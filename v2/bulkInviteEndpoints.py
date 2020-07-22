@@ -41,7 +41,7 @@ MOPENV = 'production'
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-# fetch a list of resources by network ID
+# fetch a list of networks matching a name search
 def getNetworkByName(token,name):
     """return the network object
         :token required API access token
@@ -69,7 +69,7 @@ def getNetworkByName(token,name):
         try:
             networks = json.loads(response.text)
         except ValueError as e:
-            eprint('ERROR: failed to load {r} object from GET response'.format(r = type))
+            eprint('ERROR: failed to load endpoints object from GET response')
             raise(e)
     else:
         raise Exception(
@@ -84,12 +84,11 @@ def getNetworkByName(token,name):
         return(network)
     else:
         raise Exception("ERROR: failed to find exactly one match for {}".format(name))
-        
+     
 # fetch a list of resources by network ID
 def getEndpoints(token,networkId):
     """return the resources object
         :token [required] the API access token
-        :type [required] one of endpoints, edge-routers, services
         :networkId [required] the UUID of the NF network
     """
     try:
@@ -99,7 +98,7 @@ def getEndpoints(token,networkId):
         params = {
             "networkId": networkId,
             "page": 0,
-            "size": 999,
+            "size": 10,
             "sort": "name,asc"
         }
         response = requests.get(
@@ -116,7 +115,7 @@ def getEndpoints(token,networkId):
         try:
             resources = json.loads(response.text)
         except ValueError as e:
-            eprint('ERROR: failed to load {r} object from GET response'.format(r = type))
+            eprint('ERROR: failed to load endpoints object from GET response')
             raise(e)
     else:
         raise Exception(
@@ -126,11 +125,46 @@ def getEndpoints(token,networkId):
             )
         )
 
-    if '_embedded' in resources.keys():
-        endpoints = resources['_embedded']['endpointList']
+    total_pages = resources['page']['totalPages']
+    total_elements = resources['page']['totalElements']
+    # if there are no endpoints
+    if total_elements == 0:
+        return([])
+    # if there is one page of endpoints
+    elif total_pages == 1:
+        return(resources['_embedded'][RESOURCETYPES['endpoints']['embedded']])
+    # if there are multiple pages of endpoints
     else:
-        endpoints = []
-    return(endpoints)
+        # initialize the list with the first page of endpoints
+        all_pages = resources['_embedded'][RESOURCETYPES['endpoints']['embedded']]
+        # append the remaining pages of endpoints
+        for page in range(1,total_pages):
+            try:
+                params["page"] = page
+                response = requests.get(
+                    'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints',
+                    headers=headers,
+                    params=params
+                )
+                http_code = response.status_code
+            except:
+                raise
+
+            if http_code == requests.status_codes.codes.OK: # HTTP 200
+                try:
+                    resources = json.loads(response.text)
+                    all_pages += resources['_embedded'][RESOURCETYPES['endpoints']['embedded']]
+                except ValueError as e:
+                    eprint('ERROR: failed to load endpoints object from GET response')
+                    raise(e)
+            else:
+                raise Exception(
+                    'unexpected response: {} (HTTP {:d})'.format(
+                        requests.status_codes._codes[http_code][0].upper(),
+                        http_code
+                    )
+                )
+        return(all_pages)
 
 def createEndpoint(token,networkId,name):
     """return the new endpoint object
@@ -205,7 +239,7 @@ def deleteEndpoint(token,endpointId):
             )
         )
 
-def shareEndpoint(token,recipient,endpointId,meta):
+def shareEndpoint(token,recipient,endpointId):
     """share the new endpoint enrollment token with an email address
         :token [required] the API access token
         :recipient [required] the email address
@@ -219,7 +253,7 @@ def shareEndpoint(token,recipient,endpointId,meta):
         request = [
             {
                 "toList": [recipient],
-                "subject": "Your enrollment token for {}".format(meta),
+                "subject": "Your enrollment token",
                 "id": endpointId
             }
         ]
@@ -294,7 +328,16 @@ PARSER.add_argument(
     default=None,
     help="filename with one email address per line like {first}.{last}+{meta}@netfoundry.io where optional {meta} is added to the args of --metadata to compose endpoint names like {first}_{last}-{meta}"
 )
+PARSER.add_argument(
+    "-t", "--test-environment",
+    default=None,
+    dest="testEnvironment",
+    help=argparse.SUPPRESS
+)
 ARGS = PARSER.parse_args()
+
+if ARGS.testEnvironment:
+    MOPENV = ARGS.testEnvironment
 
 if os.environ.get('NETFOUNDRY_API_TOKEN',None):
     TOKEN = os.environ.get('NETFOUNDRY_API_TOKEN')
@@ -406,10 +449,11 @@ for invitee in INVITEES:
                 raise(e)
 
         try:
-            shareEndpoint(TOKEN,invitee_email,endpoint['id'],meta)
+            shareEndpoint(TOKEN,invitee_email,endpoint['id'])
         # Display an error if something goes wrong.	
         except Exception as e:
             eprint("ERROR: failed to share {} with {}".format(endpoint_name, invitee_email))
+#            import pdb;pdb.set_trace()
             print(e.response['Error']['Message'])
         else:
             print("SENT {} to {}".format(endpoint_name, invitee_email))

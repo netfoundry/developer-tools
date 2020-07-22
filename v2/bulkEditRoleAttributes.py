@@ -31,9 +31,55 @@ RESOURCETYPES = {
     }
 }
 
+MOPENV = 'production'
+
 # print to stderr
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+# fetch a list of networks matching a name search
+def getNetworkByName(token,name):
+    """return the network object
+        :token required API access token
+        :networkId required name of the NF network may contain quoted whitespace
+    """
+#    name_encoding = urllib.parse.quote(name)
+    try:
+        headers = { 
+            "authorization": "Bearer " + token 
+        }
+        params = {
+            "findByName": name
+        }
+        response = requests.get(
+            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/networks',
+            headers=headers,
+            params=params
+        )
+
+        http_code = response.status_code
+    except:
+        raise
+
+    if http_code == requests.status_codes.codes.OK: # HTTP 200
+        try:
+            networks = json.loads(response.text)
+        except ValueError as e:
+            eprint('ERROR: failed to load endpoints object from GET response')
+            raise(e)
+    else:
+        raise Exception(
+            'unexpected response: {} (HTTP {:d})'.format(
+                requests.status_codes._codes[http_code][0].upper(),
+                http_code
+            )
+        )
+    hits = networks['page']['totalElements']
+    if hits == 1:
+        network = networks['_embedded']['networkList'][0]
+        return(network)
+    else:
+        raise Exception("ERROR: failed to find exactly one match for {}".format(name))
 
 def getNetwork(token,networkId):
     """return the network object
@@ -45,7 +91,7 @@ def getNetwork(token,networkId):
             "authorization": "Bearer " + token 
         }
         response = requests.get(
-            'https://gateway.production.netfoundry.io/core/v2/networks/'+networkId,
+            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/networks/'+networkId,
             headers=headers
         )
 
@@ -86,7 +132,7 @@ def getResources(token,type,networkId):
             "sort": "name,asc"
         }
         response = requests.get(
-            'https://gateway.production.netfoundry.io/core/v2/'+type,
+            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/'+type,
             headers=headers,
             params=params
         )
@@ -109,14 +155,24 @@ def getResources(token,type,networkId):
             )
         )
 
-    all_pages = resources['_embedded'][RESOURCETYPES[type]['embedded']]
     total_pages = resources['page']['totalPages']
-    if total_pages > 1:
+    total_elements = resources['page']['totalElements']
+    # if there are no resources
+    if total_elements == 0:
+        return([])
+    # if there is one page of resources
+    elif total_pages == 1:
+        return(resources['_embedded'][RESOURCETYPES[type]['embedded']])
+    # if there are multiple pages of resources
+    else:
+        # initialize the list with the first page of resources
+        all_pages = resources['_embedded'][RESOURCETYPES[type]['embedded']]
+        # append the remaining pages of resources
         for page in range(1,total_pages):
             try:
                 params["page"] = page
                 response = requests.get(
-                    'https://gateway.production.netfoundry.io/core/v2/'+type,
+                    'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/'+type,
                     headers=headers,
                     params=params
                 )
@@ -129,7 +185,7 @@ def getResources(token,type,networkId):
                     resources = json.loads(response.text)
                     all_pages += resources['_embedded'][RESOURCETYPES[type]['embedded']]
                 except ValueError as e:
-                    eprint('ERROR: failed to load {r} object from GET response'.format(r = type))
+                    eprint('ERROR: failed to load resources object from GET response')
                     raise(e)
             else:
                 raise Exception(
@@ -138,8 +194,7 @@ def getResources(token,type,networkId):
                         http_code
                     )
                 )
-
-    return(all_pages)
+        return(all_pages)
 
 def patchAttributes(token,type,resource):
     """return the new resource object
@@ -153,7 +208,7 @@ def patchAttributes(token,type,resource):
             "authorization": "Bearer " + token 
         }
         response = requests.patch(
-            'https://gateway.production.netfoundry.io/core/v2/'+type+'/'+resource['id'],
+            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/'+type+'/'+resource['id'],
             json={
                 'name': resource['name'],
                 'attributes': resource['attributes']
@@ -209,8 +264,13 @@ PARSER.add_argument(
     "-u", "--networkId",
     default=os.environ.get('NFNETWORKID',None),
     dest="networkId",
-    required=True,
     help="the UUID of the NF network"
+)
+PARSER.add_argument(
+    "-n", "--network-name",
+    default=None,
+    dest="networkName",
+    help="the name of the NF network may contain quoted whitespace"
 )
 PARSER.add_argument(
     "-i", "--include",
@@ -228,48 +288,71 @@ PARSER.add_argument(
     default=False,
     help="print INFO level messages"
 )
+PARSER.add_argument(
+    "-t", "--test-environment",
+    default=None,
+    dest="testEnvironment",
+    help=argparse.SUPPRESS
+)
 ARGS = PARSER.parse_args()
 
-TOKENREQUEST = {
-    "client_id": ARGS.clientId,
-    "client_secret": ARGS.clientSecret,
-    "audience": "https://gateway.production.netfoundry.io/",
-    "grant_type": "client_credentials"
-}
+if ARGS.testEnvironment:
+    MOPENV = ARGS.testEnvironment
 
-try:
-    TOKENRESPONSE = requests.post(
-        "https://netfoundry-production.auth0.com/oauth/token",
-        json=TOKENREQUEST,
-        headers={ 'content-type': "application/json" }
-    )
-    RESPONSECODE = TOKENRESPONSE.status_code
-except:
-    eprint('ERROR: authentication failed')
-    raise
+if os.environ.get('NETFOUNDRY_API_TOKEN',None):
+    TOKEN = os.environ.get('NETFOUNDRY_API_TOKEN')
+else:
+    TOKENREQUEST = {
+        "client_id": ARGS.nfClientId,
+        "client_secret": ARGS.nfClientSecret,
+        "audience": "https://gateway."+MOPENV+".netfoundry.io/",
+        "grant_type": "client_credentials"
+    }
 
-if RESPONSECODE == requests.status_codes.codes.OK:
     try:
-        TOKENOBJECT = json.loads(TOKENRESPONSE.text)
-        TOKEN = TOKENOBJECT['access_token']
+        TOKENRESPONSE = requests.post(
+            "https://netfoundry-"+MOPENV+".auth0.com/oauth/token",
+            json=TOKENREQUEST,
+            headers={ 'content-type': "application/json" }
+        )
+        RESPONSECODE = TOKENRESPONSE.status_code
     except:
+        eprint('ERROR: authentication failed')
+        raise
+
+    if RESPONSECODE == requests.status_codes.codes.OK:
+        try:
+            TOKENOBJECT = json.loads(TOKENRESPONSE.text)
+            TOKEN = TOKENOBJECT['access_token']
+        except:
+            raise Exception(
+                'ERROR: failed to find an access_token in the response and instead got: {}'.format(
+                    TOKENRESPONSE.text
+                )
+            )
+    else:
         raise Exception(
-            'ERROR: failed to find an access_token in the response and instead got: {}'.format(
-                TOKENRESPONSE.text
+            'got unexpected HTTP response {} ({:d})'.format(
+                requests.status_codes._codes[RESPONSECODE][0].upper(),
+                RESPONSECODE
             )
         )
-else:
-    raise Exception(
-        'got unexpected HTTP response {} ({:d})'.format(
-            requests.status_codes._codes[RESPONSECODE][0].upper(),
-            RESPONSECODE
-        )
-    )
 
-NETWORKOBJ = getNetwork(TOKEN,ARGS.networkId)
+
+if ARGS.networkName and ARGS.networkId:
+    raise Exception("ERROR: need one of network-name or network-id")
+elif ARGS.networkName:
+    NFNETWORK = getNetworkByName(TOKEN,ARGS.networkName)
+    NFNETWORKID = NFNETWORK['id']
+elif ARGS.networkId:
+    NFNETWORKID = ARGS.networkId
+else:
+    raise Exception("ERROR: need one of network-name or network-id")
+
+NETWORKOBJ = getNetwork(TOKEN,NFNETWORKID)
 if ARGS.verbose:
     print('INFO: operating on network "{n}"'.format(n = NETWORKOBJ['name']))
-RESOURCES = getResources(TOKEN, ARGS.resourceType, ARGS.networkId)
+RESOURCES = getResources(TOKEN, ARGS.resourceType, NFNETWORKID)
 
 ATTRIBUTES = list()
 for attr in ARGS.attributes:
