@@ -262,7 +262,7 @@ PARSER.add_argument(
 )
 PARSER.add_argument(
     "-u", "--networkId",
-    default=os.environ.get('NFNETWORKID',None),
+    default=None,
     dest="networkId",
     help="the UUID of the NF network"
 )
