@@ -359,7 +359,12 @@ for attr in ARGS.attributes:
     if not re.match('^[#]', attr):
         attr = '#'+attr
     ATTRIBUTES.append(attr)
-
+"""
+ for attr in ARGS.attributes:
+    if re.match('^[#]', attr):
+        attr = attr.lstrip('#')
+    ATTRIBUTES.append(attr)
+"""
 for resource in RESOURCES:
 
     # skip unless included
