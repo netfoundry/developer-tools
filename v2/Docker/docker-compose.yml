@@ -1,0 +1,33 @@
+version: "3.3"
+services:
+    dialer:
+        image: docker.io/netfoundry/ziti-tunnel:0.16.4
+        volumes:
+        - ~/netfoundry:/netfoundry
+        network_mode: host
+        cap_add:
+        - NET_ADMIN
+        environment:
+        - NF_REG_NAME=myDialer
+        - PFXLOG_NO_JSON=true
+        command: tproxy --resolver udp://127.0.0.123:53
+    terminator:
+        image: docker.io/netfoundry/ziti-tunnel:0.16.4
+        volumes:
+        - ~/netfoundry:/netfoundry
+        networks:
+        - netfoundry_bridge
+        environment:
+        - NF_REG_NAME=myTerminator
+        - PFXLOG_NO_JSON=true
+        command: proxy myHello:8080 mySpeed:8081
+    hello:
+        image: netfoundry/railz
+        networks:
+        - netfoundry_bridge
+    speedtest:
+        image: mlabbe/openspeedtest
+        networks:
+        - netfoundry_bridge
+networks:
+    netfoundry_bridge:
