@@ -1,7 +1,7 @@
 version: "3.3"
 services:
     dialer:
-        image: docker.io/netfoundry/ziti-tunnel:0.16.4
+        image: docker.io/netfoundry/ziti-tunnel:tproxy
         volumes:
         - ~/netfoundry:/netfoundry
         network_mode: host
@@ -12,7 +12,7 @@ services:
         - PFXLOG_NO_JSON=true
         command: tproxy --resolver udp://127.0.0.123:53
     terminator:
-        image: docker.io/netfoundry/ziti-tunnel:0.16.4
+        image: docker.io/netfoundry/ziti-tunnel:proxy
         volumes:
         - ~/netfoundry:/netfoundry
         networks:
@@ -24,7 +24,7 @@ services:
     hello:
         image: netfoundry/railz
         ports:
-        - 8888:8080
+        - 8888:3000
         networks:
         - netfoundry_bridge
     speedtest:

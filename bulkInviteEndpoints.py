@@ -41,6 +41,7 @@ MOPENV = 'production'
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+# TODO: [MOP-13442] import netfoundry v3 instead of subroutines in this script
 # fetch a list of networks matching a name search
 def getNetworkByName(token,name):
     """return the network object
