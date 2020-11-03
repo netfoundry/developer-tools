@@ -24,7 +24,7 @@ services:
     hello:
         image: netfoundry/railz
         ports:
-        - 8888:3000
+        - 3000:3000
         networks:
         - netfoundry_bridge
     speedtest:
@@ -33,5 +33,12 @@ services:
         - 8080:8080
         networks:
         - netfoundry_bridge
+    httpbin:
+        image: kennethreitz/httpbin
+        ports:
+        - 8081:80
+        networks:
+        - netfoundry_bridge
+
 networks:
     netfoundry_bridge:
