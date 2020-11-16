@@ -1,11 +1,10 @@
 version: "3.3"
 services:
     builder:
-        image: netfoundry/builderbot
+        image: netfoundry/python:demo
         restart: "no"
-        build: .
         volumes:
-        - ~/.netfoundry:/root/.netfoundry
+        - ./credentials:/root/.netfoundry
         environment:
         # - NETFOUNDRY_CLIENT_ID
         # - NETFOUNDRY_PASSWORD
@@ -15,7 +14,7 @@ services:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
         restart: unless-stopped
         volumes:
-        - ~/.netfoundry:/netfoundry
+        - ./credentials:/netfoundry
         network_mode: host
         cap_add:
         - NET_ADMIN
@@ -27,7 +26,7 @@ services:
         image: docker.io/netfoundry/ziti-tunnel:tun
         restart: unless-stopped
         volumes:
-        - ~/.netfoundry:/netfoundry
+        - ./credentials:/netfoundry
         networks:
         - netfoundry_bridge
         cap_add:
