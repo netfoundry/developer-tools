@@ -1,3 +1,6 @@
 FROM netfoundry/python:demo
 
-RUN pip install --index-url https://test.pypi.org/simple/ --no-deps --upgrade netfoundry
+#RUN pip install --index-url https://test.pypi.org/simple/ --no-deps --upgrade netfoundry
+COPY ./entrypoint-test.sh .
+ENTRYPOINT [ "./entrypoint-test.sh" ]
+CMD ["python","-m","netfoundry.demo"]
