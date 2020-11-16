@@ -4,7 +4,7 @@ services:
         image: netfoundry/python:demo
         restart: "no"
         volumes:
-        - ./credentials:/root/.netfoundry
+        - .:/netfoundry
         environment:
         # - NETFOUNDRY_CLIENT_ID
         # - NETFOUNDRY_PASSWORD
@@ -14,7 +14,7 @@ services:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
         restart: unless-stopped
         volumes:
-        - ./credentials:/netfoundry
+        - .:/netfoundry
         network_mode: host
         cap_add:
         - NET_ADMIN
@@ -26,7 +26,7 @@ services:
         image: docker.io/netfoundry/ziti-tunnel:tun
         restart: unless-stopped
         volumes:
-        - ./credentials:/netfoundry
+        - .:/netfoundry
         networks:
         - netfoundry_bridge
         cap_add:
