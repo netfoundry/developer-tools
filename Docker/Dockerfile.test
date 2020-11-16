@@ -1,7 +1,3 @@
-FROM python:3.9-slim-buster
+FROM netfoundry/python:demo
 
-RUN pip install --upgrade pip
-RUN pip install --index-url https://test.pypi.org/simple/ --no-deps netfoundry
-RUN pip install --upgrade requests pyjwt pysocks
-CMD ["bash"]
-
+RUN pip install --index-url https://test.pypi.org/simple/ --no-deps --upgrade netfoundry

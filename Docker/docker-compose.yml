@@ -6,9 +6,6 @@ services:
         volumes:
         - .:/netfoundry
         environment:
-        # - NETFOUNDRY_CLIENT_ID
-        # - NETFOUNDRY_PASSWORD
-        # - NETFOUNDRY_OAUTH_URL
         - NETFOUNDRY_API_ACCOUNT
     dialer:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
