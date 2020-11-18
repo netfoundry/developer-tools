@@ -7,6 +7,7 @@ services:
         - .:/netfoundry
         environment:
         - NETFOUNDRY_API_ACCOUNT
+        - NETWORK_NAME
     dialer:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
         restart: unless-stopped

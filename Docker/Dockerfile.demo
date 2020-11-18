@@ -1,3 +1,4 @@
 FROM netfoundry/python
-
-CMD ["python","-m","netfoundry.demo"]
+ARG network_name=BibbidiBobbidiBoo
+ENV NETWORK_NAME=${network_name}
+CMD python3 -m netfoundry.demo ${NETWORK_NAME} privateServices
