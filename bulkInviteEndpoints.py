@@ -1,8 +1,3 @@
-import boto3
-from botocore.exceptions import ClientError
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 import json
 import sys
 import argparse
@@ -11,8 +6,7 @@ import jwt
 from datetime import datetime, date
 import time
 import os
-import requests # HTTP user agent
-#import urllib.parse
+import netfoundry
 
 #
 # inviteZitiEndpoints.py
@@ -25,270 +19,11 @@ import requests # HTTP user agent
 
 NOW = time.time()
 
-# describe resource types 
-#  * embedded list key names and
-#  * expected HTTP response codes
-RESOURCETYPES = {
-    'endpoints': {
-        'embedded': "endpointList",
-        'httpcode': "OK"
-    }
-}
-
-MOPENV = 'production'
-
 # print to stderr
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-# TODO: [MOP-13442] import netfoundry v3 instead of subroutines in this script
-# fetch a list of networks matching a name search
-def getNetworkByName(token,name):
-    """return the network object
-        :token required API access token
-        :networkId required name of the NF network may contain quoted whitespace
-    """
-#    name_encoding = urllib.parse.quote(name)
-    try:
-        headers = { 
-            "authorization": "Bearer " + token 
-        }
-        params = {
-            "findByName": name
-        }
-        response = requests.get(
-            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/networks',
-            headers=headers,
-            params=params
-        )
-
-        http_code = response.status_code
-    except:
-        raise
-
-    if http_code == requests.status_codes.codes.OK: # HTTP 200
-        try:
-            networks = json.loads(response.text)
-        except ValueError as e:
-            eprint('ERROR: failed to load endpoints object from GET response')
-            raise(e)
-    else:
-        raise Exception(
-            'unexpected response: {} (HTTP {:d})'.format(
-                requests.status_codes._codes[http_code][0].upper(),
-                http_code
-            )
-        )
-    hits = networks['page']['totalElements']
-    if hits == 1:
-        network = networks['_embedded']['networkList'][0]
-        return(network)
-    else:
-        raise Exception("ERROR: failed to find exactly one match for {}".format(name))
-     
-# fetch a list of resources by network ID
-def getEndpoints(token,networkId):
-    """return the resources object
-        :token [required] the API access token
-        :networkId [required] the UUID of the NF network
-    """
-    try:
-        headers = { 
-            "authorization": "Bearer " + token 
-        }
-        params = {
-            "networkId": networkId,
-            "page": 0,
-            "size": 10,
-            "sort": "name,asc"
-        }
-        response = requests.get(
-            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints',
-            headers=headers,
-            params=params
-        )
-
-        http_code = response.status_code
-    except:
-        raise
-
-    if http_code == requests.status_codes.codes.OK: # HTTP 200
-        try:
-            resources = json.loads(response.text)
-        except ValueError as e:
-            eprint('ERROR: failed to load endpoints object from GET response')
-            raise(e)
-    else:
-        raise Exception(
-            'unexpected response: {} (HTTP {:d})'.format(
-                requests.status_codes._codes[http_code][0].upper(),
-                http_code
-            )
-        )
-
-    total_pages = resources['page']['totalPages']
-    total_elements = resources['page']['totalElements']
-    # if there are no endpoints
-    if total_elements == 0:
-        return([])
-    # if there is one page of endpoints
-    elif total_pages == 1:
-        return(resources['_embedded'][RESOURCETYPES['endpoints']['embedded']])
-    # if there are multiple pages of endpoints
-    else:
-        # initialize the list with the first page of endpoints
-        all_pages = resources['_embedded'][RESOURCETYPES['endpoints']['embedded']]
-        # append the remaining pages of endpoints
-        for page in range(1,total_pages):
-            try:
-                params["page"] = page
-                response = requests.get(
-                    'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints',
-                    headers=headers,
-                    params=params
-                )
-                http_code = response.status_code
-            except:
-                raise
-
-            if http_code == requests.status_codes.codes.OK: # HTTP 200
-                try:
-                    resources = json.loads(response.text)
-                    all_pages += resources['_embedded'][RESOURCETYPES['endpoints']['embedded']]
-                except ValueError as e:
-                    eprint('ERROR: failed to load endpoints object from GET response')
-                    raise(e)
-            else:
-                raise Exception(
-                    'unexpected response: {} (HTTP {:d})'.format(
-                        requests.status_codes._codes[http_code][0].upper(),
-                        http_code
-                    )
-                )
-        return(all_pages)
-
-def createEndpoint(token,networkId,name):
-    """return the new endpoint object
-        :token required API access token
-        :networkId required UUID of the NF network
-        :name required endpoint name
-    """
-    try:
-        headers = { 
-            'Content-Type': 'application/json',
-            "authorization": "Bearer " + token 
-        }
-        request = {
-            "networkId": networkId,
-            "attributes": [
-                    "#defaultRouters"
-            ],
-            "enrollmentMethod": {
-                    "ott": True
-            },
-            "name": name
-        }
-        response = requests.post(
-            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints',
-            json=request,
-            headers=headers
-        )
-        http_code = response.status_code
-    except:
-        raise
-
-    if http_code == requests.status_codes.codes[RESOURCETYPES['endpoints']['httpcode']]:
-        try:
-            updated = json.loads(response.text)
-        except ValueError as e:
-            eprint('ERROR: failed to load updated resource object from PUT response body')
-            raise(e)
-    else:
-        raise Exception(
-            'unexpected response: {} (HTTP {:d}\n{})'.format(
-                requests.status_codes._codes[http_code][0].upper(),
-                http_code,
-                response.text
-            )
-        )
-
-    return(updated)
-
-def deleteEndpoint(token,endpointId):
-    """delete an endpoint with an expired enrollment token
-        :token [required] the API access token
-        :endpointId [required] the UUID of the expired endpoint
-    """
-    try:
-        headers = { 
-            "authorization": "Bearer " + token 
-        }
-        response = requests.delete(
-            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints/'+endpointId,
-            headers=headers
-        )
-        http_code = response.status_code
-    except:
-        raise
-
-    if not http_code == requests.status_codes.codes.OK:
-        raise Exception(
-            'unexpected response: {} (HTTP {:d}\n{})'.format(
-                requests.status_codes._codes[http_code][0].upper(),
-                http_code,
-                response.text
-            )
-        )
-
-def shareEndpoint(token,recipient,endpointId):
-    """share the new endpoint enrollment token with an email address
-        :token [required] the API access token
-        :recipient [required] the email address
-        :endpointId [required] the UUID of the endpoint
-    """
-    try:
-        headers = { 
-            'Content-Type': 'application/json',
-            "authorization": "Bearer " + token 
-        }
-        request = [
-            {
-                "toList": [recipient],
-                "subject": "Your enrollment token",
-                "id": endpointId
-            }
-        ]
-        response = requests.post(
-            'https://gateway.'+MOPENV+'.netfoundry.io/core/v2/endpoints/share',
-            json=request,
-            headers=headers
-        )
-        http_code = response.status_code
-    except:
-        raise
-
-    if not http_code == requests.status_codes.codes['ACCEPTED']:
-        raise Exception(
-            'unexpected response: {} (HTTP {:d}\n{})'.format(
-                requests.status_codes._codes[http_code][0].upper(),
-                http_code,
-                response.text
-            )
-        )
-
 PARSER = argparse.ArgumentParser()
-PARSER.add_argument(
-    "-c", "--client-id",
-    default=os.environ.get('NETFOUNDRY_CLIENT_ID',None),
-    dest="nfClientId",
-    help="required NetFoundry API account principal"
-)
-PARSER.add_argument(
-    "-s", "--client-secret",
-    default=os.environ.get('NETFOUNDRY_CLIENT_SECRET',None),
-    dest="nfClientSecret",
-    help="required NetFoundry API account credential"
-)
 PARSER.add_argument(
     "-u", "--network-id",
     default=None,
@@ -309,6 +44,13 @@ PARSER.add_argument(
     help="one or more metadata to be appended endpoint names e.g. '-m laptop mobile'"
 )
 PARSER.add_argument(
+    "-a", "--attributes",
+    default=[],
+    nargs="+",
+    required=False,
+    help="one or more Endpoint role attributes e.g. -a sandbox staging dummyServices"
+)
+PARSER.add_argument(
     "-i", "--include",
     default=None,
     help="invite emails matching regex"
@@ -319,77 +61,36 @@ PARSER.add_argument(
     help="ignore emails matching regex"
 )
 PARSER.add_argument(
-    "-p", "--aws-profile",
-    dest="awsProfile",
-    default=None,
-    help="AWS shared credentials profile for sending email with SES"
-)
-PARSER.add_argument(
     "-f", "--invitees",
     default=None,
     help="filename with one email address per line like {first}.{last}+{meta}@netfoundry.io where optional {meta} is added to the args of --metadata to compose endpoint names like {first}_{last}-{meta}"
 )
 PARSER.add_argument(
-    "-t", "--test-environment",
+    "-c", "--credentials",
     default=None,
-    dest="testEnvironment",
-    help=argparse.SUPPRESS
+    help="API account credentials JSON file"
 )
 ARGS = PARSER.parse_args()
 
-if ARGS.testEnvironment:
-    MOPENV = ARGS.testEnvironment
+Session = netfoundry.Session(ARGS.credentials if ARGS.credentials is not None else None)
 
-if os.environ.get('NETFOUNDRY_API_TOKEN',None):
-    TOKEN = os.environ.get('NETFOUNDRY_API_TOKEN')
-else:
-    TOKENREQUEST = {
-        "client_id": ARGS.nfClientId,
-        "client_secret": ARGS.nfClientSecret,
-        "audience": "https://gateway."+MOPENV+".netfoundry.io/",
-        "grant_type": "client_credentials"
-    }
+# yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
+Organization = netfoundry.Organization(Session)
 
-    try:
-        TOKENRESPONSE = requests.post(
-            "https://netfoundry-"+MOPENV+".auth0.com/oauth/token",
-            json=TOKENREQUEST,
-            headers={ 'content-type': "application/json" }
-        )
-        RESPONSECODE = TOKENRESPONSE.status_code
-    except:
-        eprint('ERROR: authentication failed')
-        raise
-
-    if RESPONSECODE == requests.status_codes.codes.OK:
-        try:
-            TOKENOBJECT = json.loads(TOKENRESPONSE.text)
-            TOKEN = TOKENOBJECT['access_token']
-        except:
-            raise Exception(
-                'ERROR: failed to find an access_token in the response and instead got: {}'.format(
-                    TOKENRESPONSE.text
-                )
-            )
-    else:
-        raise Exception(
-            'got unexpected HTTP response {} ({:d})'.format(
-                requests.status_codes._codes[RESPONSECODE][0].upper(),
-                RESPONSECODE
-            )
-        )
+# use the default Network Group (the first Network Group ID known to the Organization)
+NetworkGroup = netfoundry.NetworkGroup(Organization)
 
 if ARGS.networkName and ARGS.networkId:
     raise Exception("ERROR: need one of network-name or network-id")
 elif ARGS.networkName:
-    NFNETWORK = getNetworkByName(TOKEN,ARGS.networkName)
-    NFNETWORKID = NFNETWORK['id']
+    Network = netfoundry.Network(Session, networkName=ARGS.networkName)
 elif ARGS.networkId:
-    NFNETWORKID = ARGS.networkId
+    Network = netfoundry.Network(Session, networkId=ARGS.networkId)
 else:
     raise Exception("ERROR: need one of network-name or network-id")
 
-ENDPOINTS = getEndpoints(TOKEN,NFNETWORKID)
+#NFNETWORKID = NFNETWORK['id']
+ENDPOINTS = Network.endpoints()
 
 if ARGS.invitees:
     INVITEES = open(ARGS.invitees)
@@ -433,7 +134,7 @@ for invitee in INVITEES:
                 continue
         else:
             # create the endpoint
-            endpoint = createEndpoint(TOKEN,NFNETWORKID,endpoint_name)
+            endpoint = Network.createEndpoint(name=endpoint_name,attributes=ARGS.attributes)
 
         # decode the JWT
         expiry_epoch = jwt.decode(endpoint['jwt'], verify=False)['exp']
@@ -443,14 +144,15 @@ for invitee in INVITEES:
         if (NOW+(60*60*12)) > expiry_epoch:
             print('EXPIRY: recreating {}'.format(endpoint_name))
             try:
-                deleteEndpoint(TOKEN,endpoint['id'])
-                endpoint = createEndpoint(TOKEN,NFNETWORKID,endpoint_name)
+                Network.deleteResource(type="endpoint",id=endpoint['id'])
+                # recreate the endpoint
+                endpoint = Network.createEndpoint(name=endpoint_name,attributes=ARGS.attributes)
             except Exception as e:
                 eprint('ERROR: failed to re-create expired endpoint {}'.format(endpoint_name))
                 raise(e)
 
         try:
-            shareEndpoint(TOKEN,invitee_email,endpoint['id'])
+            Network.shareEndpoint(invitee_email,endpoint['id'])
         # Display an error if something goes wrong.	
         except Exception as e:
             eprint("ERROR: failed to share {} with {}".format(endpoint_name, invitee_email))
