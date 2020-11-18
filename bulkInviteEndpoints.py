@@ -1,4 +1,5 @@
 import json
+from os import environ
 import sys
 import argparse
 import re
@@ -72,7 +73,10 @@ PARSER.add_argument(
 )
 ARGS = PARSER.parse_args()
 
-Session = netfoundry.Session(ARGS.credentials if ARGS.credentials is not None else None)
+Session = netfoundry.Session(
+    token=os.environ['NETFOUNDRY_API_TOKEN'] if 'NETFOUNDRY_API_TOKEN' in os.environ else None,
+    credentials=ARGS.credentials if ARGS.credentials is not None else None
+)
 
 # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
 Organization = netfoundry.Organization(Session)
@@ -89,7 +93,6 @@ elif ARGS.networkId:
 else:
     raise Exception("ERROR: need one of network-name or network-id")
 
-#NFNETWORKID = NFNETWORK['id']
 ENDPOINTS = Network.endpoints()
 
 if ARGS.invitees:
