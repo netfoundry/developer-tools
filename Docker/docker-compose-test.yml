@@ -9,6 +9,7 @@ services:
         environment:
         - NETFOUNDRY_API_ACCOUNT
         - NETWORK_NAME
+        command: python3 -m netfoundry.demo ${NETWORK_NAME} privateServices
     dialer:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
         restart: unless-stopped
