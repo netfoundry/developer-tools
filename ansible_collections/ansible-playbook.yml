@@ -1,0 +1,26 @@
+
+- hosts: localhost
+  tasks:
+  - name: find Network resources
+    netfoundry_info:
+      name: BibbidiBobbidiBoo
+    register: netfoundry_info
+  - name: dump test output
+    debug:
+      msg: '{{ netfoundry_info }}'
+
+  #   - name: create Endpoint
+  #     uri:
+  #       url: "https://gateway.production.netfoundry.io/core/v2/endpoints"
+  #       body_format: json
+  #       method: POST
+  #       headers:
+  #           Content-Type: application/json
+  #           Authorization: Bearer {{lookup('env', 'NETFOUNDRY_API_TOKEN')}}
+  #       body:
+  #           networkId: '{{ networkId }}'
+  #           name: '{{ endpointName }}'
+
+  # vars:
+  #   networkId:
+  #   endpointName:
