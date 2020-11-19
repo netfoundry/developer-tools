@@ -1,0 +1,3 @@
+FROM netfoundry/python
+COPY ./my-netfoundry-network.py .
+CMD ./my-netfoundry-network.py
