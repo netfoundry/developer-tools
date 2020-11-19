@@ -6,9 +6,10 @@ services:
         volumes:
         - .:/netfoundry
         environment:
+        - NETFOUNDRY_API_TOKEN
         - NETFOUNDRY_API_ACCOUNT
         - NETWORK_NAME
-        command: python3 -m netfoundry.demo ${NETWORK_NAME} privateServices
+        command: python3 -m netfoundry.demo --network ${NETWORK_NAME} --make-private-services
     dialer:
         image: docker.io/netfoundry/ziti-tunnel:tproxy
         restart: unless-stopped
@@ -20,7 +21,7 @@ services:
         environment:
         - NF_REG_NAME=dialer1
         - PFXLOG_NO_JSON=true
-        command: tproxy --resolver udp://127.0.0.123:53
+        command: tproxy --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use dialer1
     exit:
         image: docker.io/netfoundry/ziti-tunnel:tun
         restart: unless-stopped
