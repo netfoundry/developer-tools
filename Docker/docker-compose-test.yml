@@ -44,13 +44,6 @@ services:
         - 3000:3000
         networks:
         - netfoundry_bridge
-    speedtest:
-        image: mlabbe/openspeedtest
-        restart: "no"
-        ports:
-        - 8080:8080
-        networks:
-        - netfoundry_bridge
     httpbin:
         image: kennethreitz/httpbin
         restart: "no"
