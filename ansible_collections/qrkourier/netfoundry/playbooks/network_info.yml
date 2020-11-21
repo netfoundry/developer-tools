@@ -1,9 +1,12 @@
 
 - hosts: localhost
+  collections:
+  - qrkourier.netfoundry
   tasks:
   - name: find Network resources
     netfoundry_info:
-      name: BibbidiBobbidiBoo
+      networkName: BibbidiBobbidiBoo
+      credentials: dwstaging.json # relative to playbook
     register: netfoundry_info
   - name: dump test output
     debug:

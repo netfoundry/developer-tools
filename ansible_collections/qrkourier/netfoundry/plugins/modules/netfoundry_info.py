@@ -16,20 +16,26 @@ version_added: "1.0.0"
 description: Discover NetFoundry Network resources with an API account
 
 options:
-    name:
+    networkName:
         description: This is the message to send to the test module.
         required: true
         type: str
 
 author:
     - Kenneth Bingham (@qrkourier)
+
+requirements:
+    - netfoundry
 '''
 
 EXAMPLES = r'''
 # Pass in a message
 - name: discover resources in the Network
-  community.netfoundry.netfoundry_info:
-    name: BibbidiBobbidiBoo
+  qrkourier.netfoundry.netfoundry_info:
+    networkName: BibbidiBobbidiBoo
+    credentials: credentials.json
+  register: network_info
+
 '''
 
 RETURN = r'''
@@ -55,12 +61,20 @@ netfoundry_info:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from netfoundry import Session
+from netfoundry import Organization
+from netfoundry import NetworkGroup
+from netfoundry import Network
+
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        name=dict(type='str', required=True),
+        networkName=dict(type='str', required=True),
+        credentials=dict(type='str', required=False),
+        networkGroupId=dict(type='str', required=False),
+        networkGroupName=dict(type='str', required=False),
     )
 
     # seed the result dict in the object
@@ -92,12 +106,33 @@ def run_module():
 
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
-    result['original_message'] = module.params['name']
-    result['message'] = 'goodbye'
-    result['my_useful_info'] = {
-        'foo': 'bar',
-        'answer': 42,
-    }
+    result['original_message'] = module.params
+
+    session = Session(
+        credentials=module.params['credentials'] if module.params['credentials'] is not None else None
+    )
+    # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
+    organization = Organization(session)
+
+    # use the default Network Group (the first Network Group ID known to the Organization)
+    network_group = NetworkGroup(
+        organization,
+        networkGroupId=module.params['networkGroupId'] if module.params['networkGroupId'] is not None else None,
+        networkGroupName=module.params['networkGroupName'] if module.params['networkGroupName'] is not None else None
+    )
+
+    network = Network(session, networkName=module.params['networkName'])
+
+    result['organization'] = organization.describe
+#    result['network_groups'] = organization.networkGroups
+    result['network_group'] = network_group.describe
+    result['network'] = network.describe
+    result['endpoints'] = network.endpoints()
+    result['edge_routers'] = network.edgeRouters()
+    result['services'] = network.services()
+    result['edge_router_policies'] = network.edgeRouterPolicies()
+    result['app_wans'] = network.appWans()
+    
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
     module.exit_json(**result)
