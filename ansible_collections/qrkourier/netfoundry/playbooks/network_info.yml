@@ -5,12 +5,19 @@
   tasks:
   - name: find Network resources
     netfoundry_info:
-      networkName: BibbidiBobbidiBoo
-      credentials: credentials.json # relative to playbook
+      networkName: kentest2222
+      credentials: dwstaging.json # relative to playbook
     register: netfoundry_info
-  - name: dump test output
+  - name: dump output
     debug:
-      msg: '{{ netfoundry_info }}'
+      msg: "{{ netfoundry_info }}"
+  - name: show Organization
+    debug:
+      msg: "{{ netfoundry_info.organization }}"
+  - name: list Endpoint names
+    debug:
+      msg: "* {{ item.name }}"
+    loop: "{{ netfoundry_info.endpoints }}"
 
   #   - name: create Endpoint
   #     uri:
