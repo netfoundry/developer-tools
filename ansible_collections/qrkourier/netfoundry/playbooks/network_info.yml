@@ -5,8 +5,8 @@
   tasks:
   - name: find Network resources
     netfoundry_info:
-      networkName: kentest2222
-      credentials: dwstaging.json # relative to playbook
+      networkName: BibbidiBobbidiBoo
+      credentials: credentials.json # relative to playbook
     register: netfoundry_info
   - name: dump output
     debug:
