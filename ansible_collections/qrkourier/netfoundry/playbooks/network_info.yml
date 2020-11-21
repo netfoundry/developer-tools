@@ -8,9 +8,6 @@
       network: "{{ networkName }}"
       credentials: "{{ credentialsJson }}" 
     register: netfoundry_info
-  - name: dump output
-    debug:
-      msg: "{{ netfoundry_info }}"
   - name: show Organization
     debug:
       msg: "{{ netfoundry_info.organization }}"
@@ -39,8 +36,8 @@
   #   loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
 
   vars:
-    networkName: kentest1014
-    credentialsJson: kentest-nfsales.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
+    networkName: BibbidiBobbidiBoo
+    credentialsJson: credentials.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
     endpointNames:
     - dialer1
     - exit1
