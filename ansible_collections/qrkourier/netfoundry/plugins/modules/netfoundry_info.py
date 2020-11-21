@@ -71,8 +71,8 @@ from netfoundry import Network
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        networkName=dict(type='str', required=True),
-        credentials=dict(type='str', required=False),
+        network=dict(type='str', required=True),
+        credentials=dict(type='path', required=False),
         networkGroupId=dict(type='str', required=False),
         networkGroupName=dict(type='str', required=False),
     )
@@ -121,12 +121,17 @@ def run_module():
         networkGroupName=module.params['networkGroupName'] if module.params['networkGroupName'] is not None else None
     )
 
-    network = Network(session, networkName=module.params['networkName'])
+    network = Network(session, networkName=module.params['network'])
 
-    result['organization'] = organization.describe
+#    result['token'] = session.token
 #    result['network_groups'] = organization.networkGroups
-    result['network_group'] = network_group.describe
-    result['network'] = network.describe
+    result['console'] = network_group.nfconsole
+    # merge the session object to top-level resources on which we will perform
+    #  operations so that only a single parameter is necessary when calling
+    #  subsequent modules e.g. netfoundry_endpoint
+    result['organization'] = organization.describe|{"session": session}
+    result['network_group'] = network_group.describe|{"session": session}
+    result['network'] = network.describe|{"session": session}
     result['endpoints'] = network.endpoints()
     result['edge_routers'] = network.edgeRouters()
     result['services'] = network.services()

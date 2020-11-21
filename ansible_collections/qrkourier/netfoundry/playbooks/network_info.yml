@@ -3,10 +3,10 @@
   collections:
   - qrkourier.netfoundry
   tasks:
-  - name: find Network resources
+  - name: Establish session and find Network resources
     netfoundry_info:
-      networkName: BibbidiBobbidiBoo
-      credentials: credentials.json # relative to playbook
+      network: "{{ networkName }}"
+      credentials: "{{ credentialsJson }}" 
     register: netfoundry_info
   - name: dump output
     debug:
@@ -14,23 +14,22 @@
   - name: show Organization
     debug:
       msg: "{{ netfoundry_info.organization }}"
+  - name: show Console URL
+    debug:
+      msg: "{{ netfoundry_info.console }}"
   - name: list Endpoint names
     debug:
       msg: "* {{ item.name }}"
     loop: "{{ netfoundry_info.endpoints }}"
+  - name: create Endpoint
+    netfoundry_endpoint:
+      name: "{{ endpointName }}"
+      state: PROVISIONED
+      network: "{{ netfoundry_info.network }}"
 
-  #   - name: create Endpoint
-  #     uri:
-  #       url: "https://gateway.production.netfoundry.io/core/v2/endpoints"
-  #       body_format: json
-  #       method: POST
-  #       headers:
-  #           Content-Type: application/json
-  #           Authorization: Bearer {{lookup('env', 'NETFOUNDRY_API_TOKEN')}}
-  #       body:
-  #           networkId: '{{ networkId }}'
-  #           name: '{{ endpointName }}'
-
-  # vars:
-  #   networkId:
-  #   endpointName:
+  vars:
+    networkName: BibbidiBobbidiBoo
+    credentialsJson: credentials.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
+    endpointNames:
+    - dialer1
+    - exit1

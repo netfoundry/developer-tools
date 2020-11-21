@@ -3,6 +3,7 @@
 # Copyright: (c) 2020, Kenneth Bingham <kenneth.bingham@netfoundry.io>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
+from re import match
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -70,13 +71,17 @@ message:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-
+from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
+from netfoundry import Session
+from netfoundry import Network
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        new=dict(type='bool', required=False, default=False)
+        attributes=dict(type='list', elements='str', required=False, default=[]),
+        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
+        network=dict(type='json', required=True)
     )
 
     # seed the result dict in the object
@@ -108,22 +113,33 @@ def run_module():
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
     result['original_message'] = module.params['name']
-    result['message'] = 'goodbye'
 
-    # use whatever logic you need to determine whether or not this module
-    # made any modifications to your target
-    if module.params['new']:
+    session = Session(
+        token=module.params['network']['token']
+    )
+
+    network = Network(session, networkId=module.params['network']['id'])
+
+    found = network.getResources(type="endpoints",name=module.params['name'])
+    if len(found) == 0:
+        if module.params['state'] == "PROVISIONED":
+            network.createEndpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['changed'] = True
+            module.exit_json(**result)
+        elif module.params['state'] == "DELETED":
+            result['changed'] = False
+            module.exit_json(**result)
+    elif len(found) == 1:
+        endpoint = found[0]
+        if module.params['state'] == "PROVISIONED":
+            endpoint['attributes'] = module.params['attributes']
+            network.patchResource(endpoint)
+        elif module.params['state'] == "DELETED":
+            network.deleteResource(type="endpoint",id=endpoint['id'])
         result['changed'] = True
-
-    # during the execution of the module, if there is an exception or a
-    # conditional state that effectively causes a failure, run
-    # AnsibleModule.fail_json() to pass in the message and the result
-    if module.params['name'] == 'fail me':
-        module.fail_json(msg='You requested this to fail', **result)
-
-    # in the event of a successful module execution, you will want to
-    # simple AnsibleModule.exit_json(), passing the key/value results
-    module.exit_json(**result)
+        module.exit_json(**result)
+    else:
+        module.fail_json(msg='ERROR: "{name}" matched more than one Endpoint'.format(name=module.params['name']), **result)
 
 
 def main():
