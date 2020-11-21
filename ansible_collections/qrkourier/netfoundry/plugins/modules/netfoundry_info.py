@@ -17,8 +17,16 @@ description: Discover NetFoundry Network resources with an API account
 
 options:
     networkName:
-        description: This is the message to send to the test module.
+        description: The name of the Network to describe.
         required: true
+        type: str
+    credentials:
+        description: Path to API account credentials JSON file relative to playbook directory.
+        required: true
+        type: path
+    networkGroupId:
+        description: Network Group UUID. Only necessary if there is more than one, which is unusual.
+        required: false
         type: str
 
 author:
@@ -74,7 +82,6 @@ def run_module():
         network=dict(type='str', required=True),
         credentials=dict(type='path', required=False),
         networkGroupId=dict(type='str', required=False),
-        networkGroupName=dict(type='str', required=False),
     )
 
     # seed the result dict in the object
@@ -118,7 +125,6 @@ def run_module():
     network_group = NetworkGroup(
         organization,
         networkGroupId=module.params['networkGroupId'] if module.params['networkGroupId'] is not None else None,
-        networkGroupName=module.params['networkGroupName'] if module.params['networkGroupName'] is not None else None
     )
 
     network = Network(session, networkName=module.params['network'])
@@ -129,9 +135,9 @@ def run_module():
     # merge the session object to top-level resources on which we will perform
     #  operations so that only a single parameter is necessary when calling
     #  subsequent modules e.g. netfoundry_endpoint
-    result['organization'] = organization.describe|{"session": session}
-    result['network_group'] = network_group.describe|{"session": session}
-    result['network'] = network.describe|{"session": session}
+    result['organization'] = {**organization.describe, **{"token": session.token}}
+    result['network_group'] = {**network_group.describe, **{"token": session.token}}
+    result['network'] = {**network.describe, **{"token": session.token}}
     result['endpoints'] = network.endpoints()
     result['edge_routers'] = network.edgeRouters()
     result['services'] = network.services()

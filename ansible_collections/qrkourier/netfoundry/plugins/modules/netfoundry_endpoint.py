@@ -8,52 +8,61 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: my_test
+module: netfoundry_endpoint
 
-short_description: This is my test module
+short_description: Create, update, or delete an Endpoint
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.0.0"
+version_added: "1.1.0"
 
-description: This is my longer description explaining my test module.
+description: Create and update always have result=changed
 
 options:
     name:
-        description: This is the message to send to the test module.
+        description: The name of the Endpoint.
         required: true
         type: str
-    new:
-        description:
-            - Control to demo if the result of this module is changed or not.
-            - Parameter description can be a list as well.
+    attributes:
+        description: A list of Endpoint role attributes prefixed with a \#hash mark.
         required: false
-        type: bool
-# Specify this value according to your collection
-# in format of namespace.collection.doc_fragment_name
-extends_documentation_fragment:
-    - my_namespace.my_collection.my_doc_fragment_name
+        type: list
+    state:
+        description: The desired state.
+        required: false
+        type: str
+        choices: ["PROVISIONED","DELETED"]
+        default: PROVISIONED
+    network:
+        description: The dictionary describing the Network on which to operate from network_info.network.
+        required: true
+        type: dict
 
 author:
-    - Your Name (@yourGitHubHandle)
+    - Kenneth Bingham (@qrkourier)
+
+requirements:
+    - netfoundry
 '''
 
 EXAMPLES = r'''
 # Pass in a message
-- name: Test with a message
-  my_namespace.my_collection.my_test:
-    name: hello world
+  - name: create Endpoint
+    netfoundry_endpoint:
+      name: "{{ item }}"
+      state: PROVISIONED
+      network: "{{ netfoundry_info.network }}"
+      attributes:
+      - "#dialers"
+    loop: "{{ endpointNames }}"
+    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
 
-# pass in a message and have changed true
-- name: Test with a message and changed output
-  my_namespace.my_collection.my_test:
-    name: hello world
-    new: true
-
-# fail the module
-- name: Test failure of the module
-  my_namespace.my_collection.my_test:
-    name: fail me
+  - name: Delete all Endpoints
+    netfoundry_endpoint:
+      name: "{{ item }}"
+      state: DELETED
+      network: "{{ netfoundry_info.network }}"
+    loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -81,7 +90,7 @@ def run_module():
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
-        network=dict(type='json', required=True)
+        network=dict(type='dict', required=True)
     )
 
     # seed the result dict in the object
