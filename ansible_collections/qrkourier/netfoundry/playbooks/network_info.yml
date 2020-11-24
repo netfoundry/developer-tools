@@ -25,9 +25,11 @@
       network: "{{ netfoundry_info.network }}"
       attributes:
       - "#dialers"
+      dest: /tmp/netfoundry                  # filename is Endpoint name if dest is a directory
+      #dest: /tmp/netfoundry/ott-{{item}}.jwt # custom filename if name is like *.jwt
     loop: "{{ endpointNames }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list
-#    debugger: on_failed
+  #  debugger: on_failed
   # - name: Delete all Endpoints
   #   netfoundry_endpoint:
   #     name: "{{ item }}"
@@ -36,8 +38,8 @@
   #   loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
 
   vars:
-    networkName: BibbidiBobbidiBoo
-    credentialsJson: credentials.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
+    networkName: kentest1209
+    credentialsJson: nfint-ZitiBastions.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
     endpointNames:
     - dialer1
     - exit1

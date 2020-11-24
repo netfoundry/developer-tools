@@ -70,6 +70,8 @@ netfoundry_info:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
+from ansible.errors import AnsibleError
+from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Organization
 from netfoundry import NetworkGroup
