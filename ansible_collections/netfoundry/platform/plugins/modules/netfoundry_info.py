@@ -39,7 +39,7 @@ requirements:
 EXAMPLES = r'''
 # Pass in a message
 - name: discover resources in the Network
-  qrkourier.netfoundry.netfoundry_info:
+  netfoundry.platform.netfoundry_info:
     networkName: BibbidiBobbidiBoo
     credentials: credentials.json
   register: network_info
