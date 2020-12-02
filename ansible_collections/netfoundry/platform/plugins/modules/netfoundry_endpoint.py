@@ -27,6 +27,10 @@ options:
         description: A list of Endpoint role attributes prefixed with a \#hash mark.
         required: false
         type: list
+    dest:
+        description: Path to directory or file named like *.jwt in which to save the enrollment one-time-token JWT. If a directory is specified then it will be created if necessary and the filename will be that of the Endpoint, including whitespace, and must have filename suffix *.jwt.
+        required: false
+        type: path
     state:
         description: The desired state.
         required: false
@@ -46,7 +50,6 @@ requirements:
 '''
 
 EXAMPLES = r'''
-# Pass in a message
   - name: create Endpoint
     netfoundry_endpoint:
       name: "{{ item }}"
@@ -54,6 +57,7 @@ EXAMPLES = r'''
       network: "{{ netfoundry_info.network }}"
       attributes:
       - "#dialers"
+      dest: /tmp/ott  # directory in which to save {{ item }}.jwt
     loop: "{{ endpointNames }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list
 
@@ -67,22 +71,21 @@ EXAMPLES = r'''
 
 RETURN = r'''
 # These are examples of possible return values, and in general should use other names for return values.
-original_message:
-    description: The original name param that was passed in.
-    type: str
-    returned: always
-    sample: 'hello world'
 message:
-    description: The output message that the test module generates.
-    type: str
+    description: The HTTP response from the create, update, or delete operation.
+    type: dict
     returned: always
-    sample: 'goodbye'
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
+from ansible.errors import AnsibleError
+from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
+from os import path as path
+from os import mkdir as mkdir
+from pathlib import Path as PathLib
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -90,6 +93,7 @@ def run_module():
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
+        dest=dict(type='path', required=False, default=None),
         network=dict(type='dict', required=True)
     )
 
@@ -100,8 +104,7 @@ def run_module():
     # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
-        original_message='',
-        message=''
+        message=dict()
     )
 
     # the AnsibleModule object will be our abstraction working with Ansible
@@ -121,7 +124,6 @@ def run_module():
 
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
-    result['original_message'] = module.params['name']
 
     session = Session(
         token=module.params['network']['token']
@@ -132,24 +134,50 @@ def run_module():
     found = network.getResources(type="endpoints",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            network.createEndpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['message'] = network.createEndpoint(name=module.params['name'],attributes=module.params['attributes'])
             result['changed'] = True
-            module.exit_json(**result)
+            if module.params['dest']:
+                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
             result['changed'] = False
-            module.exit_json(**result)
     elif len(found) == 1:
         endpoint = found[0]
         if module.params['state'] == "PROVISIONED":
             endpoint['attributes'] = module.params['attributes']
-            network.patchResource(endpoint)
+            result['message'] = network.patchResource(endpoint)
+            result['changed'] = True
+            if result['message']['jwt'] and module.params['dest']:
+                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            network.deleteResource(type="endpoint",id=endpoint['id'])
-        result['changed'] = True
-        module.exit_json(**result)
+            try: network.deleteResource(type="endpoint",id=endpoint['id'])
+            except Exception as e:
+                raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+            result['changed'] = True
     else:
         module.fail_json(msg='ERROR: "{name}" matched more than one Endpoint'.format(name=module.params['name']), **result)
 
+    module.exit_json(**result)
+
+def saveOneTimeToken(name, jwt, dest):
+    # is a filename if *.jwt
+    if dest[-4:] == ".jwt":
+        # use current directory if only a filename is specified
+        if not path.dirname(dest):
+            dest_dir = str(PathLib.cwd())
+        else:
+            dest_dir = path.dirname(dest)
+        dest_file = path.basename(dest)
+    # is a directory
+    else:
+        dest_file = name+'.jwt'
+        dest_dir = dest
+    if not path.exists(dest_dir):
+        try: mkdir(dest_dir)
+        except Exception as e:
+            raise AnsibleError('Failed to create the directory "{}". Caught exception: {}'.format(dest_dir, to_native(e)))
+    handle = open(dest_dir+'/'+dest_file, "wt")
+    handle.write(jwt)
+    handle.close()
 
 def main():
     run_module()
