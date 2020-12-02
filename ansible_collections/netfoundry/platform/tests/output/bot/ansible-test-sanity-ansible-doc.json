@@ -1,0 +1,10 @@
+{
+    "docs": "https://docs.ansible.com/ansible/devel/dev_guide/testing/sanity/ansible-doc.html", 
+    "results": [
+        {
+            "message": "The test `ansible-test sanity --test ansible-doc` [[explain](https://docs.ansible.com/ansible/devel/dev_guide/testing/sanity/ansible-doc.html)] failed with the error:", 
+            "output": "Command \"ansible-doc -t module community.netfoundry.netfoundry_endpoint community.netfoundry.netfoundry_info\" returned exit status 1.\n>>> Standard Error\nERROR! module community.netfoundry.netfoundry_endpoint missing documentation (or could not parse documentation): unknown doc_fragment(s) in file /home/kbingham/Sites/netfoundry/github/developer-tools/ansible_collections/community/netfoundry/plugins/modules/netfoundry_endpoint.py: my_namespace.my_collection.my_doc_fragment_name"
+        }
+    ], 
+    "verified": false
+}
