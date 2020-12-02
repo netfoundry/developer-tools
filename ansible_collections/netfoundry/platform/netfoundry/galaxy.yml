@@ -45,7 +45,7 @@ dependencies: {}
 repository: https://github.com/netfoundry/developer-tools
 
 # The URL to any online docs
-documentation: https://developer.netfoundry.io/
+documentation: https://developer.netfoundry.io/guides/ansible/
 
 # The URL to the homepage of the collection/project
 homepage: https://netfoundry.io/
