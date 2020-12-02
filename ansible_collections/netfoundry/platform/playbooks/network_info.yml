@@ -1,7 +1,7 @@
 
 - hosts: localhost
   collections:
-  - qrkourier.netfoundry
+  - netfoundry.platform
   tasks:
   - name: Establish session and find Network resources
     netfoundry_info:
@@ -30,7 +30,6 @@
       - "#dialers"
     loop: "{{ endpointNames }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list
-#    debugger: on_failed
   # - name: Delete all Endpoints
   #   netfoundry_endpoint:
   #     name: "{{ item }}"
