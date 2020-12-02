@@ -46,23 +46,22 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create Endpoint
+  - name: create Service
     netfoundry_service:
-      name: "{{ item }}"
+      name: "{{ item.name }}"
       state: PROVISIONED
       network: "{{ netfoundry_info.network }}"
       attributes:
-      - "#dialers"
-      dest: /tmp/ott  # directory in which to save {{ item }}.jwt
-    loop: "{{ endpointNames }}"
+      - "#workFromAnywhere"
+    loop: "{{ services }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list
 
-  - name: Delete all Endpoints
+  - name: Delete all Services
     netfoundry_service:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"
-    loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
+    loop: "{{ netfoundry_info.services|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -89,7 +88,6 @@ def run_module():
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
-        dest=dict(type='path', required=False, default=None),
         network=dict(type='dict', required=True)
     )
 
@@ -127,53 +125,41 @@ def run_module():
 
     network = Network(session, networkId=module.params['network']['id'])
 
-    found = network.getResources(type="endpoints",name=module.params['name'])
+    serviceProperties = {
+        "name": module.params['name'],
+        "attributes": module.params['attributes'],
+        "clientHostName": module.params['clientHostName'],
+        "clientPortRange": module.params['clientPortRange'],
+        "endpoints": module.params['endpoints'],
+        "egressRouterId": module.params['egressRouterId'],
+        "serverHostName": module.params['serverHostName'],
+        "serverPortRange": module.params['serverPortRange'],
+        "serverProtocol": module.params['serverProtocol'],
+    }
+
+    found = network.getResources(type="services",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.createEndpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['message'] = network.createService(serviceProperties)
             result['changed'] = True
-            if module.params['dest']:
-                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        endpoint = found[0]
+        service = found[0]
         if module.params['state'] == "PROVISIONED":
-            endpoint['attributes'] = module.params['attributes']
-            result['message'] = network.patchResource(endpoint)
+            for key in service.keys():
+                service[key] = serviceProperties[key] if key in serviceProperties.keys() else service[key]
+            result['message'] = network.patchResource(service)
             result['changed'] = True
-            if result['message']['jwt'] and module.params['dest']:
-                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.deleteResource(type="endpoint",id=endpoint['id'])
+            try: network.deleteResource(type="service",id=service['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Endpoint'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
-
-def saveOneTimeToken(name, jwt, dest):
-    # is a filename if *.jwt
-    if dest[-4:] == ".jwt":
-        # use current directory if only a filename is specified
-        if not path.dirname(dest):
-            dest_dir = str(PathLib.cwd())
-        else:
-            dest_dir = path.dirname(dest)
-        dest_file = path.basename(dest)
-    # is a directory
-    else:
-        dest_file = name+'.jwt'
-        dest_dir = dest
-    if not path.exists(dest_dir):
-        try: mkdir(dest_dir)
-        except Exception as e:
-            raise AnsibleError('Failed to create the directory "{}". Caught exception: {}'.format(dest_dir, to_native(e)))
-    handle = open(dest_dir+'/'+dest_file, "wt")
-    handle.write(jwt)
-    handle.close()
 
 def main():
     run_module()
