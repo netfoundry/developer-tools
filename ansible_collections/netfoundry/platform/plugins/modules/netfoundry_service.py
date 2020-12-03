@@ -23,6 +23,10 @@ options:
         description: the name of the Service
         required: true
         type: str
+    rename:
+        description: the new name of the Service
+        required: false
+        type: str
     attributes:
         description: A list of Service role attributes prefixed with a \#hash mark.
         required: false
@@ -81,14 +85,23 @@ from netfoundry import Network
 from os import path as path
 from os import mkdir as mkdir
 from pathlib import Path as PathLib
+from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
+        rename=dict(type='str', required=False),
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
-        network=dict(type='dict', required=True)
+        network=dict(type='dict', required=True),
+        clientHostName=dict(type='str', required=True),
+        clientPortRange=dict(type='int', required=True),
+        endpoints=dict(type='list', elements='str', required=False),
+        egressRouter=dict(type='str', required=False),
+        serverHostName=dict(type='str', required=True),
+        serverPortRange=dict(type='int', required=True),
+        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
     )
 
     # seed the result dict in the object
@@ -125,22 +138,62 @@ def run_module():
 
     network = Network(session, networkId=module.params['network']['id'])
 
+    # if not empty string (default=null)
+    if module.params['rename']:
+        serviceName = module.params['rename']
+    else:
+        serviceName = module.params['name']
+
+    serviceProperties = dict()
+    serviceProperties['endpoints'] = list()
+
+    if module.params['endpoints'] and module.params['egressRouter']:
+        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
+    elif module.params['endpoints']:
+        for endpoint in module.params['endpoints']:
+            # check if UUIDv4
+            try: UUID(endpoint, version=4)
+            except ValueError:
+                # else assume is a name and resolve to ID
+                try: 
+                    nameLookup = network.getResources(type="endpoints",name=endpoint)[0]
+                    endpointId = nameLookup['id']
+                except Exception as e:
+                    raise AnsibleError('Failed to find exactly one hosting Endpoint "{}". Caught exception: {}'.format(endpoint, to_native(e)))
+                # append to list after successfully resolving name to ID
+                else: serviceProperties['endpoints'] += [endpointId]
+            else: serviceProperties['endpoints'] += [endpoint]
+    elif module.params['egressRouter']:
+        # check if UUIDv4
+        try: UUID(module.params['egressRouter'], version=4)
+        except ValueError:
+            # else assume is a name and resolve to ID
+            try: 
+                nameLookup = network.getResources(type="edge-routers",name=module.params['egressRouter'])[0]
+                egressRouterId = nameLookup['id']
+            except Exception as e:
+                raise AnsibleError('Failed to find exactly one egress Router "{}". Caught exception: {}'.format(module.params['egressRouter'], to_native(e)))
+            # assign after successfully resolving name to ID
+            else: serviceProperties["egressRouterId"] = egressRouterId
+        # assign directly if UUID
+        else: serviceProperties["egressRouterId"] = module.params['egressRouter']
+    else: raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
+
     serviceProperties = {
-        "name": module.params['name'],
+        "name": serviceName,
         "attributes": module.params['attributes'],
         "clientHostName": module.params['clientHostName'],
         "clientPortRange": module.params['clientPortRange'],
-        "endpoints": module.params['endpoints'],
-        "egressRouterId": module.params['egressRouterId'],
         "serverHostName": module.params['serverHostName'],
         "serverPortRange": module.params['serverPortRange'],
         "serverProtocol": module.params['serverProtocol'],
     }
 
+    # discover any existing Services with the specified name
     found = network.getResources(type="services",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.createService(serviceProperties)
+            result['message'] = network.createService(*serviceProperties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False

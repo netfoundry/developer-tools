@@ -14,21 +14,43 @@
   - name: show Console URL
     debug:
       msg: "{{ netfoundry_info.console }}"
-  - name: list Endpoint names
+  - name: list Existing Endpoint names
     debug:
       msg: "NAME: {{ item.name }}"
     loop: "{{ netfoundry_info.endpoints }}"
-  - name: create Endpoint
+  - name: declare Endpoints
     netfoundry_endpoint:
       name: "{{ item }}"
-      state: PROVISIONED
       network: "{{ netfoundry_info.network }}"
       attributes:
-      - "#dialers"
+      - "#workFromAnywhere"
       dest: /tmp/netfoundry                  # filename is Endpoint name if dest is a directory
       #dest: /tmp/netfoundry/ott-{{item}}.jwt # custom filename if name is like *.jwt
     loop: "{{ endpointNames }}"
-    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
+    register: endpoints
+  - name: print results for changed Endpoints
+    debug:
+      var: item.message
+    loop: "{{endpoints.results}}"
+    when: item.changed
+
+  - name: declare a Service
+    netfoundry_service:
+      network: "{{ netfoundry_info.network }}"
+      name: HTTP Echo 1
+      attributes: 
+      - "#workFromAnywhere"
+      clientHostName: echo1.netfoundry
+      clientPortRange: 80
+      endpoints: 
+      - exit1
+#      egressRouterId: 
+      serverHostName: eth0.me
+      serverPortRange: 80
+      serverProtocol: TCP
+  #  debugger: on_failed
+
+
   # - name: Delete all Endpoints
   #   netfoundry_endpoint:
   #     name: "{{ item }}"
