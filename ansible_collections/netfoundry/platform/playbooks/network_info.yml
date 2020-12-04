@@ -34,6 +34,13 @@
     loop: "{{endpoints.results}}"
     when: item.changed
 
+  # - name: Delete all Endpoints
+  #   netfoundry_endpoint:
+  #     name: "{{ item }}"
+  #     state: DELETED
+  #     network: "{{ netfoundry_info.network }}"
+  #   loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
+
   - name: declare an Endpoint-hosted Service
     netfoundry_service:
       network: "{{ netfoundry_info.network }}"
@@ -61,16 +68,9 @@
       serverPortRange: 80
       serverProtocol: TCP
 
-  # - name: Delete all Endpoints
-  #   netfoundry_endpoint:
-  #     name: "{{ item }}"
-  #     state: DELETED
-  #     network: "{{ netfoundry_info.network }}"
-  #   loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
-
   vars:
     networkName: kentest1209
     credentialsJson: nfint-ZitiBastions.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
     endpointNames:
-    - dialer1
-    - exit1
+    - Client1
+    - Exit1
