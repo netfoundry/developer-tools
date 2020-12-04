@@ -1,7 +1,5 @@
-# developer-tools
 
-## API Versions
+# NetFoundry API Developer Tools
 
-NetFoundry networks have a version e.g. v7 and are managed by some version of the API e.g. v2. Look for the folder for the API version you are working with e.g. v2. Know more about NetFoundry API versions in [this page](https://developer.netfoundry.io/versions/).
+These resources are described in [the Developer Portal](https://developer.netfoundry.io/v2/tools/).
 
-* [API v2 Scripts](https://developer.netfoundry.io/v2/tools/)

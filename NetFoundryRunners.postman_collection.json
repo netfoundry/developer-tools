@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "8bc6f500-fdbd-40e0-b7bf-7e67099fba4e",
+		"name": "NetFoundry Runners",
+		"description": "Create NetFoundry Network resources in bulk by parsing fields from a CSV file.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service Runner",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"attributes\": [\"{{attribute}}\"],\n\"clientHostName\": \"{{hostName}}\",\n\"clientPortRange\": \"{{port}}\",\n\"edgeRouterAttributes\": [],\n\"egressRouterId\": \"{{edgeRouterId}}\",\n\"encryptionRequired\": true,\n\"endpoints\": [\"{{endpointId}}\"],\n\"name\": \"{{serviceName}}\",\n\"networkId\": \"{{networkId}}\",\n\"serverHostName\": \"{{ipAddress}}\",\n\"serverPortRange\": \"{{port}}\",\n\"serverProtocol\": \"{{protocol}}\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://gateway.production.netfoundry.io/core/v2/services",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"production",
+						"netfoundry",
+						"io"
+					],
+					"path": [
+						"core",
+						"v2",
+						"services"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "The create request was successful and the resource has been added at the following location",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"description": {
+									"content": "Added as a part of security scheme: apikey",
+									"type": "text/plain"
+								},
+								"key": "zt-session",
+								"value": "<API Key>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"<string>\",\n    \"encryptionRequired\": \"<boolean>\",\n    \"terminatorStrategy\": \"<string>\",\n    \"roleAttributes\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"configs\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"tags\": {}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"meta\": {\n  \"filterableFields\": [\n   \"deserunt fugiat laborum dolor\",\n   \"nost\"\n  ],\n  \"pagination\": {\n   \"limit\": 54981584.37856513,\n   \"offset\": 84137055.59609413,\n   \"totalCount\": 58606483.93207896\n  },\n  \"apiEnrolmentVersion\": \"enim ei\",\n  \"apiVersion\": \"do tempor\"\n },\n \"data\": {\n  \"_links\": {},\n  \"id\": \"deserunt nisi consectetur\"\n }\n}"
+				},
+				{
+					"name": "The currently supplied session does not have the correct access rights to request this resource",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"description": {
+									"content": "Added as a part of security scheme: apikey",
+									"type": "text/plain"
+								},
+								"key": "zt-session",
+								"value": "<API Key>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"<string>\",\n    \"encryptionRequired\": \"<boolean>\",\n    \"terminatorStrategy\": \"<string>\",\n    \"roleAttributes\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"configs\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"tags\": {}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"error\": {\n  \"args\": {\n   \"urlVars\": {}\n  },\n  \"cause\": \"\",\n  \"causeMessage\": \"\",\n  \"code\": \"UNAUTHORIZED\",\n  \"message\": \"The request could not be completed. The session is not authorized or the credentials are invalid\",\n  \"requestId\": \"0bfe7a04-9229-4b7a-812c-9eb3cc0eac0f\"\n },\n \"meta\": {\n  \"apiEnrolmentVersion\": \"0.0.1\",\n  \"apiVersion\": \"0.0.1\"\n }\n}"
+				},
+				{
+					"name": "The supplied request contains invalid fields or could not be parsed (json and non-json bodies). The error's code, message, and cause fields can be inspected for further information",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"description": {
+									"content": "Added as a part of security scheme: apikey",
+									"type": "text/plain"
+								},
+								"key": "zt-session",
+								"value": "<API Key>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"<string>\",\n    \"encryptionRequired\": \"<boolean>\",\n    \"terminatorStrategy\": \"<string>\",\n    \"roleAttributes\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"configs\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"tags\": {}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/services",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"services"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"error\": {\n  \"args\": {\n   \"urlVars\": {}\n  },\n  \"cause\": {\n   \"field\": \"(root)\",\n   \"type\": \"required\",\n   \"value\": {\n    \"fooField\": \"abc\",\n    \"fooField2\": \"def\"\n   },\n   \"message\": \"(root): fooField3 is required\",\n   \"details\": {\n    \"context\": \"(root)\",\n    \"field\": \"(root)\",\n    \"property\": \"fooField3\"\n   }\n  },\n  \"causeMessage\": \"schema validation failed\",\n  \"code\": \"COULD_NOT_VALIDATE\",\n  \"message\": \"The supplied request contains an invalid document\",\n  \"requestId\": \"ac6766d6-3a09-44b3-8d8a-1b541d97fdd9\"\n },\n \"meta\": {\n  \"apiEnrolmentVersion\": \"0.0.1\",\n  \"apiVersion\": \"0.0.1\"\n }\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "86f9f5fd-d0a4-4320-8e24-5d156ae8446d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "00e26053-29e3-4262-8b06-bb54502ddc86",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
