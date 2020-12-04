@@ -71,7 +71,7 @@ netfoundry_info:
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
-from ansible.module_utils._text import to_native
+#from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Organization
 from netfoundry import NetworkGroup
@@ -126,13 +126,13 @@ def run_module():
     # use the default Network Group (the first Network Group ID known to the Organization)
     network_group = NetworkGroup(
         organization,
-        networkGroupId=module.params['networkGroupId'] if module.params['networkGroupId'] is not None else None,
+        network_group_id=module.params['networkGroupId'] if module.params['networkGroupId'] is not None else None,
     )
 
-    network = Network(session, networkName=module.params['network'])
+    network = Network(session, network_name=module.params['network'])
 
 #    result['token'] = session.token
-#    result['network_groups'] = organization.networkGroups
+#    result['network_groups'] = organization.network_groups
     result['console'] = network_group.nfconsole
     # merge the session object to top-level resources on which we will perform
     #  operations so that only a single parameter is necessary when calling
@@ -141,10 +141,10 @@ def run_module():
     result['network_group'] = {**network_group.describe, **{"token": session.token}}
     result['network'] = {**network.describe, **{"token": session.token}}
     result['endpoints'] = network.endpoints()
-    result['edge_routers'] = network.edgeRouters()
+    result['edge_routers'] = network.edge_routers()
     result['services'] = network.services()
-    result['edge_router_policies'] = network.edgeRouterPolicies()
-    result['app_wans'] = network.appWans()
+    result['edge_router_policies'] = network.edge_router_policies()
+    result['app_wans'] = network.appwans()
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results

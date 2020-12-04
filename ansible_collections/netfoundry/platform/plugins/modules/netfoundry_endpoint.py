@@ -83,7 +83,7 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
-from os import path as path
+from os import path as Path
 from os import mkdir as mkdir
 from pathlib import Path as PathLib
 
@@ -129,27 +129,27 @@ def run_module():
         token=module.params['network']['token']
     )
 
-    network = Network(session, networkId=module.params['network']['id'])
+    network = Network(session, network_id=module.params['network']['id'])
 
-    found = network.getResources(type="endpoints",name=module.params['name'])
+    found = network.get_resources(type="endpoints",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.createEndpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'])
             result['changed'] = True
             if module.params['dest']:
-                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
+                save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
         endpoint = found[0]
         if module.params['state'] == "PROVISIONED":
             endpoint['attributes'] = module.params['attributes']
-            result['message'] = network.patchResource(endpoint)
+            result['message'] = network.patch_resource(endpoint)
             result['changed'] = True
             if result['message']['jwt'] and module.params['dest']:
-                saveOneTimeToken(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
+                save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.deleteResource(type="endpoint",id=endpoint['id'])
+            try: network.delete_resource(type="endpoint",id=endpoint['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
@@ -158,20 +158,20 @@ def run_module():
 
     module.exit_json(**result)
 
-def saveOneTimeToken(name, jwt, dest):
+def save_one_time_token(name, jwt, dest):
     # is a filename if *.jwt
     if dest[-4:] == ".jwt":
         # use current directory if only a filename is specified
-        if not path.dirname(dest):
+        if not Path.dirname(dest):
             dest_dir = str(PathLib.cwd())
         else:
-            dest_dir = path.dirname(dest)
-        dest_file = path.basename(dest)
+            dest_dir = Path.dirname(dest)
+        dest_file = Path.basename(dest)
     # is a directory
     else:
         dest_file = name+'.jwt'
         dest_dir = dest
-    if not path.exists(dest_dir):
+    if not Path.exists(dest_dir):
         try: mkdir(dest_dir)
         except Exception as e:
             raise AnsibleError('Failed to create the directory "{}". Caught exception: {}'.format(dest_dir, to_native(e)))
