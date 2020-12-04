@@ -34,22 +34,32 @@
     loop: "{{endpoints.results}}"
     when: item.changed
 
-  - name: declare a Service
+  - name: declare an Endpoint-hosted Service
     netfoundry_service:
       network: "{{ netfoundry_info.network }}"
       name: HTTP Echo 1
       attributes: 
-      - "#workFromAnywhere"
+      - "#welcomeWagon"
       clientHostName: echo1.netfoundry
       clientPortRange: 80
       endpoints: 
-      - exit1
-#      egressRouterId: 
+      - Exit1
       serverHostName: eth0.me
       serverPortRange: 80
       serverProtocol: TCP
-  #  debugger: on_failed
 
+  - name: declare a Router-hosted Service
+    netfoundry_service:
+      network: "{{ netfoundry_info.network }}"
+      name: HTTP Echo 2
+      attributes: 
+      - "#welcomeWagon"
+      clientHostName: echo2.netfoundry
+      clientPortRange: 80
+      egressRouter: N. California
+      serverHostName: eth0.me
+      serverPortRange: 80
+      serverProtocol: TCP
 
   # - name: Delete all Endpoints
   #   netfoundry_endpoint:

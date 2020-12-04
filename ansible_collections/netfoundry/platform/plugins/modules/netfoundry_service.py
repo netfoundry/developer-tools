@@ -82,9 +82,9 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
-from os import path as path
-from os import mkdir as mkdir
-from pathlib import Path as PathLib
+#from os import path as Path
+#from os import mkdir as mkdir
+#from pathlib import Path as PathLib
 from uuid import UUID
 
 def run_module():
@@ -136,64 +136,64 @@ def run_module():
         token=module.params['network']['token']
     )
 
-    network = Network(session, networkId=module.params['network']['id'])
+    network = Network(session, network_id=module.params['network']['id'])
 
     # if not empty string (default=null)
     if module.params['rename']:
-        serviceName = module.params['rename']
+        service_name = module.params['rename']
     else:
-        serviceName = module.params['name']
+        service_name = module.params['name']
 
-    serviceProperties = dict()
-    serviceProperties['endpoints'] = list()
+    service_properties = {
+        "name": service_name,
+        "attributes": module.params['attributes'],
+        "client_hostname": module.params['clientHostName'],
+        "client_port_range": module.params['clientPortRange'],
+        "server_hostname": module.params['serverHostName'],
+        "server_port_range": module.params['serverPortRange'],
+        "server_protocol": module.params['serverProtocol'],
+    }
 
     if module.params['endpoints'] and module.params['egressRouter']:
         raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
     elif module.params['endpoints']:
+        service_properties['egress_router_id'] = None
+        service_properties['endpoints'] = list()
         for endpoint in module.params['endpoints']:
             # check if UUIDv4
             try: UUID(endpoint, version=4)
             except ValueError:
                 # else assume is a name and resolve to ID
                 try: 
-                    nameLookup = network.getResources(type="endpoints",name=endpoint)[0]
-                    endpointId = nameLookup['id']
+                    name_lookup = network.get_resources(type="endpoints",name=endpoint)[0]
+                    endpointId = name_lookup['id']
                 except Exception as e:
-                    raise AnsibleError('Failed to find exactly one hosting Endpoint "{}". Caught exception: {}'.format(endpoint, to_native(e)))
+                    raise AnsibleError('Failed to find exactly one hosting Endpoint named "{}". Caught exception: {}'.format(endpoint, to_native(e)))
                 # append to list after successfully resolving name to ID
-                else: serviceProperties['endpoints'] += [endpointId]
-            else: serviceProperties['endpoints'] += [endpoint]
+                else: service_properties['endpoints'] += [endpointId]
+            else: service_properties['endpoints'] += [endpoint]
     elif module.params['egressRouter']:
+        service_properties['endpoints'] = list()
         # check if UUIDv4
         try: UUID(module.params['egressRouter'], version=4)
         except ValueError:
             # else assume is a name and resolve to ID
             try: 
-                nameLookup = network.getResources(type="edge-routers",name=module.params['egressRouter'])[0]
-                egressRouterId = nameLookup['id']
+                name_lookup = network.get_resources(type="edge-routers",name=module.params['egressRouter'])[0]
+                egress_router_id = name_lookup['id']
             except Exception as e:
                 raise AnsibleError('Failed to find exactly one egress Router "{}". Caught exception: {}'.format(module.params['egressRouter'], to_native(e)))
             # assign after successfully resolving name to ID
-            else: serviceProperties["egressRouterId"] = egressRouterId
+            else: service_properties["egress_router_id"] = egress_router_id
         # assign directly if UUID
-        else: serviceProperties["egressRouterId"] = module.params['egressRouter']
+        else: service_properties["egress_router_id"] = module.params['egressRouter']
     else: raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
 
-    serviceProperties = {
-        "name": serviceName,
-        "attributes": module.params['attributes'],
-        "clientHostName": module.params['clientHostName'],
-        "clientPortRange": module.params['clientPortRange'],
-        "serverHostName": module.params['serverHostName'],
-        "serverPortRange": module.params['serverPortRange'],
-        "serverProtocol": module.params['serverProtocol'],
-    }
-
     # discover any existing Services with the specified name
-    found = network.getResources(type="services",name=module.params['name'])
+    found = network.get_resources(type="services",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.createService(*serviceProperties)
+            result['message'] = network.create_service(**service_properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -201,11 +201,11 @@ def run_module():
         service = found[0]
         if module.params['state'] == "PROVISIONED":
             for key in service.keys():
-                service[key] = serviceProperties[key] if key in serviceProperties.keys() else service[key]
-            result['message'] = network.patchResource(service)
+                service[key] = service_properties[key] if key in service_properties.keys() else service[key]
+            result['message'] = network.patch_resource(service)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.deleteResource(type="service",id=service['id'])
+            try: network.delete_resource(type="service",id=service['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
