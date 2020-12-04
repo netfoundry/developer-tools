@@ -18,6 +18,10 @@
     debug:
       msg: "NAME: {{ item.name }}"
     loop: "{{ netfoundry_info.endpoints }}"
+  - name: list Existing Edge Router names
+    debug:
+      msg: "NAME: {{ item.name }}"
+    loop: "{{ netfoundry_info.edge_routers }}"
   - name: declare Endpoints
     netfoundry_endpoint:
       name: "{{ item }}"
@@ -45,12 +49,12 @@
     netfoundry_service:
       network: "{{ netfoundry_info.network }}"
       name: HTTP Echo 1
+      endpoints: 
+      - Exit1
       attributes: 
       - "#welcomeWagon"
       clientHostName: echo1.netfoundry
       clientPortRange: 80
-      endpoints: 
-      - Exit1
       serverHostName: eth0.me
       serverPortRange: 80
       serverProtocol: TCP
@@ -63,13 +67,19 @@
       - "#welcomeWagon"
       clientHostName: echo2.netfoundry
       clientPortRange: 80
-      egressRouter: N. California
+      egressRouter: "{{ netfoundry_info.edge_routers.0.name }}"
       serverHostName: eth0.me
       serverPortRange: 80
       serverProtocol: TCP
 
+  - name: delete a Service
+    netfoundry_service:
+      network: "{{ netfoundry_info.network }}"
+      name: HTTPEcho3
+      state: DELETED
+
   vars:
-    networkName: kentest1209
+    networkName: kentest1430
     credentialsJson: nfint-ZitiBastions.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
     endpointNames:
     - Client1

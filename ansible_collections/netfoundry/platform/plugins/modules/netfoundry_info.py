@@ -144,7 +144,7 @@ def run_module():
     result['edge_routers'] = network.edge_routers()
     result['services'] = network.services()
     result['edge_router_policies'] = network.edge_router_policies()
-    result['app_wans'] = network.appwans()
+    result['app_wans'] = network.app_wans()
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
