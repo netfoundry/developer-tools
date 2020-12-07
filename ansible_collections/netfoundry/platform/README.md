@@ -9,7 +9,7 @@ ansible-doc netfoundry.platform.netfoundry_endpoint
 ansible-doc netfoundry.platform.netfoundry_service
 ```
 
-For more examples please see [the playbook included in the collection](https://github.com/netfoundry/developer-tools/blob/master/ansible_collections/netfoundry/platform/playbooks/network_info.yml). The default install path for this file is ~/.ansible/collections/ansible_collections/netfoundry/platform/playbooks/network_info.yml.
+For more examples please see [the playbook included in the collection](https://github.com/netfoundry/developer-tools/blob/master/ansible_collections/netfoundry/platform/playbooks/example_playbook.yml). The default install path for this file is ~/.ansible/collections/ansible_collections/netfoundry/platform/playbooks/example_playbook.yml.
 
 This collection will be relocated to the new namespace when it becomes available.
 
