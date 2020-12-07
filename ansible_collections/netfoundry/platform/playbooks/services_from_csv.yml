@@ -1,0 +1,44 @@
+
+- hosts: localhost
+  collections:
+  - netfoundry.platform
+  - community.general
+  tasks:
+  - name: Establish session and discover Network
+    netfoundry_info:
+      network: "{{ networkName }}"
+      credentials: "{{ credentialsJson }}" 
+    register: netfoundry_info
+
+  - name: Read Services from CSV file
+    read_csv:
+        path: hcm_correction_chennaidc_dec7.csv
+    register: services
+
+  # where headings are serviceNumber	serviceName	attribute	ipAddress	port	hostName	edgeRouterId
+  - name: declare Services from CSV
+    netfoundry_service:
+      network: "{{ netfoundry_info.network }}"
+      name: "{{ item.serviceName }}"
+      attributes: 
+      - "{{ item.attribute }}"
+      clientHostName: "{{ item.hostName }}"
+      clientPortRange: "{{ item.port }}"
+      egressRouter: "{{ item.edgeRouterId }}"
+      serverHostName: "{{ item.ipAddress }}"
+      serverPortRange: "{{ item.port }}"
+      serverProtocol: TCP
+    loop: "{{ services.list }}"
+#    when: item.serviceNumber|int < 4
+     
+#   - name: delete Services
+#     netfoundry_service:
+#       network: "{{ netfoundry_info.network }}"
+#       name: "{{ item.serviceName }}"
+#       state: DELETED
+#     loop: "{{ services.list }}"
+#     when: item.serviceNumber|int > 3
+
+  vars:
+    networkName: BibbidiBobbidiBoo
+    credentialsJson: credentials.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
