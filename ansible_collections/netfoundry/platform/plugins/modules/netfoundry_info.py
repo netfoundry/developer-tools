@@ -21,8 +21,8 @@ options:
         required: true
         type: str
     credentials:
-        description: Path to API account credentials JSON file relative to playbook directory.
-        required: true
+        description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
+        required: false
         type: path
     networkGroupId:
         description: Network Group UUID. Only necessary if there is more than one, which is unusual.
