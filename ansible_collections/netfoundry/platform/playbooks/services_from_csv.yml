@@ -12,7 +12,7 @@
 
   - name: Read Services from CSV file
     read_csv:
-        path: hcm_correction_chennaidc_dec7.csv
+        path: services.csv
     register: services
 
   # where headings are serviceNumber	serviceName	attribute	ipAddress	port	hostName	edgeRouterId
