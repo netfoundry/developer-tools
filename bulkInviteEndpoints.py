@@ -28,13 +28,11 @@ PARSER = argparse.ArgumentParser()
 PARSER.add_argument(
     "-u", "--network-id",
     default=None,
-    dest="networkId",
     help="the UUID of the NF network"
 )
 PARSER.add_argument(
     "-n", "--network-name",
     default=None,
-    dest="networkName",
     help="the name of the NF network may contain quoted whitespace"
 )
 PARSER.add_argument(
@@ -71,36 +69,36 @@ PARSER.add_argument(
     default=None,
     help="API account credentials JSON file"
 )
-ARGS = PARSER.parse_args()
+args = PARSER.parse_args()
 
-Session = netfoundry.Session(
+session = netfoundry.Session(
     token=os.environ['NETFOUNDRY_API_TOKEN'] if 'NETFOUNDRY_API_TOKEN' in os.environ else None,
-    credentials=ARGS.credentials if ARGS.credentials is not None else None
+    credentials=args.credentials if args.credentials is not None else None
 )
 
 # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
-Organization = netfoundry.Organization(Session)
+organization = netfoundry.Organization(session)
 
 # use the default Network Group (the first Network Group ID known to the Organization)
-NetworkGroup = netfoundry.NetworkGroup(Organization)
+network_group = netfoundry.NetworkGroup(organization)
 
-if ARGS.networkName and ARGS.networkId:
+if args.network_name and args.network_id:
     raise Exception("ERROR: need one of network-name or network-id")
-elif ARGS.networkName:
-    Network = netfoundry.Network(Session, networkName=ARGS.networkName)
-elif ARGS.networkId:
-    Network = netfoundry.Network(Session, networkId=ARGS.networkId)
+elif args.network_name:
+    network = netfoundry.Network(session, network_name=args.network_name)
+elif args.network_id:
+    network = netfoundry.Network(session, network_id=args.network_id)
 else:
     raise Exception("ERROR: need one of network-name or network-id")
 
-ENDPOINTS = Network.endpoints()
+endpoints = network.endpoints()
 
-if ARGS.invitees:
-    INVITEES = open(ARGS.invitees)
+if args.invitees:
+    invitees = open(args.invitees)
 else:
-    INVITEES = sys.stdin
+    invitees = sys.stdin
 
-for invitee in INVITEES:
+for invitee in invitees:
 
     invitee_email = invitee.rstrip()
     invitee_localpart = invitee_email.split('@')[0]
@@ -109,10 +107,10 @@ for invitee in INVITEES:
     invitee_names = invitee_fullname.split('.')
 
     # skip unless included
-    if ARGS.include and not re.match(ARGS.include, invitee_email):
+    if args.include and not re.match(args.include, invitee_email):
         print('EXCLUDED: {}'.format(invitee_email))
         continue
-    if ARGS.exclude and re.match(ARGS.exclude, invitee_email):
+    if args.exclude and re.match(args.exclude, invitee_email):
         print('EXCLUDED: {}'.format(invitee_email))
         continue    
     # skip unless @netfoundry.io
@@ -121,23 +119,23 @@ for invitee in INVITEES:
         continue
 
     # if the invitee email contains a metadatum
-    for meta in ARGS.metadata:
+    for meta in args.metadata:
         endpoint_name = '_'.join(invitee_names)+'-'+meta
 
         # create endpoint unless exists
-        endpoints = [e for e in ENDPOINTS if e['name'] == endpoint_name]
-        if len(endpoints) > 1:
+        found = [e for e in endpoints if e['name'] == endpoint_name]
+        if len(found) > 1:
             eprint("ERROR: there are multiple endpoints named {}".format(endpoint_name))
             sys.exit(1)
-        elif len(endpoints) == 1:
-            endpoint = endpoints[0]
+        elif len(found) == 1:
+            endpoint = found[0]
             # skip if already registered
             if not endpoint['jwt']:
                 print('REGISTERED: {} skipped'.format(endpoint_name))
                 continue
         else:
             # create the endpoint
-            endpoint = Network.createEndpoint(name=endpoint_name,attributes=ARGS.attributes)
+            endpoint = network.create_endpoint(name=endpoint_name,attributes=args.attributes)
 
         # decode the JWT
         expiry_epoch = jwt.decode(endpoint['jwt'], verify=False)['exp']
@@ -147,15 +145,15 @@ for invitee in INVITEES:
         if (NOW+(60*60*12)) > expiry_epoch:
             print('EXPIRY: recreating {}'.format(endpoint_name))
             try:
-                Network.deleteResource(type="endpoint",id=endpoint['id'])
+                network.delete_resource(type="endpoint",id=endpoint['id'])
                 # recreate the endpoint
-                endpoint = Network.createEndpoint(name=endpoint_name,attributes=ARGS.attributes)
+                endpoint = network.create_endpoint(name=endpoint_name,attributes=args.attributes)
             except Exception as e:
                 eprint('ERROR: failed to re-create expired endpoint {}'.format(endpoint_name))
                 raise(e)
 
         try:
-            Network.shareEndpoint(invitee_email,endpoint['id'])
+            network.share_endpoint(invitee_email,endpoint['id'])
         # Display an error if something goes wrong.	
         except Exception as e:
             eprint("ERROR: failed to share {} with {}".format(endpoint_name, invitee_email))

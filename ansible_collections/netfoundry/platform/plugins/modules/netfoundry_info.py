@@ -21,8 +21,8 @@ options:
         required: true
         type: str
     credentials:
-        description: Path to API account credentials JSON file relative to playbook directory.
-        required: true
+        description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
+        required: false
         type: path
     networkGroupId:
         description: Network Group UUID. Only necessary if there is more than one, which is unusual.
@@ -144,7 +144,7 @@ def run_module():
     result['edge_routers'] = network.edge_routers()
     result['services'] = network.services()
     result['edge_router_policies'] = network.edge_router_policies()
-    result['app_wans'] = network.appwans()
+    result['app_wans'] = network.app_wans()
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results

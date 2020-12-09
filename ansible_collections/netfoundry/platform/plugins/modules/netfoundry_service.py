@@ -23,10 +23,6 @@ options:
         description: the name of the Service
         required: true
         type: str
-    rename:
-        description: the new name of the Service
-        required: false
-        type: str
     attributes:
         description: A list of Service role attributes prefixed with a \#hash mark.
         required: false
@@ -86,22 +82,23 @@ from netfoundry import Network
 #from os import mkdir as mkdir
 #from pathlib import Path as PathLib
 from uuid import UUID
+from re import sub
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        rename=dict(type='str', required=False),
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
-        clientHostName=dict(type='str', required=True),
-        clientPortRange=dict(type='int', required=True),
+        clientHostName=dict(type='str', required=False),
+        clientPortRange=dict(type='int', required=False),
         endpoints=dict(type='list', elements='str', required=False),
         egressRouter=dict(type='str', required=False),
-        serverHostName=dict(type='str', required=True),
-        serverPortRange=dict(type='int', required=True),
+        serverHostName=dict(type='str', required=False),
+        serverPortRange=dict(type='int', required=False),
         serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
+        encryptionRequired=dict(type='bool', required=False, default=True),
     )
 
     # seed the result dict in the object
@@ -138,20 +135,15 @@ def run_module():
 
     network = Network(session, network_id=module.params['network']['id'])
 
-    # if not empty string (default=null)
-    if module.params['rename']:
-        service_name = module.params['rename']
-    else:
-        service_name = module.params['name']
-
     service_properties = {
-        "name": service_name,
+        "name": module.params['name'],
         "attributes": module.params['attributes'],
-        "client_hostname": module.params['clientHostName'],
+        "client_host_name": module.params['clientHostName'],
         "client_port_range": module.params['clientPortRange'],
-        "server_hostname": module.params['serverHostName'],
+        "server_host_name": module.params['serverHostName'],
         "server_port_range": module.params['serverPortRange'],
         "server_protocol": module.params['serverProtocol'],
+        "encryption_required": module.params['encryptionRequired'],
     }
 
     if module.params['endpoints'] and module.params['egressRouter']:
@@ -173,7 +165,7 @@ def run_module():
                 else: service_properties['endpoints'] += [endpointId]
             else: service_properties['endpoints'] += [endpoint]
     elif module.params['egressRouter']:
-        service_properties['endpoints'] = list()
+        service_properties['endpoints'] = []
         # check if UUIDv4
         try: UUID(module.params['egressRouter'], version=4)
         except ValueError:
@@ -187,7 +179,8 @@ def run_module():
             else: service_properties["egress_router_id"] = egress_router_id
         # assign directly if UUID
         else: service_properties["egress_router_id"] = module.params['egressRouter']
-    else: raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
+    elif not module.params['state'] == "DELETED":
+        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
 
     # discover any existing Services with the specified name
     found = network.get_resources(type="services",name=module.params['name'])
@@ -201,7 +194,9 @@ def run_module():
         service = found[0]
         if module.params['state'] == "PROVISIONED":
             for key in service.keys():
-                service[key] = service_properties[key] if key in service_properties.keys() else service[key]
+                # if there's an exact match for the existing property in service_properties then replace it
+                if snake(key) in service_properties.keys():
+                    service[key] = service_properties[snake(key)]
             result['message'] = network.patch_resource(service)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
@@ -217,6 +212,12 @@ def run_module():
 def main():
     run_module()
 
+def camel(snake_str):
+    first, *others = snake_str.split('_')
+    return ''.join([first.lower(), *map(str.title, others)])
+
+def snake(camel_str):
+    return sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
 
 if __name__ == '__main__':
     main()
