@@ -11,6 +11,11 @@ import netfoundry
 #
 # bulk edit role attributes for Endpoints, Services, or Edge Routers
 #
+# python3 ./bulkEditRoleAttributes.py endpoints \
+#             --credentials credentials.json \
+#             --attributes sandbox staging production \
+#             --network-name ZitiBastions \
+#             --include ".*laptop$"                                       
 
 # print to stderr
 def eprint(*args, **kwargs):

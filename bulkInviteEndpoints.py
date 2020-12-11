@@ -16,6 +16,21 @@ import netfoundry
 #  {first}_{last}-{meta} and email address is like {first}.{last}+{meta}@netfoundry.io
 #  skipping those that are already registered (.jwt is null) or expired
 #
+# Supply email addresses one per line on standard input or use --invitees INVITEES_FILE
+# python3 ./bulkInviteEndpoints.py \
+#             --metadata laptop \
+#             --network-name ZitiBastions \
+#             --attributes salesEndpoints \
+#             --credentials credentials.json  <<< "alice.faulkner@example.com"
+#
+# python3 ./bulkInviteEndpoints.py \
+#             --metadata mobile \
+#             --network-name ZitiBastions \
+#             --attributes salesEndpoints \
+#             --credentials credentials.json  <<EOF
+# alice.faulkner@example.com
+# bob.criton@example.com
+# EOF
 
 now = time.time()
 
