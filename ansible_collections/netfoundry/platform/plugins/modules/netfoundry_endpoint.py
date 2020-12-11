@@ -56,7 +56,7 @@ EXAMPLES = r'''
       state: PROVISIONED
       network: "{{ netfoundry_info.network }}"
       attributes:
-      - "#dialers"
+      - "#workFromAnywhere"
       dest: /tmp/ott  # directory in which to save {{ item }}.jwt
     loop: "{{ endpointNames }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list

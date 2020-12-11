@@ -8,23 +8,27 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_service
+module: netfoundry_appwan
 
-short_description: Create, update, or delete a Service
+short_description: Create, update, or delete an AppWAN
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.3.0"
+version_added: "1.4.0"
 
 description: Create and update always have result=changed
 
 options:
     name:
-        description: the name of the Service
+        description: the name of the AppWAN
         required: true
         type: str
-    attributes:
-        description: A list of Service role attributes prefixed with a \#hash mark.
+    endpoints:
+        description: A list of Endpoint IDs or names or Endpoint role attributes prefixed with a \#hash mark.
+        required: false
+        type: list
+    services:
+        description: A list of Service IDs or names or Service role attributes prefixed with a \#hash mark.
         required: false
         type: list
     state:
@@ -46,13 +50,15 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create Service
-    netfoundry_service:
+  - name: create AppWAN
+    netfoundry_appwan:
       name: "{{ item.name }}"
       network: "{{ netfoundry_info.network }}"
-      attributes:
+      endpoints:
+      - "#workFromAnywhere"
+      services:
       - "#welcomeWagon"
-    loop: "{{ services }}"
+    loop: "{{ appwans }}"
     when: item not in netfoundry_info.endpoints|map(attribute='name')|list
 
   - name: Delete all Services
@@ -84,17 +90,11 @@ def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        attributes=dict(type='list', elements='str', required=False, default=[]),
+        endpoints=dict(type='list', elements='str', required=False, default=[]),
+        services=dict(type='list', elements='str', required=False, default=[]),
+        posture_checks=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
-        clientHostName=dict(type='str', required=False),
-        clientPortRange=dict(type='int', required=False),
-        endpoints=dict(type='list', elements='str', required=False),
-        egressRouter=dict(type='str', required=False),
-        serverHostName=dict(type='str', required=False),
-        serverPortRange=dict(type='int', required=False),
-        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
-        encryptionRequired=dict(type='bool', required=False, default=True),
     )
 
     # seed the result dict in the object
@@ -131,58 +131,42 @@ def run_module():
 
     network = Network(session, network_id=module.params['network']['id'])
 
-    service_properties = {
+    endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
+    service_names = [service['name'] for service in network.services()]
+    posture_names = [posture['name'] for posture in network.posture_checks()]
+
+    properties = {
         "name": module.params['name'],
-        "attributes": module.params['attributes'],
-        "client_host_name": module.params['clientHostName'],
-        "client_port_range": module.params['clientPortRange'],
-        "server_host_name": module.params['serverHostName'],
-        "server_port_range": module.params['serverPortRange'],
-        "server_protocol": module.params['serverProtocol'],
-        "encryption_required": module.params['encryptionRequired'],
+        "endpoint_attributes": module.params['endpoints'],
+        "service_attributes": module.params['services'],
+        "posture_check_attributes": module.params['posture_checks'],
     }
 
-    if module.params['endpoints'] and module.params['egressRouter']:
-        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
-    elif module.params['endpoints']:
-        service_properties['egress_router_id'] = None
-        service_properties['endpoints'] = list()
-        for endpoint in module.params['endpoints']:
-            # check if UUIDv4
-            try: UUID(endpoint, version=4)
-            except ValueError:
-                # else assume is a name and resolve to ID
-                try: 
-                    name_lookup = network.get_resources(type="endpoints",name=endpoint)[0]
-                    endpointId = name_lookup['id']
-                except Exception as e:
-                    raise AnsibleError('Failed to find exactly one hosting Endpoint named "{}". Caught exception: {}'.format(endpoint, to_native(e)))
-                # append to list after successfully resolving name to ID
-                else: service_properties['endpoints'] += [endpointId]
-            else: service_properties['endpoints'] += [endpoint]
-    elif module.params['egressRouter']:
-        service_properties['endpoints'] = []
-        # check if UUIDv4
-        try: UUID(module.params['egressRouter'], version=4)
-        except ValueError:
-            # else assume is a name and resolve to ID
-            try: 
-                name_lookup = network.get_resources(type="edge-routers",name=module.params['egressRouter'])[0]
-                egress_router_id = name_lookup['id']
-            except Exception as e:
-                raise AnsibleError('Failed to find exactly one egress Router "{}". Caught exception: {}'.format(module.params['egressRouter'], to_native(e)))
-            # assign after successfully resolving name to ID
-            else: service_properties["egress_router_id"] = egress_router_id
-        # assign directly if UUID
-        else: service_properties["egress_router_id"] = module.params['egressRouter']
-    elif not module.params['state'] == "DELETED":
-        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
+    # if not empty list then verify @mentions resolve to existing entities
+    if properties["endpoint_attributes"]:
+        for role in properties["endpoint_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in endpoint_names:
+                    raise AnsibleError('Failed to find an Endpoint named "{}".'.format(role[1:]))
+    if properties["service_attributes"]:
+        for role in properties["service_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in service_names:
+                    raise AnsibleError('Failed to find a Service named "{}".'.format(role[1:]))
+    if properties["posture_check_attributes"]:
+        for role in properties["posture_check_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in service_names:
+                    raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
 
     # discover any existing Services with the specified name
-    found = network.get_resources(type="services",name=module.params['name'])
+    found = network.get_resources(type="app-wans",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_service(**service_properties)
+            result['message'] = network.create_app_wan(**properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -190,9 +174,9 @@ def run_module():
         service = found[0]
         if module.params['state'] == "PROVISIONED":
             for key in service.keys():
-                # if there's an exact match for the existing property in service_properties then replace it
-                if snake(key) in service_properties.keys():
-                    service[key] = service_properties[snake(key)]
+                # if there's an exact match for the existing property in properties then replace it
+                if snake(key) in properties.keys():
+                    service[key] = properties[snake(key)]
             result['message'] = network.patch_resource(service)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
