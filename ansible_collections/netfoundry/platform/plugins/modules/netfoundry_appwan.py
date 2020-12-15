@@ -52,14 +52,14 @@ requirements:
 EXAMPLES = r'''
   - name: create AppWAN
     netfoundry_appwan:
-      name: "{{ item.name }}"
+      name: Telecommuter AppWAN
       network: "{{ netfoundry_info.network }}"
       endpoints:
       - "#workFromAnywhere"
+      - "@gunter-laptop1"
       services:
       - "#welcomeWagon"
-    loop: "{{ appwans }}"
-    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
+      - "@internal-portal"
 
   - name: Delete all Services
     netfoundry_service:
@@ -162,7 +162,7 @@ def run_module():
                 if not role[1:] in service_names:
                     raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
 
-    # discover any existing Services with the specified name
+    # find AppWAN with the specified name
     found = network.get_resources(type="app-wans",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
@@ -171,16 +171,16 @@ def run_module():
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        service = found[0]
+        appwan = found[0]
         if module.params['state'] == "PROVISIONED":
-            for key in service.keys():
+            for key in appwan.keys():
                 # if there's an exact match for the existing property in properties then replace it
                 if snake(key) in properties.keys():
-                    service[key] = properties[snake(key)]
-            result['message'] = network.patch_resource(service)
+                    appwan[key] = properties[snake(key)]
+            result['message'] = network.patch_resource(appwan)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="service",id=service['id'])
+            try: network.delete_resource(type="app-wan",id=appwan['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True

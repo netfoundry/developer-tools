@@ -33,6 +33,41 @@ options:
         type: str
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
+    clientHostName:
+        description: the domain name (DNS) to intercept
+        required: false
+        type: str
+    clientPortRange:
+        description: the port number to intercept
+        type: int
+        required: false
+    endpoints:
+        description: a list of Endpoint hashtag role attributes and Endpoint @names
+        type: list
+        required: false
+    egressRouter:
+        description: use the Edge Router hosting strategy; specify a name or UUIDv4
+        type: str
+        required: false
+    serverHostName:
+        description: the domain name (DNS) or IPv4 of the server that is reachable by the hosting Endpoint or Edge Router
+        type: str
+        required: false
+    serverPortRange:
+        description: the listening port of the server that is reachable by the hosting Endpoint or Edge Router
+        type: int
+        required: false
+    serverProtocol:
+        description: the transport protocol used by the server
+        type: str
+        required: false
+        default: TCP
+        choices: ["TCP","UDP"]
+    encryptionRequired:
+        description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint or Edge Router or SDK
+        type: bool
+        required: false
+        default: true
     network:
         description: The dictionary describing the Network on which to operate from network_info.network.
         required: true
@@ -46,14 +81,31 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create Service
+  - name: host a Service with a round-robin of Endpoints running on Linux servers
     netfoundry_service:
-      name: "{{ item.name }}"
-      network: "{{ netfoundry_info.network }}"
-      attributes:
-      - "#welcomeWagon"
-    loop: "{{ services }}"
-    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
+        name: SSO Portal
+        network: "{{ netfoundry_info.network }}"
+        attributes:
+        - "#allEmployees"
+        clientHostName: portal.example.com # this matches the SSL server certificate
+        clientPortRange: 443
+        endpoints:
+        - americas-datacenter-centos12
+        - americas-datacenter-centos13
+        serverHostName: portal-load-balancer.internal.example.com
+        serverPortRange: 1443
+
+  - name: host a Service with an Edge Router running on the NetFoundry VM configured as a "bastion" host
+    netfoundry_service:
+        name: Finance Portal
+        network: "{{ netfoundry_info.network }}"
+        attributes:
+        - "#accounting"
+        clientHostName: finance.example.com # this matches the SSL server certificate
+        clientPortRange: 443
+        egressRouter: finance-bastion11
+        serverHostName: portal-load-balancer.finance.internal.example.com
+        serverPortRange: 18443
 
   - name: Delete all Services
     netfoundry_service:
