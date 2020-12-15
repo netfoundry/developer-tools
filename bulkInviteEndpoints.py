@@ -5,7 +5,6 @@ import re
 import jwt
 from datetime import datetime
 import time
-import os
 import netfoundry
 
 #

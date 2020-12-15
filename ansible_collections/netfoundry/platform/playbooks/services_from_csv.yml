@@ -35,9 +35,8 @@
     debug:
       msg: "{{ item }}"
     loop: "{{ services_loop.results }}"
-#    when: item.
-#    when: item.serviceNumber|int < 4
-     
+    when: item.failed
+
 #   - name: delete Services
 #     netfoundry_service:
 #       network: "{{ netfoundry_info.network }}"
