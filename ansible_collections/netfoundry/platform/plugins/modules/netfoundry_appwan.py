@@ -8,29 +8,29 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_endpoint
+module: netfoundry_appwan
 
-short_description: Create, update, or delete an Endpoint
+short_description: Create, update, or delete an AppWAN
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.1.0"
+version_added: "1.4.0"
 
 description: Create and update always have result=changed
 
 options:
     name:
-        description: The name of the Endpoint.
+        description: the name of the AppWAN
         required: true
         type: str
-    attributes:
-        description: A list of Endpoint role attributes prefixed with a \#hash mark.
+    endpoints:
+        description: A list of Endpoint IDs or names or Endpoint role attributes prefixed with a \#hash mark.
         required: false
         type: list
-    dest:
-        description: Path to directory or file named like *.jwt in which to save the enrollment one-time-token JWT. If a directory is specified then it will be created if necessary and the filename will be that of the Endpoint, including whitespace, and must have filename suffix *.jwt.
+    services:
+        description: A list of Service IDs or names or Service role attributes prefixed with a \#hash mark.
         required: false
-        type: path
+        type: list
     state:
         description: The desired state.
         required: false
@@ -50,23 +50,23 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create Endpoint
-    netfoundry_endpoint:
-      name: "{{ item }}"
-      state: PROVISIONED
+  - name: create AppWAN
+    netfoundry_appwan:
+      name: Telecommuter AppWAN
       network: "{{ netfoundry_info.network }}"
-      attributes:
+      endpoints:
       - "#workFromAnywhere"
-      dest: /tmp/ott  # directory in which to save {{ item }}.jwt
-    loop: "{{ endpointNames }}"
-    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
+      - "@gunter-laptop1"
+      services:
+      - "#welcomeWagon"
+      - "@internal-portal"
 
-  - name: Delete all Endpoints
-    netfoundry_endpoint:
+  - name: Delete all Services
+    netfoundry_service:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"
-    loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
+    loop: "{{ netfoundry_info.services|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -83,18 +83,18 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
-from os import path as Path
-from os import mkdir as mkdir
-from pathlib import Path as PathLib
+from uuid import UUID
+from re import sub
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        attributes=dict(type='list', elements='str', required=False, default=[]),
+        endpoints=dict(type='list', elements='str', required=False, default=[]),
+        services=dict(type='list', elements='str', required=False, default=[]),
+        posture_checks=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
-        dest=dict(type='path', required=False, default=None),
-        network=dict(type='dict', required=True)
+        network=dict(type='dict', required=True),
     )
 
     # seed the result dict in the object
@@ -131,57 +131,73 @@ def run_module():
 
     network = Network(session, network_id=module.params['network']['id'])
 
-    found = network.get_resources(type="endpoints",name=module.params['name'])
+    endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
+    service_names = [service['name'] for service in network.services()]
+    posture_names = [posture['name'] for posture in network.posture_checks()]
+
+    properties = {
+        "name": module.params['name'],
+        "endpoint_attributes": module.params['endpoints'],
+        "service_attributes": module.params['services'],
+        "posture_check_attributes": module.params['posture_checks'],
+    }
+
+    # if not empty list then verify @mentions resolve to existing entities
+    if properties["endpoint_attributes"]:
+        for role in properties["endpoint_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in endpoint_names:
+                    raise AnsibleError('Failed to find an Endpoint named "{}".'.format(role[1:]))
+    if properties["service_attributes"]:
+        for role in properties["service_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in service_names:
+                    raise AnsibleError('Failed to find a Service named "{}".'.format(role[1:]))
+    if properties["posture_check_attributes"]:
+        for role in properties["posture_check_attributes"]:
+            # check if @mention
+            if role[0:1] == '@':
+                if not role[1:] in service_names:
+                    raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
+
+    # find AppWAN with the specified name
+    found = network.get_resources(type="app-wans",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['message'] = network.create_app_wan(**properties)
             result['changed'] = True
-            if module.params['dest']:
-                save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        endpoint = found[0]
+        appwan = found[0]
         if module.params['state'] == "PROVISIONED":
-            endpoint['attributes'] = module.params['attributes']
-            result['message'] = network.patch_resource(endpoint)
+            for key in appwan.keys():
+                # if there's an exact match for the existing property in properties then replace it
+                if snake(key) in properties.keys():
+                    appwan[key] = properties[snake(key)]
+            result['message'] = network.patch_resource(appwan)
             result['changed'] = True
-            if result['message']['jwt'] and module.params['dest']:
-                save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="endpoint",id=endpoint['id'])
+            try: network.delete_resource(type="app-wan",id=appwan['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Endpoint'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
-
-def save_one_time_token(name, jwt, dest):
-    # is a filename if *.jwt
-    if dest[-4:] == ".jwt":
-        # use current directory if only a filename is specified
-        if not Path.dirname(dest):
-            dest_dir = str(PathLib.cwd())
-        else:
-            dest_dir = Path.dirname(dest)
-        dest_file = Path.basename(dest)
-    # is a directory
-    else:
-        dest_file = name+'.jwt'
-        dest_dir = dest
-    if not Path.exists(dest_dir):
-        try: mkdir(dest_dir)
-        except Exception as e:
-            raise AnsibleError('Failed to create the directory "{}". Caught exception: {}'.format(dest_dir, to_native(e)))
-    handle = open(dest_dir+'/'+dest_file, "wt")
-    handle.write(jwt)
-    handle.close()
 
 def main():
     run_module()
 
+def camel(snake_str):
+    first, *others = snake_str.split('_')
+    return ''.join([first.lower(), *map(str.title, others)])
+
+def snake(camel_str):
+    return sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
 
 if __name__ == '__main__':
     main()
