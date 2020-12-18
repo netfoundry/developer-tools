@@ -9,25 +9,30 @@ DOCUMENTATION = r'''
 ---
 module: netfoundry_info
 
-short_description: Describe a NetFoundry Network
+short_description: Use or describe a NetFoundry Network
 
 version_added: "1.0.0"
 
 description: Discover NetFoundry Network resources with an API account
 
 options:
-    networkName:
-        description: The name of the Network to describe.
+    network:
+        description: The name or UUID of the Network to use or describe.
         required: true
         type: str
     credentials:
         description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
         required: false
         type: path
-    networkGroupId:
-        description: Network Group UUID. Only necessary if there is more than one, which is unusual.
+    token:
+        description: providing a session token i.e. bearer token (JWT) is time efficient and will be renewed if expiry is imminent and credentials are supplied
         required: false
         type: str
+    inventory:
+        description: optionally, perform expensive operations to describe all resources
+        required: false
+        default: false
+        type: bool
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -37,12 +42,25 @@ requirements:
 '''
 
 EXAMPLES = r'''
-# Pass in a message
-- name: discover resources in the Network
+- name: start a one-hour session for a Network
   netfoundry.platform.netfoundry_info:
-    networkName: BibbidiBobbidiBoo
+    network: BibbidiBobbidiBoo
     credentials: credentials.json
-  register: network_info
+  register: netfoundry_session
+
+- name: re-use the session token, but take the time to discover resources in a Network with "inventory"
+  netfoundry.platform.netfoundry_info:
+    network: "{{ netfoundry_session.network.id }}"
+    inventory: True
+    token: "{{ network_session.token }}"
+  register: network_inventory
+
+- name: renew a session if expiring soon
+  netfoundry.platform.netfoundry_info:
+    network: BibbidiBobbidiBoo
+    token: "{{ netfoundry_session.token }}"
+    credentials: credentials.json
+  register: netfoundry_session
 
 '''
 
@@ -76,14 +94,15 @@ from netfoundry import Session
 from netfoundry import Organization
 from netfoundry import NetworkGroup
 from netfoundry import Network
-
+from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         network=dict(type='str', required=True),
         credentials=dict(type='path', required=False),
-        networkGroupId=dict(type='str', required=False),
+        token=dict(type='str', required=False),
+        inventory=dict(type='bool', required=False, default=False),
     )
 
     # seed the result dict in the object
@@ -118,33 +137,45 @@ def run_module():
     result['original_message'] = module.params
 
     session = Session(
-        credentials=module.params['credentials'] if module.params['credentials'] is not None else None
-    )
-    # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
-    organization = Organization(session)
-
-    # use the default Network Group (the first Network Group ID known to the Organization)
-    network_group = NetworkGroup(
-        organization,
-        network_group_id=module.params['networkGroupId'] if module.params['networkGroupId'] is not None else None,
+        credentials=module.params['credentials'] if module.params['credentials'] is not None else None,
+        token=module.params['token'] if module.params['token'] is not None else None
     )
 
-    network = Network(session, network_name=module.params['network'])
+    network_id = None
+    network_name = None
+    # assign network_id if UUIDv4 else network_name
+    try: UUID(module.params['network'], version=4)
+    except ValueError: network_name = module.params['network']
+    else: network_id = module.params['network']
 
-#    result['token'] = session.token
-#    result['network_groups'] = organization.network_groups
-    result['console'] = network_group.nfconsole
-    # merge the session object to top-level resources on which we will perform
-    #  operations so that only a single parameter is necessary when calling
-    #  subsequent modules e.g. netfoundry_endpoint
-    result['organization'] = {**organization.describe, **{"token": session.token}}
-    result['network_group'] = {**network_group.describe, **{"token": session.token}}
+    network = Network(
+        session, 
+        network_id=network_id if network_id else None,
+        network_name=network_name if network_name else None,
+    )
+
     result['network'] = {**network.describe, **{"token": session.token}}
-    result['endpoints'] = network.endpoints()
-    result['edge_routers'] = network.edge_routers()
-    result['services'] = network.services()
-    result['edge_router_policies'] = network.edge_router_policies()
-    result['app_wans'] = network.app_wans()
+
+    if module.params['inventory']:
+        # optionally perform expensive inventory operations
+        result['endpoints'] = network.endpoints()
+        result['services'] = network.services()
+        result['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
+        result['customer_edge_routers'] = network.edge_routers(only_customer=True)
+        result['edge_router_policies'] = network.edge_router_policies()
+        result['app_wans'] = network.app_wans()
+        result['data_centers'] = network.get_edge_router_datacenters()
+
+        # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
+        organization = Organization(session)
+        # use the default Network Group (the first Network Group ID known to the Organization)
+        network_group = NetworkGroup(organization, network_group_id=network.network_group_id)
+        result['console'] = network_group.nfconsole
+        # merge the session object to top-level resources on which we will perform
+        #  operations so that only a single parameter is necessary when calling
+        #  subsequent modules e.g. netfoundry_endpoint
+        result['organization'] = {**organization.describe, **{"token": session.token}}
+        result['network_group'] = {**network_group.describe, **{"token": session.token}}
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
