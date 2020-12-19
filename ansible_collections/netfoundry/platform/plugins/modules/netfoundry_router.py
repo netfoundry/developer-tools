@@ -27,11 +27,6 @@ options:
         description: A list of role attributes prefixed with a \#hash mark.
         required: false
         type: list
-    georegion:
-        description: provision the router in a NetFoundry datacenter by major geographic region
-        required: false
-        type: str
-        choices: ["Americas","EuropeMiddleEastAfrica","AsiaPacific"]
     datacenter:
         description: provision the router in a NetFoundry datacenter by locationCode or ID from netfoundry_info.data_centers
         required: false
@@ -54,34 +49,29 @@ requirements:
     - netfoundry
 '''
 
+    # georegion:
+    #     description: provision the router in a NetFoundry datacenter by major geographic region
+    #     required: false
+    #     type: str
+    #     choices: ["Americas","EuropeMiddleEastAfrica","AsiaPacific"]
+
+    # linkListener:
+    #     description: listen for Router links on 80/tcp; this is not typical for customer Routers; all hosted Routers have link listeners
+    #     type: bool
+    #     required: false
+    #     default: false
+
 EXAMPLES = r'''
 # Hosted Routers listen on an internet IP for Endpoints and other Routers to
 #  form North-South / branch-to-datacenter links and are configured by matching an
 #  Edge Router Policy.
-  - name: create hosted Edge Router near EU in any available cloud provider
-    netfoundry_router:
-        name: EU Hosted Router
-        georegion: EuropeMiddleEastAfrica
-        network: "{{ netfoundry_info.network }}"
-        attributes:
-        - "#hostedRouters"
-
-  - name: create hosted Edge Router near US in AWS
-    netfoundry_router:
-        name: US Hosted Router
-        georegion: Americas
-        provider: AWS
-        network: "{{ netfoundry_info.network }}"
-        attributes:
-        - "#hostedRouters"
-
   - name: create hosted Edge Router in a particular Azure region
     netfoundry_router:
         name: Hosted Router for Azure "East US 2"
         datacenter: eastus2
         network: "{{ netfoundry_info.network }}"
         attributes:
-        - "#hostedRouters"
+        - "#global_hosted_routers"
 
 # customer Routers may host Services and are typically deployed by running and
 #  registering the NetFoundry VM
@@ -90,7 +80,7 @@ EXAMPLES = r'''
         name: On-premises VM for the Frankfurt branch
         network: "{{ netfoundry_info.network }}"
         attributes:
-        - "#frankfurtRouters"
+        - "#frankfurt_terminus_routers
 
 # state: PROVISIONED (default)
   - name: Delete all customer Edge Routers
@@ -108,6 +98,34 @@ EXAMPLES = r'''
     loop: "{{ netfoundry_info.hosted_edge_routers|map(attribute='name')|list }}"
 '''
 
+#   - name: create hosted Edge Router near EU in any available cloud provider
+#     netfoundry_router:
+#         name: EU Hosted Router
+#         georegion: EuropeMiddleEastAfrica
+#         network: "{{ netfoundry_info.network }}"
+#         attributes:
+#         - "#global_hosted_routers"
+
+#   - name: create hosted Edge Router near US in AWS
+#     netfoundry_router:
+#         name: US Hosted Router
+#         georegion: Americas
+#         provider: AWS
+#         network: "{{ netfoundry_info.network }}"
+#         attributes:
+#         - "#global_hosted_routers"
+
+
+# # customer Routers may have a public link listener; 
+# # link listeners are typically provided only by NetFoundry-hosted Routers
+#   - name: create a public customer-hosted Edge Router
+#     netfoundry_router:
+#         name: On-premises DMZ Router for the Frankfurt Datacenter
+#         network: "{{ netfoundry_info.network }}"
+#         linkListener: True
+#         attributes:
+#         - "#frankfurt_edge_routers"
+
 RETURN = r'''
 # These are examples of possible return values, and in general should use other
 #  names for return values.
@@ -123,6 +141,7 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
+from netfoundry import Utility
 from uuid import UUID
 from re import sub
 
@@ -131,10 +150,12 @@ def run_module():
     module_args = dict(
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
-        georegion=dict(type='str', required=False),
+#        georegion=dict(type='str', required=False),
+#        provider=dict(type='str', required=False),
         datacenter=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
+#        linkListener=dict(type='bool', required=False, default=False)
     )
 
     # seed the result dict in the object
@@ -169,47 +190,70 @@ def run_module():
         token=module.params['network']['token']
     )
 
+    # instantiate some utility methods like snake(), camel() for translating styles
+    utility = Utility()
+
     network = Network(session, network_id=module.params['network']['id'])
 
-    router_names = [er['name'] for er in network.edge_routers()]
+    # if not module.params['linkListener'] and module.params['datacenter']:
+    #     raise AnsibleError("ERROR: specify only one of linkListener or datacenter; all NF-datacenter-hosted Edge Routers listen for Router links")
 
+    # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
     }
 
-    # if not empty list then verify @mentions resolve to existing entities
-    if properties["attributes"]:
-        for role in properties["attributes"]:
-            # check if @mention
-            if role[0:1] == '@':
-                if not role[1:] in router_names:
-                    raise AnsibleError('Failed to find an Endpoint named "{}".'.format(role[1:]))
+    # if datacenter arg is given this is a NF-datacenter-hosted Edge Router and
+    # we need to know if the string is a UUID (datacenter ID) or the name of
+    # a datacenter location (location code)
+    if module.params['datacenter']:
+        datacenter = module.params['datacenter']
+        # check if UUIDv4
+        try: UUID(datacenter, version=4)
+        except ValueError:
+            # else assume is a location code and resolve to ID
+            try:
+                properties['data_center_id'] = network.get_edge_router_datacenters(location_code=datacenter)[0]['id']
+            except Exception as e:
+                raise AnsibleError('Failed to find an exact match for datacenter location code "{}". Caught exception: {}'.format(datacenter, to_native(e)))
+        # it's a UUID and so we assign the property directly
+        else: properties['data_center_id'] = datacenter
 
-    # find AppWAN with the specified name
-    found = network.get_resources(type="app-wans",name=properties['name'])
+    # find any Router with the specified name
+    found = network.get_resources(type="edge-routers",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_app_wan(**properties)
+            result['message'] = network.create_edge_router(**properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        appwan = found[0]
+        router = found[0]
         if module.params['state'] == "PROVISIONED":
-            for key in appwan.keys():
-                # if there's an exact match for the existing property in properties then replace it
-                if snake(key) in properties.keys():
-                    appwan[key] = properties[snake(key)]
-            result['message'] = network.patch_resource(appwan)
+            # sanity check datacenter IDs
+            if module.params['datacenter']:
+                if not router['dataCenterId']:
+                    raise AnsibleError('ERROR: existing Router is customer-hosted, not NF-datacenter-hosted, and so a datacenter ID may not be assigned.')
+                elif not router['dataCenterId'] == properties['data_center_id']:
+                    raise AnsibleError('ERROR: existing Router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted Routers may not be re-located.'.format(
+                        router['dataCenterId'], 
+                        properties['data_center_id']
+                    ))
+            for key in router.keys():
+                # if there's an exact match for the existing property in
+                # our override properties then replace it before patching
+                if utility.snake(key) in properties.keys():
+                    router[key] = properties[utility.snake(key)]
+            result['message'] = network.patch_resource(router)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="app-wan",id=appwan['id'])
+            try: network.delete_resource(type="edge-router",id=router['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Edge Router'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
 
