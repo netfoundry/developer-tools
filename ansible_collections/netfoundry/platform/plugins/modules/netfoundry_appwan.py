@@ -83,6 +83,7 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
+from netfoundry import Utility
 from uuid import UUID
 from re import sub
 
@@ -128,6 +129,9 @@ def run_module():
     session = Session(
         token=module.params['network']['token']
     )
+
+    # instantiate some utility methods like snake(), camel() for translating styles
+    utility = Utility()
 
     network = Network(session, network_id=module.params['network']['id'])
 
@@ -175,8 +179,8 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             for key in appwan.keys():
                 # if there's an exact match for the existing property in properties then replace it
-                if snake(key) in properties.keys():
-                    appwan[key] = properties[snake(key)]
+                if utility.snake(key) in properties.keys():
+                    appwan[key] = properties[utility.snake(key)]
             result['message'] = network.patch_resource(appwan)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
@@ -191,13 +195,6 @@ def run_module():
 
 def main():
     run_module()
-
-def camel(snake_str):
-    first, *others = snake_str.split('_')
-    return ''.join([first.lower(), *map(str.title, others)])
-
-def snake(camel_str):
-    return sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
 
 if __name__ == '__main__':
     main()

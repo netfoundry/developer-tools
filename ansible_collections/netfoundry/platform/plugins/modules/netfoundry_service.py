@@ -129,6 +129,7 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Network
+from netfoundry import Utility
 from uuid import UUID
 from re import sub
 
@@ -181,6 +182,9 @@ def run_module():
         token=module.params['network']['token']
     )
 
+    # instantiate some utility methods like snake(), camel() for translating styles
+    utility = Utility()
+
     network = Network(session, network_id=module.params['network']['id'])
 
     service_properties = {
@@ -206,11 +210,11 @@ def run_module():
                 # else assume is a name and resolve to ID
                 try: 
                     name_lookup = network.get_resources(type="endpoints",name=endpoint)[0]
-                    endpointId = name_lookup['id']
+                    endpoint_id = name_lookup['id']
                 except Exception as e:
                     raise AnsibleError('Failed to find exactly one hosting Endpoint named "{}". Caught exception: {}'.format(endpoint, to_native(e)))
                 # append to list after successfully resolving name to ID
-                else: service_properties['endpoints'] += [endpointId]
+                else: service_properties['endpoints'] += [endpoint_id]
             else: service_properties['endpoints'] += [endpoint]
     elif module.params['egressRouter']:
         service_properties['endpoints'] = []
@@ -243,8 +247,8 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             for key in service.keys():
                 # if there's an exact match for the existing property in service_properties then replace it
-                if snake(key) in service_properties.keys():
-                    service[key] = service_properties[snake(key)]
+                if utility.snake(key) in service_properties.keys():
+                    service[key] = service_properties[utility.snake(key)]
             result['message'] = network.patch_resource(service)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
@@ -259,13 +263,6 @@ def run_module():
 
 def main():
     run_module()
-
-def camel(snake_str):
-    first, *others = snake_str.split('_')
-    return ''.join([first.lower(), *map(str.title, others)])
-
-def snake(camel_str):
-    return sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
 
 if __name__ == '__main__':
     main()

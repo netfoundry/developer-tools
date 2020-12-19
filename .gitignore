@@ -1,1 +1,3 @@
 netfoundry-platform-*.tar.gz
+/example_playbook.yml
+*.jwt

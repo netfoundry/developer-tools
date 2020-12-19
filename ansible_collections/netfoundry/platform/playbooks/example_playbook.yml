@@ -80,8 +80,8 @@
       state: DELETED
 
   vars:
-    networkName: kentest1430
-    credentialsJson: nfint-ZitiBastions.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
+    networkName: BibbidiBobbidiBoo
+    credentialsJson: credentials.json # relative to playbook; documentation: https://developer.netfoundry.io/v2/guides/authentication/#get-an-api-account
     endpointNames:
     - Client1
     - Exit1
