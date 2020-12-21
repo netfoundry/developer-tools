@@ -143,7 +143,6 @@ from netfoundry import Session
 from netfoundry import Network
 from netfoundry import Utility
 from uuid import UUID
-from re import sub
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -214,7 +213,7 @@ def run_module():
         except ValueError:
             # else assume is a location code and resolve to ID
             try:
-                properties['data_center_id'] = network.get_edge_router_datacenters(location_code=datacenter)[0]['id']
+                properties['data_center_id'] = network.get_edge_router_data_centers(location_code=datacenter)[0]['id']
             except Exception as e:
                 raise AnsibleError('Failed to find an exact match for datacenter location code "{}". Caught exception: {}'.format(datacenter, to_native(e)))
         # it's a UUID and so we assign the property directly

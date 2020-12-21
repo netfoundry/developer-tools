@@ -85,7 +85,6 @@ from netfoundry import Session
 from netfoundry import Network
 from netfoundry import Utility
 from uuid import UUID
-from re import sub
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
