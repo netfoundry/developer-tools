@@ -8,27 +8,27 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_appwan
+module: netfoundry_router_policy
 
-short_description: Create, update, or delete an AppWAN
+short_description: Create, update, or delete an Router Policy
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.4.0"
+version_added: "1.6.0"
 
 description: Create and update always have result=changed
 
 options:
     name:
-        description: the name of the AppWAN
+        description: the name of the Router Policy
         required: true
         type: str
     endpoints:
         description: A list of Endpoint IDs or names or Endpoint role attributes prefixed with a \#hash mark.
         required: false
         type: list
-    services:
-        description: A list of Service IDs or names or Service role attributes prefixed with a \#hash mark.
+    routers:
+        description: A list of Router IDs or names or Router role attributes prefixed with a \#hash mark.
         required: false
         type: list
     state:
@@ -50,23 +50,23 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create AppWAN
-    netfoundry_appwan:
-      name: Telecommuter AppWAN
+# most networks require only a single, global, blanket Edge Router Policy for #all dialing Endpoints
+  - name: create Router Policy
+    netfoundry_router_policy:
+      name: Blanket Router Policy
       network: "{{ netfoundry_info.network }}"
       endpoints:
-      - "#workFromAnywhere"
-      - "@gunter-laptop1"
-      services:
-      - "#welcomeWagon"
-      - "@internal-portal"
+      - "#all"
+      routers:
+      - "#global-hosted-routers"
 
-  - name: Delete all Services
-    netfoundry_service:
+# /requires netfoundry_info arg inventory=True
+  - name: Delete all Router Policies
+    netfoundry_router_policy:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"
-    loop: "{{ netfoundry_info.services|map(attribute='name')|list }}"
+    loop: "{{ netfoundry_info.edge_router_policies|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -91,8 +91,7 @@ def run_module():
     module_args = dict(
         name=dict(type='str', required=True),
         endpoints=dict(type='list', elements='str', required=False, default=[]),
-        services=dict(type='list', elements='str', required=False, default=[]),
-        posture_checks=dict(type='list', elements='str', required=False, default=[]),
+        routers=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
     )
@@ -135,14 +134,12 @@ def run_module():
     network = Network(session, network_id=module.params['network']['id'])
 
     endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
-    service_names = [service['name'] for service in network.services()]
-    posture_names = [posture['name'] for posture in network.posture_checks()]
+    router_names = [router['name'] for router in network.edge_routers()]
 
     properties = {
         "name": module.params['name'],
         "endpoint_attributes": module.params['endpoints'],
-        "service_attributes": module.params['services'],
-        "posture_check_attributes": module.params['posture_checks'],
+        "edge_router_attributes": module.params['routers'],
     }
 
     # if not empty list then verify @mentions resolve to existing entities
@@ -152,43 +149,37 @@ def run_module():
             if role[0:1] == '@':
                 if not role[1:] in endpoint_names:
                     raise AnsibleError('Failed to find an Endpoint named "{}".'.format(role[1:]))
-    if properties["service_attributes"]:
-        for role in properties["service_attributes"]:
+    if properties["edge_router_attributes"]:
+        for role in properties["edge_router_attributes"]:
             # check if @mention
             if role[0:1] == '@':
-                if not role[1:] in service_names:
-                    raise AnsibleError('Failed to find a Service named "{}".'.format(role[1:]))
-    if properties["posture_check_attributes"]:
-        for role in properties["posture_check_attributes"]:
-            # check if @mention
-            if role[0:1] == '@':
-                if not role[1:] in service_names:
-                    raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
+                if not role[1:] in router_names:
+                    raise AnsibleError('Failed to find a Router named "{}".'.format(role[1:]))
 
-    # find AppWAN with the specified name
-    found = network.get_resources(type="app-wans",name=properties['name'])
+    # find Router Policy with the specified name
+    found = network.get_resources(type="edge-router-policies",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_app_wan(**properties)
+            result['message'] = network.create_edge_router_policy(**properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        appwan = found[0]
+        router_policy = found[0]
         if module.params['state'] == "PROVISIONED":
-            for key in appwan.keys():
+            for key in router_policy.keys():
                 # if there's an exact match for the existing property in properties then replace it
                 if utility.snake(key) in properties.keys():
-                    appwan[key] = properties[utility.snake(key)]
-            result['message'] = network.patch_resource(appwan)
+                    router_policy[key] = properties[utility.snake(key)]
+            result['message'] = network.patch_resource(router_policy)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="app-wan",id=appwan['id'])
+            try: network.delete_resource(type="edge-router-policy",id=router_policy['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete Router Policy"{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Router Policy'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
 
