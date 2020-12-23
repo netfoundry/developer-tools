@@ -11,6 +11,30 @@
         credentials: credentials.json
     register: netfoundry_info
 
+  - name: wait for each hosted Edge Router to have a minimum state of PROVISIONING
+    netfoundry_router:
+        network: "{{ netfoundry_info.network }}"
+        name: "{{ item.name }}"
+        attributes: 
+        - "#defaultRouters"
+        datacenter: "{{ item.datacenter  }}"
+        state: PROVISIONING
+        wait: 100
+    loop: "{{hosted_edge_routers}}"
+
+  - name: wait in the background for each hosted Edge Router to become REGISTERED
+    netfoundry_router:
+        network: "{{ netfoundry_info.network }}"
+        name: "{{ item.name }}"
+        attributes: 
+        - "#defaultRouters"
+        datacenter: "{{ item.datacenter  }}"
+        state: REGISTERED
+    register: router_results
+    async: 1000
+    poll: 0
+    loop: "{{hosted_edge_routers}}"
+
   - name: declare Endpoints
     netfoundry_endpoint:
         name: "{{ item }}"
@@ -38,15 +62,6 @@
         serverPortRange: 80
         serverProtocol: TCP
 
-  - name: declare a NetFoundry-datacenter-hosted Edge Router
-    netfoundry_router:
-        network: "{{ netfoundry_info.network }}"
-        name: Oregon Router
-        attributes: 
-        - "#defaultRouters"
-        datacenter: us-west-2
-    register: hosted_router
-
   - name: declare a blanket Edge Router Policy
     netfoundry_router_policy:
         network: "{{ netfoundry_info.network }}"
@@ -57,19 +72,6 @@
         - "#all"
     register: blanket_policy
 
-  - name: declare a Router-hosted Service
-    netfoundry_service:
-        network: "{{ netfoundry_info.network }}"
-        name: HTTP Echo 2
-        attributes: 
-        - "#welcomeWagon"
-        clientHostName: echo2.netfoundry
-        clientPortRange: 80
-        egressRouter: "{{ hosted_router.message.id }}"
-        serverHostName: eth0.me
-        serverPortRange: 80
-        serverProtocol: TCP
-
   - name: declare an AppWAN
     netfoundry_appwan:
         network: "{{ netfoundry_info.network }}"
@@ -78,7 +80,38 @@
         - "#workFromAnywhere"
         services:
         - "#welcomeWagon"
-    
-    
 
+  - name: Wait for each Hosted Router to become REGISTERED
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    retries: 100
+    delay: 10
+    register: async_job_result
+    until: "{{ async_job_result.finished }}"
+    loop: "{{ router_results.results }}"
+
+  # lastly, do tasks that depend on an async background task
+  - name: declare a Router-hosted Service
+    netfoundry_service:
+        network: "{{ netfoundry_info.network }}"
+        name: HTTP Echo 2
+        attributes: 
+        - "#welcomeWagon"
+        clientHostName: echo2.netfoundry
+        clientPortRange: 80
+        egressRouter: "Oregon {{increment}}"
+        serverHostName: eth0.me
+        serverPortRange: 80
+        serverProtocol: TCP
+
+  vars:
+    increment: 11
+    hosted_edge_routers:
+    - name: Oregon {{increment}}
+      datacenter: us-west-2
+    - name: Ohio {{increment}}
+      datacenter: us-east-2
+    - name: Virginia {{increment}}
+      datacenter: us-east-1
+      
 
