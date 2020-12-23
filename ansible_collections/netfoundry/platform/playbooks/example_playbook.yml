@@ -11,7 +11,7 @@
         credentials: credentials.json
     register: netfoundry_info
 
-  - name: wait for each hosted Edge Router to have a minimum state of PROVISIONING
+  - name: block and wait for each hosted Edge Router to have a minimum state of PROVISIONING
     netfoundry_router:
         network: "{{ netfoundry_info.network }}"
         name: "{{ item.name }}"
@@ -19,7 +19,7 @@
         - "#defaultRouters"
         datacenter: "{{ item.datacenter  }}"
         state: PROVISIONING
-        wait: 100
+        wait: 200
     loop: "{{hosted_edge_routers}}"
 
   - name: wait in the background for each hosted Edge Router to become REGISTERED
@@ -81,7 +81,7 @@
         services:
         - "#welcomeWagon"
 
-  - name: Wait for each Hosted Router to become REGISTERED
+  - name: Block until completion of background tasks
     async_status:
       jid: "{{ item.ansible_job_id }}"
     retries: 100
@@ -105,7 +105,7 @@
         serverProtocol: TCP
 
   vars:
-    increment: 11
+    increment: 12
     hosted_edge_routers:
     - name: Oregon {{increment}}
       datacenter: us-west-2
