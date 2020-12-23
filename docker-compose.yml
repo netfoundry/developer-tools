@@ -1,0 +1,47 @@
+version: "3.3"
+services:
+    dialer:
+        image: docker.io/netfoundry/ziti-tunnel:tproxy
+        restart: unless-stopped
+        volumes:
+        - .:/netfoundry
+        network_mode: host
+        cap_add:
+        - NET_ADMIN
+        environment:
+        - NF_REG_NAME=Linux1
+        - PFXLOG_NO_JSON=true
+        command: tproxy --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use dialer1
+    exit:
+        image: docker.io/netfoundry/ziti-tunnel:tun
+        restart: unless-stopped
+        volumes:
+        - .:/netfoundry
+        networks:
+        - netfoundry_bridge
+        cap_add:
+        - NET_ADMIN
+        environment:
+        - NF_REG_NAME=Exit1
+        - PFXLOG_NO_JSON=true
+        # devices:
+        # - "/dev/net/tun:/dev/net/tun"
+        # command: tun --resolver none
+        command: tproxy --resolver none
+    hello:
+        image: netfoundry/railz
+        restart: "no"
+        ports:
+        - 3000:3000
+        networks:
+        - netfoundry_bridge
+    httpbin:
+        image: kennethreitz/httpbin
+        restart: "no"
+        ports:
+        - 8081:80
+        networks:
+        - netfoundry_bridge
+
+networks:
+    netfoundry_bridge:
