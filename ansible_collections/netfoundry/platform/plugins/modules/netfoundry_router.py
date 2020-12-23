@@ -35,12 +35,17 @@ options:
         description: The desired state.
         required: false
         type: str
-        choices: ["PROVISIONED","DELETED"]
+        choices: ["PROVISIONING", "PROVISIONED","REGISTERED", "DELETED"]
         default: PROVISIONED
     network:
         description: The dictionary describing the Network on which to operate from network_info.network.
         required: true
         type: dict
+    wait:
+        description: seconds to wait for specified status (see async example)
+        required: false
+        type: int
+        default: 600
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -65,7 +70,7 @@ EXAMPLES = r'''
 # Hosted Routers listen on an internet IP for Endpoints and other Routers to
 #  form North-South / branch-to-datacenter links and are configured by matching an
 #  Edge Router Policy.
-  - name: create hosted Edge Router in a particular Azure region
+  - name: create and wait ten minutes for provisioning of a hosted Edge Router in a particular Azure region
     netfoundry_router:
         name: Hosted Router for Azure "East US 2"
         datacenter: eastus2
@@ -143,6 +148,7 @@ from netfoundry import Session
 from netfoundry import Network
 from netfoundry import Utility
 from uuid import UUID
+from time import time, sleep
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -152,9 +158,10 @@ def run_module():
 #        georegion=dict(type='str', required=False),
 #        provider=dict(type='str', required=False),
         datacenter=dict(type='str', required=False),
-        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
+        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
         network=dict(type='dict', required=True),
-#        linkListener=dict(type='bool', required=False, default=False)
+#        linkListener=dict(type='bool', required=False, default=False),
+        wait=dict(type='int', required=False, default=600),
     )
 
     # seed the result dict in the object
@@ -222,14 +229,16 @@ def run_module():
     # find any Router with the specified name
     found = network.get_resources(type="edge-routers",name=properties['name'])
     if len(found) == 0:
-        if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_edge_router(**properties)
+        if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
+            try: result['message'] = network.create_edge_router(**properties)
+            except Exception as e:
+                raise AnsibleError('Failed to create Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
         router = found[0]
-        if module.params['state'] == "PROVISIONED":
+        if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
             # sanity check datacenter IDs
             if module.params['datacenter']:
                 if not router['dataCenterId']:
@@ -244,15 +253,47 @@ def run_module():
                 # our override properties then replace it before patching
                 if utility.snake(key) in properties.keys():
                     router[key] = properties[utility.snake(key)]
-            result['message'] = network.patch_resource(router)
+            try: result['message'] = network.patch_resource(router)
+            except Exception as e:
+                raise AnsibleError('Failed to update Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="edge-router",id=router['id'])
+            try: result['message'] = network.delete_resource(type="edge-router",id=router['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
         module.fail_json(msg='ERROR: "{name}" matched more than one Edge Router'.format(name=module.params['name']), **result)
+
+    if module.params['wait'] > 0:
+        router_id = result['message']['id']
+        # if waiting for status then wait or timeout
+        if module.params['state'] == "DELETED":
+                try: network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+                except Exception as e:
+                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
+        elif module.params['state'] == "PROVISIONING":
+                try: network.wait_for_statuses(["PROVISIONING", "PROVISIONED"], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+                except Exception as e:
+                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
+        elif module.params['state'] == "PROVISIONED":
+                try: network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+                except Exception as e:
+                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
+        # REGISTERED implies PROVISIONED and additionally requires the value of JWT to be null, indicating enrollment
+        elif module.params['state'] == "REGISTERED":
+            wait_until = time()+module.params['wait']
+            try: network.wait_for_status("PROVISIONED", id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+            except Exception as e:
+                raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
+            else:
+                router = network.get_resource(type="edge-router",id=router_id)
+    #            import epdb; epdb.serve()
+                while time() < wait_until and router['jwt'] is not None:
+                    router = network.get_resource(type="edge-router",id=router_id)
+                    sleep(10)
+                if router['jwt'] is not None:
+                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
 
     module.exit_json(**result)
 
