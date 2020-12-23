@@ -41,11 +41,21 @@
   - name: declare a NetFoundry-datacenter-hosted Edge Router
     netfoundry_router:
         network: "{{ netfoundry_info.network }}"
-        name: EU West Router
+        name: Oregon Router
         attributes: 
         - "#defaultRouters"
-        datacenter: westeurope
+        datacenter: us-west-2
     register: hosted_router
+
+  - name: declare a blanket Edge Router Policy
+    netfoundry_router_policy:
+        network: "{{ netfoundry_info.network }}"
+        name: defaultRouters
+        routers:
+        - "#defaultRouters"
+        endpoints:
+        - "#all"
+    register: blanket_policy
 
   - name: declare a Router-hosted Service
     netfoundry_service:
@@ -59,4 +69,16 @@
         serverHostName: eth0.me
         serverPortRange: 80
         serverProtocol: TCP
+
+  - name: declare an AppWAN
+    netfoundry_appwan:
+        network: "{{ netfoundry_info.network }}"
+        name: Welcome
+        endpoints:
+        - "#workFromAnywhere"
+        services:
+        - "#welcomeWagon"
+    
+    
+
 
