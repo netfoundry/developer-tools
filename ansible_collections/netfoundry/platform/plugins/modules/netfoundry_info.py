@@ -164,7 +164,7 @@ def run_module():
         result['customer_edge_routers'] = network.edge_routers(only_customer=True)
         result['edge_router_policies'] = network.edge_router_policies()
         result['app_wans'] = network.app_wans()
-        result['data_centers'] = network.get_edge_router_datacenters()
+        result['data_centers'] = network.get_edge_router_data_centers()
 
         # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
         organization = Organization(session)
