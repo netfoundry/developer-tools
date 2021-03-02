@@ -42,7 +42,7 @@ options:
         type: int
         required: false
     endpoints:
-        description: a list of Endpoint hashtag role attributes and Endpoint @names
+        description: a list of Endpoint names, role attributes, or UUIDs to host this Service
         type: list
         required: false
     egressRouter:
@@ -202,35 +202,10 @@ def run_module():
         raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
     elif module.params['endpoints']:
         service_properties['egress_router_id'] = None
-        service_properties['endpoints'] = list()
-        for endpoint in module.params['endpoints']:
-            # check if UUIDv4
-            try: UUID(endpoint, version=4)
-            except ValueError:
-                # else assume is a name and resolve to ID
-                try: 
-                    name_lookup = network.get_resources(type="endpoints",name=endpoint)[0]
-                    endpoint_id = name_lookup['id']
-                except Exception as e:
-                    raise AnsibleError('Failed to find exactly one hosting Endpoint named "{}". Caught exception: {}'.format(endpoint, to_native(e)))
-                # append to list after successfully resolving name to ID
-                else: service_properties['endpoints'] += [endpoint_id]
-            else: service_properties['endpoints'] += [endpoint]
+        service_properties['endpoints'] = module.params['endpoints']
     elif module.params['egressRouter']:
         service_properties['endpoints'] = []
-        # check if UUIDv4
-        try: UUID(module.params['egressRouter'], version=4)
-        except ValueError:
-            # else assume is a name and resolve to ID
-            try: 
-                name_lookup = network.get_resources(type="edge-routers",name=module.params['egressRouter'])[0]
-                egress_router_id = name_lookup['id']
-            except Exception as e:
-                raise AnsibleError('Failed to find exactly one egress Router "{}". Caught exception: {}'.format(module.params['egressRouter'], to_native(e)))
-            # assign after successfully resolving name to ID
-            else: service_properties["egress_router_id"] = egress_router_id
-        # assign directly if UUID
-        else: service_properties["egress_router_id"] = module.params['egressRouter']
+        service_properties["egress_router_id"] = module.params['egressRouter']
     elif not module.params['state'] == "DELETED":
         raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
 
