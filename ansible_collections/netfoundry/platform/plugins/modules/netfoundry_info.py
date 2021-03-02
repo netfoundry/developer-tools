@@ -103,6 +103,7 @@ def run_module():
         credentials=dict(type='path', required=False),
         token=dict(type='str', required=False),
         inventory=dict(type='bool', required=False, default=False),
+        proxy=dict(type='str', required=False)
     )
 
     # seed the result dict in the object
@@ -138,7 +139,8 @@ def run_module():
 
     session = Session(
         credentials=module.params['credentials'] if module.params['credentials'] is not None else None,
-        token=module.params['token'] if module.params['token'] is not None else None
+        token=module.params['token'] if module.params['token'] is not None else None,
+        proxy=module.params['proxy']
     )
 
     network_id = None
@@ -154,7 +156,13 @@ def run_module():
         network_name=network_name if network_name else None,
     )
 
-    result['network'] = {**network.describe, **{"token": session.token}}
+    result['network'] = {
+        **network.describe, 
+        **{
+            "token": session.token,
+            "proxy": module.params['proxy']
+        }
+    }
 
     if module.params['inventory']:
         # optionally perform expensive inventory operations

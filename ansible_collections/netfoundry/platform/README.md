@@ -7,6 +7,8 @@ ansible-doc netfoundry.platform.netfoundry_info
 ansible-doc netfoundry.platform.netfoundry_endpoint
 # read about the Service module
 ansible-doc netfoundry.platform.netfoundry_service
+# read about the AppWAN module
+ansible-doc netfoundry.platform.netfoundry_appwan
 # read about the Router module
 ansible-doc netfoundry.platform.netfoundry_router
 # read about the Router Policy module
