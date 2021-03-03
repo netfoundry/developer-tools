@@ -69,7 +69,7 @@ options:
         required: false
         default: true
     network:
-        description: The dictionary describing the Network on which to operate from network_info.network.
+        description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
         type: dict
 

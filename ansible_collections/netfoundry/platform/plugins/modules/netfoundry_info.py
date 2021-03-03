@@ -18,7 +18,11 @@ description: Discover NetFoundry Network resources with an API account
 options:
     network:
         description: The name or UUID of the Network to use or describe.
-        required: true
+        required: false
+        type: str
+    network_group:
+        description: The name or UUID of the Network Group to use. This is not typically necessary unless ambiguous becuase the Network does not yet exist and there is more than one Group.
+        required: false
         type: str
     credentials:
         description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
@@ -42,23 +46,28 @@ requirements:
 '''
 
 EXAMPLES = r'''
-- name: start a one-hour session for a Network
+- name: start a one-hour session for the default Organization
+  netfoundry.platform.netfoundry_info:
+    credentials: credentials.json
+  register: netfoundry_organization
+
+- name: start a one-hour session for a particular Network
   netfoundry.platform.netfoundry_info:
     network: BibbidiBobbidiBoo
     credentials: credentials.json
-  register: netfoundry_session
+  register: netfoundry_network
 
 - name: re-use the session token, but take the time to discover resources in a Network with "inventory"
   netfoundry.platform.netfoundry_info:
-    network: "{{ netfoundry_session.network.id }}"
+    network: "{{ netfoundry_network.network.id }}"
     inventory: True
-    token: "{{ network_session.token }}"
+    token: "{{ network_network.token }}"
   register: network_inventory
 
 - name: renew a session if expiring soon
   netfoundry.platform.netfoundry_info:
     network: BibbidiBobbidiBoo
-    token: "{{ netfoundry_session.token }}"
+    token: "{{ netfoundry_network.token }}"
     credentials: credentials.json
   register: netfoundry_session
 
@@ -99,7 +108,8 @@ from uuid import UUID
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        network=dict(type='str', required=True),
+        network=dict(type='str', required=False),
+        network_group=dict(type='str', required=False),
         credentials=dict(type='path', required=False),
         token=dict(type='str', required=False),
         inventory=dict(type='bool', required=False, default=False),
@@ -142,48 +152,66 @@ def run_module():
         token=module.params['token'] if module.params['token'] is not None else None,
         proxy=module.params['proxy']
     )
+    # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
+    organization = Organization(session)
 
-    network_id = None
-    network_name = None
-    # assign network_id if UUIDv4 else network_name
-    try: UUID(module.params['network'], version=4)
-    except ValueError: network_name = module.params['network']
-    else: network_id = module.params['network']
+    if module.params['network']:
+        network_id = None
+        network_name = None
+        # assign network_id if UUIDv4 else network_name
+        try: UUID(module.params['network'], version=4)
+        except ValueError: network_name = module.params['network']
+        else: network_id = module.params['network']
 
-    network = Network(
-        session, 
-        network_id=network_id if network_id else None,
-        network_name=network_name if network_name else None,
-    )
+        network = Network(
+            session, 
+            network_id=network_id if network_id else None,
+            network_name=network_name if network_name else None,
+        )
 
-    result['network'] = {
-        **network.describe, 
-        **{
-            "token": session.token,
-            "proxy": module.params['proxy']
+        result['network'] = {
+            **network.describe, 
+            **{
+                "token": session.token,
+                "proxy": module.params['proxy']
+            }
         }
-    }
 
-    if module.params['inventory']:
-        # optionally perform expensive inventory operations
-        result['endpoints'] = network.endpoints()
-        result['services'] = network.services()
-        result['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
-        result['customer_edge_routers'] = network.edge_routers(only_customer=True)
-        result['edge_router_policies'] = network.edge_router_policies()
-        result['app_wans'] = network.app_wans()
-        result['data_centers'] = network.get_edge_router_data_centers()
+        if module.params['inventory']:
+            # optionally perform expensive inventory operations
+            result['endpoints'] = network.endpoints()
+            result['services'] = network.services()
+            result['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
+            result['customer_edge_routers'] = network.edge_routers(only_customer=True)
+            result['edge_router_policies'] = network.edge_router_policies()
+            result['app_wans'] = network.app_wans()
+            result['data_centers'] = network.get_edge_router_data_centers()
 
-        # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
-        organization = Organization(session)
-        # use the default Network Group (the first Network Group ID known to the Organization)
+        # use the Network Group of the specified Network
         network_group = NetworkGroup(organization, network_group_id=network.network_group_id)
-        result['console'] = network_group.nfconsole
-        # merge the session object to top-level resources on which we will perform
-        #  operations so that only a single parameter is necessary when calling
-        #  subsequent modules e.g. netfoundry_endpoint
-        result['organization'] = {**organization.describe, **{"token": session.token}}
-        result['network_group'] = {**network_group.describe, **{"token": session.token}}
+    elif module.params['network_group']:
+        network_group_id = None
+        network_group_name = None
+        # assign network_group_id if UUIDv4 else network_group_name
+        try: UUID(module.params['network_group'], version=4)
+        except ValueError: network_group_name = module.params['network_group']
+        else: network_group_id = module.params['network_group']
+        # use the specified Network Group
+        network_group = NetworkGroup(
+            organization, 
+            network_group_id=network_group_id if network_group_id else None,
+            network_group_name=network_group_name if network_group_name else None
+        )
+    else:
+        # use the default Network Group (the first Network Group ID known to the Organization)
+        network_group = NetworkGroup(organization)
+
+    result['console'] = network_group.nfconsole
+    # merge the session object to top-level resources on which we will perform
+    #  operations so that only a single parameter is necessary when calling
+    #  subsequent modules e.g. netfoundry_endpoint
+    result['organization'] = {**organization.describe, **{"token": session.token}}
+    result['network_group'] = {**network_group.describe, **{"token": session.token}}
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
