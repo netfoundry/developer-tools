@@ -184,7 +184,7 @@ def run_module():
                 raise AnsibleError('Failed to find an exact match for datacenter location code "{}".'.format(datacenter))
         else: 
             # it's a UUID and so we reverse lookup the datacenter name by the UUID
-            properties['location'] = next(location for location, uuid in network_group.nc_data_centers_by_location if uuid == module.params['datacenter']) 
+            properties['location'] = next(location for location, uuid in network_group.nc_data_centers_by_location.items() if uuid == module.params['datacenter'])
 
     # find any existing Network with the specified name within the Network Group
     networks_by_group = organization.get_networks_by_group(network_group_id=module.params['network_group']['id'])
