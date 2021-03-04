@@ -6,11 +6,36 @@
     - community.general
 
   tasks:
-  - name: Establish session and find Network resources
+  - name: Establish session
     netfoundry_info:
-      network: BibbidiBobbidiBoo
       credentials: credentials.json
-    register: netfoundry_info
+    register: netfoundry_organization
+
+  - name: Create Network
+    netfoundry_network:
+      network: BibbidiBobbidiBoo
+      size: small
+      datacenter: ap-south-1
+      state: PROVISIONING
+      network_group: "{{ netfoundry_organization.network_group }}"
+    register: netfoundry_network
+
+  - name: Watch for Network status in the background
+    netfoundry_network:
+      network: BibbidiBobbidiBoo
+      state: PROVISIONED
+      network_group: "{{ netfoundry_organization.network_group }}"
+    register: network_watcher
+    async: 1000
+    poll: 0
+      
+  - name: Wait until Network watcher succeeds 
+    async_status:
+      jid: "{{ network_watcher.ansible_job_id }}"
+    retries: 100
+    delay: 10
+    register: network_async_job_result
+    until: "{{ network_async_job_result.finished }}"
 
   - name: block and wait for each hosted Edge Router to have a minimum state of PROVISIONING
     netfoundry_router:
@@ -77,11 +102,13 @@
       serverProtocol: TCP
     with_sequence: 5900-5919
     register: spice_loop
+    tags: port_range
 
   - name: Read Services from CSV file
     read_csv:
         path: services.csv
     register: services
+    tags: csv
 
   # with CSV headings:
   #  name
@@ -103,6 +130,7 @@
       serverPortRange: "{{ item.port }}"
       serverProtocol: TCP
     loop: "{{ services.list }}"
+    tags: csv
 
   - name: declare a blanket Edge Router Policy
     netfoundry_router_policy:
