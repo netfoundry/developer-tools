@@ -18,25 +18,32 @@
       datacenter: ap-south-1
       state: PROVISIONING
       network_group: "{{ netfoundry_organization.network_group }}"
-    register: netfoundry_network
 
   - name: Watch for Network status in the background
     netfoundry_network:
       network: BibbidiBobbidiBoo
       state: PROVISIONED
+      wait: 1800
       network_group: "{{ netfoundry_organization.network_group }}"
     register: network_watcher
-    async: 1000
-    poll: 0
+    async: 1800 # max 30m
+    poll: 0     # background
       
   - name: Wait until Network watcher succeeds 
     async_status:
       jid: "{{ network_watcher.ansible_job_id }}"
-    retries: 100
+    retries: 180
     delay: 10
     register: network_async_job_result
     until: "{{ network_async_job_result.finished }}"
 
+  - name: Describe the Network
+    netfoundry_info:
+      network: BibbidiBobbidiBoo
+      inventory: True
+      token: "{{ netfoundry_organization.network_group.token }}"
+    register: netfoundry_network
+    
   - name: block and wait for each hosted Edge Router to have a minimum state of PROVISIONING
     netfoundry_router:
       network: "{{ netfoundry_info.network }}"
