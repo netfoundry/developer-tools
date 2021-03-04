@@ -18,7 +18,7 @@ description: Create or delete a NetFoundry Network with an API account.
  This module will only create, confirm, or delete the Network itself.
 
 options:
-    network:
+    name:
         description: The name of the Network to use.
         required: true
         type: str
@@ -62,21 +62,21 @@ EXAMPLES = r'''
 
 - name: Create the Network
   netfoundry.platform.netfoundry_network:
-    network: BibbidiBobbidiBoo
+    name: BibbidiBobbidiBoo
     datacenter: eu-west-2 # most AWS regions are valid values
     network_group: "{{ netfoundry_organization.network_group }}
   register: netfoundry_network
 
 - name: Start deleting the Network
   netfoundry.platform.netfoundry_network:
-    network: BibbidiBobbidiBoo
+    name: BibbidiBobbidiBoo
     state: DELETING
     wait: 30 # default is 1200s
     network_group: "{{ netfoundry_organization.network_group }}
 
 - name: Wait up to 20 minutes for the Network to be completely deleted
   netfoundry.platform.netfoundry_network:
-    network: BibbidiBobbidiBoo
+    name: BibbidiBobbidiBoo
     state: DELETED
     network_group: "{{ netfoundry_organization.network_group }}
 
@@ -103,19 +103,18 @@ from netfoundry import Session
 from netfoundry import Utility
 from netfoundry import Organization
 from netfoundry import NetworkGroup
-#from netfoundry import Network
+from netfoundry import Network
 from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        network=dict(type='str', required=True),
+        name=dict(type='str', required=True),
         network_group=dict(type='dict', required=True),
         datacenter=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "DELETING", "DELETED"]),
         size=dict(type='str', required=False, default="small", choices=["small","medium","large"]),
         wait=dict(type='int', required=False, default=1200),
-        proxy=dict(type='str', required=False)
     )
 
     # seed the result dict in the object
@@ -151,7 +150,7 @@ def run_module():
 
     session = Session(
         token=module.params['network_group']['token'],
-        proxy=module.params['proxy']
+        proxy=module.params['network_group']['proxy']
     )
     # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
     organization = Organization(session)
@@ -167,7 +166,7 @@ def run_module():
 
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
-        "name": module.params['network'],
+        "name": module.params['name'],
         "size": module.params['size']
     }
 
@@ -187,19 +186,21 @@ def run_module():
             # it's a UUID and so we reverse lookup the datacenter name by the UUID
             properties['location'] = next(location for location, uuid in network_group.nc_data_centers_by_location if uuid == module.params['datacenter']) 
 
-    # find any existing Network with the specified name
-    networks = network_group.get_networks_by_group(network_group_id=module.params['network_group']['id'])
-    found = [net for net in networks if net['name'] == module.params['name']]
-    if len(found) == 0:
+    # find any existing Network with the specified name within the Network Group
+    networks_by_group = organization.get_networks_by_group(network_group_id=module.params['network_group']['id'])
+    matching_networks = [net for net in networks_by_group if net['name'] == module.params['name']]
+    if len(matching_networks) == 0:
         if module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
             try: result['message'] = network_group.create_network(**properties)
             except Exception as e:
                 raise AnsibleError('Failed to create Network "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
-        elif module.params['state'] == "DELETED":
+        elif module.params['state'] in ["DELETING", "DELETED"]:
             result['changed'] = False
-    elif len(found) == 1:
-        network = found[0]
+            module.exit_json(**result)
+    elif len(matching_networks) == 1:
+        # if exists and not deleting then verify the declared config matches the found config, else error
+        result['message'] = matching_networks[0]
         if module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
             # TODO: sanity check datacenter IDs when top-level Network property locationCode is available
             # if module.params['datacenter']:
@@ -208,50 +209,48 @@ def run_module():
             #             network['dataCenterId'], 
             #             properties['data_center_id']
             #         ))
-            for key in network.keys():
+            for key in result['message'].keys():
                 # if there's an exact match for a declared property in the found Network then it's an error if the values are not identical because they can't be changed
                 if utility.snake(key) in properties.keys():
-                    if not network[key] == properties[utility.snake(key)]:
+                    if not result['message'][key] == properties[utility.snake(key)]:
                         raise AnsibleError('Declared property "{}: {}" does not match found Network "{}".'.format(
                             utility.snake(key),
                             properties[utility.snake(key)],
                             module.params['name']))
+        # if exists and deleting then delete or not changed
         elif module.params['state'] in ["DELETING", "DELETED"]:
-            try: result['message'] = network_group.delete_network(network_id=network['id'])
-            except Exception as e:
-                raise AnsibleError('Failed to delete Network "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            result['changed'] = True
-    else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Network'.format(name=module.params['name']), **result)
+            if result['message']['status'] not in ["DELETING", "DELETED"]:
+                # update the result with the response to the delete request
+                try: result['message'] = network_group.delete_network(network_id=result['message']['id'])
+                except Exception as e:
+                    raise AnsibleError('Failed to delete Network "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                else: result['changed'] = True
+            else: result['changed'] = False
+    else: module.fail_json(msg='ERROR: "{name}" matched more than one Network'.format(name=module.params['name']), **result)
 
+    # if wait
     if module.params['wait'] > 0:
-        network_id = result['message']['id']
+
+#        import epdb; epdb.serve()
+        network = Network(session, network_id=result['message']['id'])
+
         # if waiting for status then wait or timeout
         if module.params['state'] == "DELETED":
-                try: network.wait_for_status(module.params['state'], id=network_id, type="network", wait=module.params['wait'], progress=False)
+                try: 
+                    network.wait_for_status(module.params['state'], wait=module.params['wait'], progress=False)
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-        elif module.params['state'] == "PROVISIONING":
-                try: network.wait_for_statuses(["PROVISIONING", "PROVISIONED"], id=network_id, type="network", wait=module.params['wait'], progress=False)
+        elif module.params['state'] == "DELETING":
+                try: network.wait_for_statuses(["DELETING", "DELETED"], wait=module.params['wait'], progress=False)
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
         elif module.params['state'] == "PROVISIONED":
-                try: network.wait_for_status(module.params['state'], id=network_id, type="network", wait=module.params['wait'], progress=False)
+                try: network.wait_for_status(module.params['state'], progress=False)
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-        # REGISTERED implies PROVISIONED and additionally requires the value of JWT to be null, indicating enrollment
-        elif module.params['state'] == "REGISTERED":
-            wait_until = time()+module.params['wait']
-            try: network.wait_for_status("PROVISIONED", id=network_id, type="network", wait=module.params['wait'], progress=False)
-            except Exception as e:
-                raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-            else:
-                network = network.get_resource(type="network",id=network_id)
-    #            import epdb; epdb.serve()
-                while time() < wait_until and network['jwt'] is not None:
-                    network = network.get_resource(type="network",id=network_id)
-                    sleep(10)
-                if network['jwt'] is not None:
+        elif module.params['state'] == "PROVISIONING":
+                try: network.wait_for_statuses(["PROVISIONING", "PROVISIONED"], wait=module.params['wait'], progress=False)
+                except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
     
     # in the event of a successful module execution, you will want to

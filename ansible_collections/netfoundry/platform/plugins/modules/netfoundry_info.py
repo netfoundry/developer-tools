@@ -173,7 +173,7 @@ def run_module():
             **network.describe, 
             **{
                 "token": session.token,
-                "proxy": module.params['proxy']
+                "proxy": session.proxies['https']
             }
         }
 
@@ -210,8 +210,18 @@ def run_module():
     # merge the session object to top-level resources on which we will perform
     #  operations so that only a single parameter is necessary when calling
     #  subsequent modules e.g. netfoundry_endpoint
-    result['organization'] = {**organization.describe, **{"token": session.token}}
-    result['network_group'] = {**network_group.describe, **{"token": session.token}}
+    result['organization'] = {
+        **organization.describe, 
+        **{
+            "token": session.token,
+            "proxy": session.proxies['https']
+        }}
+    result['network_group'] = {
+        **network_group.describe,
+        **{
+            "token": session.token,
+            "proxy": session.proxies['https']
+        }}
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
