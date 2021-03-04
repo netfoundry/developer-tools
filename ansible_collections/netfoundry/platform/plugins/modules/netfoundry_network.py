@@ -189,7 +189,7 @@ def run_module():
 
     # find any existing Network with the specified name
     networks = network_group.get_networks_by_group(network_group_id=module.params['network_group']['id'])
-    found = [net for net in networks if net == module.params['name']
+    found = [net for net in networks if net['name'] == module.params['name']]
     if len(found) == 0:
         if module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
             try: result['message'] = network_group.create_network(**properties)
@@ -201,31 +201,28 @@ def run_module():
     elif len(found) == 1:
         network = found[0]
         if module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
-            # sanity check datacenter IDs
-            if module.params['datacenter']:
-                if not network['dataCenterId']:
-                    raise AnsibleError('ERROR: existing Router is customer-hosted, not NF-datacenter-hosted, and so a datacenter ID may not be assigned.')
-                elif not network['dataCenterId'] == properties['data_center_id']:
-                    raise AnsibleError('ERROR: existing Router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted Routers may not be re-located.'.format(
-                        network['dataCenterId'], 
-                        properties['data_center_id']
-                    ))
+            # TODO: sanity check datacenter IDs when top-level Network property locationCode is available
+            # if module.params['datacenter']:
+            #     if not network['dataCenterId'] == properties['data_center_id']:
+            #         raise AnsibleError('ERROR: existing Router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted Routers may not be re-located.'.format(
+            #             network['dataCenterId'], 
+            #             properties['data_center_id']
+            #         ))
             for key in network.keys():
-                # if there's an exact match for the existing property in
-                # our override properties then replace it before patching
+                # if there's an exact match for a declared property in the found Network then it's an error if the values are not identical because they can't be changed
                 if utility.snake(key) in properties.keys():
-                    network[key] = properties[utility.snake(key)]
-            try: result['message'] = network.patch_resource(network)
+                    if not network[key] == properties[utility.snake(key)]:
+                        raise AnsibleError('Declared property "{}: {}" does not match found Network "{}".'.format(
+                            utility.snake(key),
+                            properties[utility.snake(key)],
+                            module.params['name']))
+        elif module.params['state'] in ["DELETING", "DELETED"]:
+            try: result['message'] = network_group.delete_network(network_id=network['id'])
             except Exception as e:
-                raise AnsibleError('Failed to update Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            result['changed'] = True
-        elif module.params['state'] == "DELETED":
-            try: result['message'] = network.delete_resource(type="network",id=network['id'])
-            except Exception as e:
-                raise AnsibleError('Failed to delete Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete Network "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Edge Router'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Network'.format(name=module.params['name']), **result)
 
     if module.params['wait'] > 0:
         network_id = result['message']['id']
