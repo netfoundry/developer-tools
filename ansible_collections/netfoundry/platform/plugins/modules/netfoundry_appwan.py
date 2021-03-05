@@ -38,7 +38,7 @@ options:
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
     network:
-        description: The dictionary describing the Network on which to operate from network_info.network.
+        description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
         type: dict
 
@@ -61,12 +61,11 @@ EXAMPLES = r'''
       - "#welcomeWagon"
       - "@internal-portal"
 
-  - name: Delete all Services
-    netfoundry_service:
-      name: "{{ item }}"
+  - name: Delete an AppWAN
+    netfoundry_appwan:
+      name: Telecommuter AppWAN
       state: DELETED
       network: "{{ netfoundry_info.network }}"
-    loop: "{{ netfoundry_info.services|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -126,7 +125,8 @@ def run_module():
     # part where your module will do what it needs to do)
 
     session = Session(
-        token=module.params['network']['token']
+        token=module.params['network']['token'],
+        proxy=module.params['network']['proxy']
     )
 
     # instantiate some utility methods like snake(), camel() for translating styles
