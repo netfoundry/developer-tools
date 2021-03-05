@@ -173,7 +173,7 @@ def run_module():
             **network.describe, 
             **{
                 "token": session.token,
-                "proxy": session.proxies['https']
+                "proxy": module.params['proxy']
             }
         }
 
@@ -214,13 +214,13 @@ def run_module():
         **organization.describe, 
         **{
             "token": session.token,
-            "proxy": session.proxies['https']
+            "proxy": module.params['proxy']
         }}
     result['network_group'] = {
         **network_group.describe,
         **{
             "token": session.token,
-            "proxy": session.proxies['https']
+            "proxy": module.params['proxy']
         }}
     
     # in the event of a successful module execution, you will want to
