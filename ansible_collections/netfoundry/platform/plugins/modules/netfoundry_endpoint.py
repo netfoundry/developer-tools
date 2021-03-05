@@ -38,7 +38,7 @@ options:
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
     network:
-        description: The dictionary describing the Network on which to operate from network_info.network.
+        description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
         type: dict
 
@@ -126,7 +126,8 @@ def run_module():
     # part where your module will do what it needs to do)
 
     session = Session(
-        token=module.params['network']['token']
+        token=module.params['network']['token'],
+        proxy=module.params['network']['proxy']
     )
 
     network = Network(session, network_id=module.params['network']['id'])

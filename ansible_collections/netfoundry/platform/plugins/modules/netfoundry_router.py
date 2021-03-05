@@ -31,6 +31,11 @@ options:
         description: provision the router in a NetFoundry datacenter by locationCode or ID from netfoundry_info.data_centers
         required: false
         type: str
+    provider:
+        description: limit potential datacenter name matches to the specified cloud provider
+        required: false
+        type: str
+        choices: ["AWS", "AZURE", "GCP", "ALICLOUD", "NETFOUNDRY", "OCP"]
     state:
         description: The desired state.
         required: false
@@ -38,7 +43,7 @@ options:
         choices: ["PROVISIONING", "PROVISIONED","REGISTERED", "DELETED"]
         default: PROVISIONED
     network:
-        description: The dictionary describing the Network on which to operate from network_info.network.
+        description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
         type: dict
     wait:
@@ -74,6 +79,7 @@ EXAMPLES = r'''
     netfoundry_router:
         name: Hosted Router for Azure "East US 2"
         datacenter: eastus2
+        provider: AZURE
         network: "{{ netfoundry_info.network }}"
         attributes:
         - "#global_hosted_routers"
@@ -156,7 +162,7 @@ def run_module():
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
 #        georegion=dict(type='str', required=False),
-#        provider=dict(type='str', required=False),
+        provider=dict(type='str', required=False, default="AWS", choices=["AWS", "AZURE", "GCP", "ALICLOUD", "NETFOUNDRY", "OCP"]),
         datacenter=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
         network=dict(type='dict', required=True),
@@ -193,7 +199,8 @@ def run_module():
     # part where your module will do what it needs to do)
 
     session = Session(
-        token=module.params['network']['token']
+        token=module.params['network']['token'],
+        proxy=module.params['network']['proxy']
     )
 
     # instantiate some utility methods like snake(), camel() for translating styles
@@ -220,7 +227,7 @@ def run_module():
         except ValueError:
             # else assume is a location code and resolve to ID
             try:
-                properties['data_center_id'] = network.get_edge_router_data_centers(location_code=datacenter)[0]['id']
+                properties['data_center_id'] = network.get_edge_router_data_centers(provider=module.params['provider'],location_code=datacenter)[0]['id']
             except Exception as e:
                 raise AnsibleError('Failed to find an exact match for datacenter location code "{}". Caught exception: {}'.format(datacenter, to_native(e)))
         # it's a UUID and so we assign the property directly
