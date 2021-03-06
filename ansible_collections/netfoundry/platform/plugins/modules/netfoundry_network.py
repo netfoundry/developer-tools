@@ -245,7 +245,7 @@ def run_module():
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
         elif module.params['state'] == "PROVISIONED":
-                try: network.wait_for_status(module.params['state'], progress=False)
+                try: network.wait_for_status(module.params['state'], wait=module.params['wait'], progress=False)
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
         elif module.params['state'] == "PROVISIONING":
