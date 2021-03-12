@@ -28,8 +28,8 @@ options:
         description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
         required: false
         type: path
-    token:
-        description: providing a session token i.e. bearer token (JWT) is time efficient and will be renewed if expiry is imminent and credentials are supplied
+    session:
+        description: session object from netfoundry_info.session may be used to continue using an existing session instead of creating a new session with `credentials`
         required: false
         type: str
     inventory:
@@ -51,25 +51,23 @@ EXAMPLES = r'''
     credentials: credentials.json
   register: netfoundry_organization
 
+- name: renew a session if expiring within 30 minutes
+  netfoundry.platform.netfoundry_info:
+    session: "{{ netfoundry_organization.session }}"
+  register: netfoundry_organization
+
 - name: start a one-hour session for a particular Network
   netfoundry.platform.netfoundry_info:
     network: BibbidiBobbidiBoo
     credentials: credentials.json
   register: netfoundry_network
 
-- name: re-use the session token, but take the time to discover resources in a Network with "inventory"
+- name: re-use the session and discover resources in a Network with "inventory"
   netfoundry.platform.netfoundry_info:
-    network: "{{ netfoundry_network.network.id }}"
     inventory: True
-    token: "{{ network_network.token }}"
+    network: "{{ netfoundry_network.network.id }}"
+    session: "{{ network_network.session }}"
   register: network_inventory
-
-- name: renew a session if expiring soon
-  netfoundry.platform.netfoundry_info:
-    network: BibbidiBobbidiBoo
-    token: "{{ netfoundry_network.token }}"
-    credentials: credentials.json
-  register: netfoundry_session
 
 '''
 
@@ -81,24 +79,14 @@ original_message:
     returned: always
     sample: 'BibbidiBobbidiBoo'
 message:
-    description: The output message that the test module generates.
-    type: str
-    returned: always
-    sample: 'goodbye'
-netfoundry_info:
     description: The dictionary containing information about your Network.
     type: dict
     returned: always
-    sample: {
-        'foo': 'bar',
-        'answer': 42,
-    }
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
-#from ansible.module_utils._text import to_native
 from netfoundry import Session
 from netfoundry import Organization
 from netfoundry import NetworkGroup
@@ -111,7 +99,7 @@ def run_module():
         network=dict(type='str', required=False),
         network_group=dict(type='str', required=False),
         credentials=dict(type='path', required=False),
-        token=dict(type='str', required=False),
+        session=dict(type='dict', required=False),
         inventory=dict(type='bool', required=False, default=False),
         proxy=dict(type='str', required=False)
     )
@@ -147,11 +135,22 @@ def run_module():
     # part where your module will do what it needs to do)
     result['original_message'] = module.params
 
-    session = Session(
-        credentials=module.params['credentials'] if module.params['credentials'] is not None else None,
-        token=module.params['token'] if module.params['token'] is not None else None,
-        proxy=module.params['proxy']
-    )
+#    import epdb; epdb.serve()
+
+    if module.params['session'] is not None:
+        session = Session(**module.params['session'])
+    elif module.params['credentials'] is not None:
+        session = Session(
+            credentials=module.params['credentials'],
+            proxy=module.params['proxy']
+        )
+    renewal = {
+        "credentials": session.credentials,
+        "token": session.token,
+        "proxy": session.proxy
+    }
+    result['session'] = renewal
+
     # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
     organization = Organization(session)
 
@@ -162,19 +161,14 @@ def run_module():
         try: UUID(module.params['network'], version=4)
         except ValueError: network_name = module.params['network']
         else: network_id = module.params['network']
-
         network = Network(
             session, 
             network_id=network_id if network_id else None,
             network_name=network_name if network_name else None,
         )
-
         result['network'] = {
             **network.describe, 
-            **{
-                "token": session.token,
-                "proxy": module.params['proxy']
-            }
+            "session": renewal
         }
 
         if module.params['inventory']:
@@ -212,16 +206,12 @@ def run_module():
     #  subsequent modules e.g. netfoundry_endpoint
     result['organization'] = {
         **organization.describe, 
-        **{
-            "token": session.token,
-            "proxy": module.params['proxy']
-        }}
+        "session": renewal
+    }
     result['network_group'] = {
         **network_group.describe,
-        **{
-            "token": session.token,
-            "proxy": module.params['proxy']
-        }}
+        "session": renewal
+    }
     
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results

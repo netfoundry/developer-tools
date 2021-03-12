@@ -72,6 +72,10 @@ options:
         description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
         type: dict
+    edge_router_attributes:
+        description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this Service.
+        required: false
+        type: list
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -147,6 +151,7 @@ def run_module():
         serverPortRange=dict(type='int', required=False),
         serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
+        edge_router_attributes=dict(type='list', elements='str', required=False, default=["#all"]),
     )
 
     # seed the result dict in the object
@@ -178,9 +183,14 @@ def run_module():
     # part where your module will do what it needs to do)
 
     session = Session(
-        token=module.params['network']['token'],
-        proxy=module.params['network']['proxy']
+        **module.params['network']['session']
     )
+
+    result['session'] = {
+        "token": session.token,
+        "credentials": session.credentials,
+        "proxy": session.proxy
+    }
 
     # instantiate some utility methods like snake(), camel() for translating styles
     utility = Utility()
@@ -190,6 +200,7 @@ def run_module():
     service_properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
+        "edge_router_attributes": module.params['edge_router_attributes'],
         "client_host_name": module.params['clientHostName'],
         "client_port_range": module.params['clientPortRange'],
         "server_host_name": module.params['serverHostName'],
@@ -209,8 +220,17 @@ def run_module():
     elif not module.params['state'] == "DELETED":
         raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
 
+    # check if UUIDv4
+    try: UUID(module.params['name'], version=4)
+    except ValueError:
+        # else assume is a Service name
+        found = network.get_resources(type="services",name=module.params['name'])
+    # it's a UUID and so we assign the property directly
+    else: 
+        found = [network.get_resource(type="service",id=module.params['name'])]
     # discover any existing Services with the specified name
-    found = network.get_resources(type="services",name=module.params['name'])
+#    import epdb; epdb.serve()
+
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
             result['message'] = network.create_service(**service_properties)

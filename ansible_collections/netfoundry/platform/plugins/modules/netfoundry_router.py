@@ -199,9 +199,14 @@ def run_module():
     # part where your module will do what it needs to do)
 
     session = Session(
-        token=module.params['network']['token'],
-        proxy=module.params['network']['proxy']
+        **module.params['network']['session']
     )
+
+    result['session'] = {
+        "token": session.token,
+        "credentials": session.credentials,
+        "proxy": session.proxy
+    }
 
     # instantiate some utility methods like snake(), camel() for translating styles
     utility = Utility()
@@ -243,6 +248,7 @@ def run_module():
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
+            module.exit_json(**result)
     elif len(found) == 1:
         router = found[0]
         if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
@@ -268,7 +274,10 @@ def run_module():
             try: result['message'] = network.delete_resource(type="edge-router",id=router['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            result['changed'] = True
+            else:
+                result['changed'] = True
+                module.exit_json(**result)
+
     else:
         module.fail_json(msg='ERROR: "{name}" matched more than one Edge Router'.format(name=module.params['name']), **result)
 

@@ -112,6 +112,7 @@ def run_module():
         name=dict(type='str', required=True),
         network_group=dict(type='dict', required=True),
         datacenter=dict(type='str', required=False),
+        version=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "DELETING", "DELETED"]),
         size=dict(type='str', required=False, default="small", choices=["small","medium","large"]),
         wait=dict(type='int', required=False, default=1200),
@@ -149,9 +150,14 @@ def run_module():
     result['original_message'] = module.params
 
     session = Session(
-        token=module.params['network_group']['token'],
-        proxy=module.params['network_group']['proxy']
+        **module.params['network_group']['session']
     )
+
+    result['session'] = {
+        "token": session.token,
+        "credentials": session.credentials,
+        "proxy": session.proxy
+    }
     # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
     organization = Organization(session)
 
@@ -169,6 +175,8 @@ def run_module():
         "name": module.params['name'],
         "size": module.params['size']
     }
+    if module.params['version']:
+        properties['version'] = module.params['version']
 
     # if datacenter arg is given we need to know if the string is a UUID (datacenter ID) or the name of
     # a datacenter (location code e.g. eu-west-2)
