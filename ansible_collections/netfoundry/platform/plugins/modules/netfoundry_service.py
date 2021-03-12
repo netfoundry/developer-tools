@@ -151,7 +151,7 @@ def run_module():
         serverPortRange=dict(type='int', required=False),
         serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
-        edge_router_attributes=dict(type='list', elements='str', required=False, default=["#all"]),
+        edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
     )
 
     # seed the result dict in the object
@@ -200,7 +200,7 @@ def run_module():
     service_properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
-        "edge_router_attributes": module.params['edge_router_attributes'],
+        "edge_router_attributes": module.params['edgeRouterAttributes'],
         "client_host_name": module.params['clientHostName'],
         "client_port_range": module.params['clientPortRange'],
         "server_host_name": module.params['serverHostName'],
@@ -240,12 +240,12 @@ def run_module():
     elif len(found) == 1:
         service = found[0]
         if module.params['state'] == "PROVISIONED":
-            for key in service.keys():
-                # if there's an exact match for the existing property in service_properties then replace it
-                if utility.snake(key) in service_properties.keys():
-                    service[key] = service_properties[utility.snake(key)]
-            result['message'] = network.patch_resource(service)
-            result['changed'] = True
+            try:
+                network.delete_resource(type="service",id=service['id'])
+                result['message'] = network.create_service(**service_properties)
+            except Exception as e:
+                raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+            else: result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: network.delete_resource(type="service",id=service['id'])
             except Exception as e:
