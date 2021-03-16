@@ -20,16 +20,12 @@ options:
         description: The name or UUID of the Network to use or describe.
         required: false
         type: str
-    network_group:
-        description: The name or UUID of the Network Group to use. This is not typically necessary unless ambiguous becuase the Network does not yet exist and there is more than one Group.
-        required: false
-        type: str
     credentials:
         description: Path to API account credentials JSON file relative to playbook directory. Overrides default environment variables and file paths described in https://developer.netfoundry.io/guides/authentication/
         required: false
         type: path
     session:
-        description: session object from netfoundry_info.session may be used to continue using an existing session instead of creating a new session with `credentials`
+        description: session object from netfoundry_info.session may be used to continue using an existing session instead of creating a new session with `credentials`, `organization`, `network_group`
         required: false
         type: str
     inventory:
@@ -37,6 +33,14 @@ options:
         required: false
         default: false
         type: bool
+    organization:
+        description: optional name or UUID of the identity Organization to use. This is not typically necessary because there is normally only one Organization, that of the caller's identity.
+        required: false
+        type: str
+    network_group:
+        description: optional name or UUID of the Network Group to use. This is not typically necessary because there is normally only one Group.
+        required: false
+        type: str
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -72,7 +76,6 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-# These are examples of possible return values, and in general should use other names for return values.
 original_message:
     description: The original name param that was passed in.
     type: str
@@ -86,11 +89,11 @@ message:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
-from ansible.errors import AnsibleError
-from netfoundry import Session
+#from ansible.errors import AnsibleError
 from netfoundry import Organization
 from netfoundry import NetworkGroup
 from netfoundry import Network
+#from netfoundry import Utility
 from uuid import UUID
 
 def run_module():
@@ -98,6 +101,7 @@ def run_module():
     module_args = dict(
         network=dict(type='str', required=False),
         network_group=dict(type='str', required=False),
+        organization=dict(type='str', required=False),
         credentials=dict(type='path', required=False),
         session=dict(type='dict', required=False),
         inventory=dict(type='bool', required=False, default=False),
@@ -135,24 +139,27 @@ def run_module():
     # part where your module will do what it needs to do)
     result['original_message'] = module.params
 
-#    import epdb; epdb.serve()
-
     if module.params['session'] is not None:
-        session = Session(**module.params['session'])
+        organization = Organization(**module.params['session'])
     elif module.params['credentials'] is not None:
-        session = Session(
+        organization = Organization(
             credentials=module.params['credentials'],
+            organization_label=module.params['organization'] if 'organization' in module.params else None,
             proxy=module.params['proxy']
         )
     renewal = {
-        "credentials": session.credentials,
-        "token": session.token,
-        "proxy": session.proxy
+        "credentials": organization.credentials,
+        "token": organization.token,
+        "proxy": organization.proxy,
+        "organization_id": organization.id
     }
     result['session'] = renewal
 
-    # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
-    organization = Organization(session)
+    # use some Network Group, default is to use the first and there's typically only one
+    network_group = NetworkGroup(
+        organization,
+        network_group_name=module.params['network_group'] if 'network_group' in module.params else None
+    )
 
     if module.params['network']:
         network_id = None
@@ -162,7 +169,7 @@ def run_module():
         except ValueError: network_name = module.params['network']
         else: network_id = module.params['network']
         network = Network(
-            session, 
+            network_group,
             network_id=network_id if network_id else None,
             network_name=network_name if network_name else None,
         )
@@ -179,6 +186,7 @@ def run_module():
             result['customer_edge_routers'] = network.edge_routers(only_customer=True)
             result['edge_router_policies'] = network.edge_router_policies()
             result['app_wans'] = network.app_wans()
+            result['posture_checks'] = network.posture_checks()
             result['data_centers'] = network.get_edge_router_data_centers()
 
         # use the Network Group of the specified Network

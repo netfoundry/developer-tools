@@ -99,11 +99,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.module_utils._text import to_native
 from ansible.errors import AnsibleError
-from netfoundry import Session
-from netfoundry import Utility
 from netfoundry import Organization
 from netfoundry import NetworkGroup
 from netfoundry import Network
+from netfoundry import Utility
 from uuid import UUID
 
 def run_module():
@@ -149,26 +148,24 @@ def run_module():
     # part where your module will do what it needs to do)
     result['original_message'] = module.params
 
-    session = Session(
+    organization = Organization(
         **module.params['network_group']['session']
     )
 
     result['session'] = {
-        "token": session.token,
-        "credentials": session.credentials,
-        "proxy": session.proxy
+        "token": organization.token,
+        "credentials": organization.credentials,
+        "proxy": organization.proxy,
+        "organization_id": organization.id
     }
-    # yields a list of Network Groups in Organization.networkGroups[], but there's typically only one group
-    organization = Organization(session)
+
+    # instantiate some utility methods like snake(), camel() for translating styles
+    utility = Utility()
 
     network_group = NetworkGroup(
         organization,
         network_group_id=module.params['network_group']['id']
     )
-
-    # instantiate some utility methods like snake(), camel() for translating styles
-    utility = Utility()
-
 
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
@@ -239,8 +236,7 @@ def run_module():
     # if wait
     if module.params['wait'] > 0:
 
-#        import epdb; epdb.serve()
-        network = Network(session, network_id=result['message']['id'])
+        network = Network(network_group, network_id=result['message']['id'])
 
         # if waiting for status then wait or timeout
         if module.params['state'] == "DELETED":

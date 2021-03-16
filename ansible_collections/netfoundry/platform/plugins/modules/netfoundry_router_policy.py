@@ -81,10 +81,11 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
-from netfoundry import Session
+from netfoundry import Organization
+from netfoundry import NetworkGroup
 from netfoundry import Network
 from netfoundry import Utility
-from uuid import UUID
+#from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -124,20 +125,26 @@ def run_module():
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
 
-    session = Session(
+    organization = Organization(
         **module.params['network']['session']
     )
 
     result['session'] = {
-        "token": session.token,
-        "credentials": session.credentials,
-        "proxy": session.proxy
+        "token": organization.token,
+        "credentials": organization.credentials,
+        "proxy": organization.proxy,
+        "organization_id": organization.id
     }
 
     # instantiate some utility methods like snake(), camel() for translating styles
     utility = Utility()
 
-    network = Network(session, network_id=module.params['network']['id'])
+    network_group = NetworkGroup(
+        organization,
+        network_group_id=module.params['network']['networkGroupId']
+    )
+
+    network = Network(network_group, network_id=module.params['network']['id'])
 
     endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
     router_names = [router['name'] for router in network.edge_routers()]
