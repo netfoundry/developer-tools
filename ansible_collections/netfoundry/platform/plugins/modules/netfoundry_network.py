@@ -172,7 +172,7 @@ def run_module():
         "name": module.params['name'],
         "size": module.params['size']
     }
-    if module.params['version']:
+    if module.params['version'] and not module.params['version'] in ["default","Default","DEFAULT","None","null",""]:
         properties['version'] = module.params['version']
 
     # if datacenter arg is given we need to know if the string is a UUID (datacenter ID) or the name of
