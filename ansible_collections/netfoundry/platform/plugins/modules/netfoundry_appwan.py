@@ -144,11 +144,20 @@ def run_module():
         network_group_id=module.params['network']['networkGroupId']
     )
 
+#    import epdb; epdb.serve()
     network = Network(network_group, network_id=module.params['network']['id'])
-
-    endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
-    service_names = [service['name'] for service in network.services()]
-    posture_names = [posture['name'] for posture in network.posture_checks()]
+    if "endpoints" in module.params['network']:
+        endpoint_names = [endpoint['name'] for endpoint in module.params['network']['endpoints']]
+    else:
+        endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
+    if "services" in module.params['network']:
+        service_names = [service['name'] for service in module.params['network']['services']]
+    else:
+        service_names = [service['name'] for service in network.services()]
+    if "posture_checks" in module.params['network']:
+        posture_names = [posture['name'] for posture in module.params['network']['posture_checks']]
+    else:
+        posture_names = [posture['name'] for posture in network.posture_checks()]
 
     properties = {
         "name": module.params['name'],
@@ -174,7 +183,7 @@ def run_module():
         for role in properties["posture_check_attributes"]:
             # check if @mention
             if role[0:1] == '@':
-                if not role[1:] in service_names:
+                if not role[1:] in posture_names:
                     raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
 
     # find AppWAN with the specified name

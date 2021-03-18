@@ -234,14 +234,29 @@ def run_module():
     # a datacenter location (location code)
     if module.params['datacenter']:
         datacenter = module.params['datacenter']
+        provider = module.params['provider']
         # check if UUIDv4
         try: UUID(datacenter, version=4)
         except ValueError:
             # else assume is a location code and resolve to ID
             try:
-                properties['data_center_id'] = network.get_edge_router_data_centers(provider=module.params['provider'],location_code=datacenter)[0]['id']
+                if 'data_centers' in module.params['network']:
+                    provider_data_centers = [dc for dc in module.params['network']['data_centers'] if dc['provider'] == provider]
+                else:
+                    # else try to find the matching name+provider pair in the API
+                    provider_data_centers = network.get_edge_router_data_centers(provider=provider)
+
+                # try to find a matching datacenter name (locationCode) and provider pair if the datacenter inventory was included with the network param
+                dc_matches = [dc for dc in provider_data_centers if dc['locationCode'] == datacenter]
+                properties['data_center_id'] = dc_matches[0]['id']
             except Exception as e:
-                raise AnsibleError('Failed to find an exact match for datacenter location code "{}". Caught exception: {}'.format(datacenter, to_native(e)))
+                raise AnsibleError(
+                    'Failed to find exactly one datacenter "{datacenter}". Caught exception: {exception}. Valid datacenter names for {provider} are "{provider_data_centers}"'.format(
+                        datacenter=datacenter,
+                        provider=provider, 
+                        exception=to_native(e),
+                        provider_data_centers=[dc['locationCode'] for dc in provider_data_centers],
+                    ))
         # it's a UUID and so we assign the property directly
         else: properties['data_center_id'] = datacenter
 

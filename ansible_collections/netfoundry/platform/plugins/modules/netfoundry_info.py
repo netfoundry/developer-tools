@@ -175,19 +175,19 @@ def run_module():
         )
         result['network'] = {
             **network.describe, 
-            "session": renewal
+            'data_centers': network.get_edge_router_data_centers(),
+            'session': renewal,
         }
 
         if module.params['inventory']:
             # optionally perform expensive inventory operations
-            result['endpoints'] = network.endpoints()
-            result['services'] = network.services()
-            result['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
-            result['customer_edge_routers'] = network.edge_routers(only_customer=True)
-            result['edge_router_policies'] = network.edge_router_policies()
-            result['app_wans'] = network.app_wans()
-            result['posture_checks'] = network.posture_checks()
-            result['data_centers'] = network.get_edge_router_data_centers()
+            result['network']['endpoints'] = network.endpoints()
+            result['network']['services'] = network.services()
+            result['network']['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
+            result['network']['customer_edge_routers'] = network.edge_routers(only_customer=True)
+            result['network']['edge_router_policies'] = network.edge_router_policies()
+            result['network']['app_wans'] = network.app_wans()
+            result['network']['posture_checks'] = network.posture_checks()
 
         # use the Network Group of the specified Network
         network_group = NetworkGroup(organization, network_group_id=network.network_group_id)
