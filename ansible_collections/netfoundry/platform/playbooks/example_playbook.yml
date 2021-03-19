@@ -1,6 +1,6 @@
 
 - hosts: localhost
-
+  gather_facts: no
   collections:
     - netfoundry.platform
     - community.general
@@ -18,6 +18,9 @@
       datacenter: ap-south-1
       state: PROVISIONING
       network_group: "{{ netfoundry_organization.network_group }}"
+
+  # HINT: background tasks are completely optional and may save time by performing other operations in parallel that
+  #  do not depend on the background task. You may instead require state=PROVISIONED to block until the task is complete.
 
   - name: Watch for Network status in the background
     netfoundry_network:
