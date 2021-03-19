@@ -1,8 +1,25 @@
 # Ansible Collection - netfoundry.platform
 
+## Before You Begin
+
+Install [the NetFoundry Python module](/guides/python).
+
 ```bash
-# read about the info module
+# for example, to install latest in HOME
+pip3 install netfoundry --user --upgrade
+```
+
+## Built-in Documentation
+
+Explanation of module parameters with practical examples
+
+```bash
+# install collection
+ansible-galaxy collection install netfoundry.platform
+# read about the Info module
 ansible-doc netfoundry.platform.netfoundry_info
+# read about the Network module
+ansible-doc netfoundry.platform.netfoundry_network
 # read about the Endpoint module
 ansible-doc netfoundry.platform.netfoundry_endpoint
 # read about the Service module

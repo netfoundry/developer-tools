@@ -80,10 +80,11 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
-from netfoundry import Session
+from netfoundry import Organization
+from netfoundry import NetworkGroup
 from netfoundry import Network
 from netfoundry import Utility
-from uuid import UUID
+#from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -124,24 +125,39 @@ def run_module():
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
 
-    session = Session(
+    organization = Organization(
         **module.params['network']['session']
     )
 
     result['session'] = {
-        "token": session.token,
-        "credentials": session.credentials,
-        "proxy": session.proxy
+        "token": organization.token,
+        "credentials": organization.credentials,
+        "proxy": organization.proxy,
+        "organization_id": organization.id
     }
 
     # instantiate some utility methods like snake(), camel() for translating styles
     utility = Utility()
 
-    network = Network(session, network_id=module.params['network']['id'])
+    network_group = NetworkGroup(
+        organization,
+        network_group_id=module.params['network']['networkGroupId']
+    )
 
-    endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
-    service_names = [service['name'] for service in network.services()]
-    posture_names = [posture['name'] for posture in network.posture_checks()]
+#    import epdb; epdb.serve()
+    network = Network(network_group, network_id=module.params['network']['id'])
+    if "endpoints" in module.params['network']:
+        endpoint_names = [endpoint['name'] for endpoint in module.params['network']['endpoints']]
+    else:
+        endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
+    if "services" in module.params['network']:
+        service_names = [service['name'] for service in module.params['network']['services']]
+    else:
+        service_names = [service['name'] for service in network.services()]
+    if "posture_checks" in module.params['network']:
+        posture_names = [posture['name'] for posture in module.params['network']['posture_checks']]
+    else:
+        posture_names = [posture['name'] for posture in network.posture_checks()]
 
     properties = {
         "name": module.params['name'],
@@ -167,7 +183,7 @@ def run_module():
         for role in properties["posture_check_attributes"]:
             # check if @mention
             if role[0:1] == '@':
-                if not role[1:] in service_names:
+                if not role[1:] in posture_names:
                     raise AnsibleError('Failed to find a Posture Check named "{}".'.format(role[1:]))
 
     # find AppWAN with the specified name

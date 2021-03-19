@@ -81,8 +81,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
-from netfoundry import Session
+from netfoundry import Organization
+from netfoundry import NetworkGroup
 from netfoundry import Network
+#from netfoundry import Utility
 from os import path as Path
 from os import mkdir as mkdir
 from pathlib import Path as PathLib
@@ -125,17 +127,26 @@ def run_module():
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
 
-    session = Session(
+    organization = Organization(
         **module.params['network']['session']
     )
 
     result['session'] = {
-        "token": session.token,
-        "credentials": session.credentials,
-        "proxy": session.proxy
+        "token": organization.token,
+        "credentials": organization.credentials,
+        "proxy": organization.proxy,
+        "organization_id": organization.id
     }
 
-    network = Network(session, network_id=module.params['network']['id'])
+    # instantiate some utility methods like snake(), camel() for translating styles
+#    utility = Utility()
+
+    network_group = NetworkGroup(
+        organization,
+        network_group_id=module.params['network']['networkGroupId']
+    )
+
+    network = Network(network_group, network_id=module.params['network']['id'])
 
     found = network.get_resources(type="endpoints",name=module.params['name'])
     if len(found) == 0:
