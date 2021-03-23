@@ -8,13 +8,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_service
+module: netfoundry_endpoint_service
 
-short_description: Create, update, or delete a Service
+short_description: Create, update, or delete an Endpoint-hosted Service
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.3.0"
+version_added: "1.10.0"
 
 description: Create and update always have result=changed
 
@@ -24,7 +24,7 @@ options:
         required: true
         type: str
     attributes:
-        description: A list of Service role attributes prefixed with a \#hash mark.
+        description: A list of Service role attributes prefixed with a \#hash mark to be matched by an AppWAN
         required: false
         type: list
     state:
@@ -33,38 +33,40 @@ options:
         type: str
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
-    clientHostName:
-        description: the domain name (DNS) to intercept
-        required: false
-        type: str
-    clientPort:
-        description: the port number to intercept
-        type: int
-        required: false
-    endpoints:
-        description: a list of Endpoint names, role attributes, or UUIDs to host this Service
+    clientHostNames:
+        description: the domain names (DNS) and IPv4s to intercept
+        required: true
         type: list
-        required: false
-    egressRouter:
-        description: use the Edge Router hosting strategy; specify a name or UUIDv4
-        type: str
-        required: false
-    serverHostName:
-        description: the domain name (DNS) or IPv4 of the server that is reachable by the hosting Endpoint or Edge Router
-        type: str
-        required: false
-    serverPort:
-        description: the listening port of the server that is reachable by the hosting Endpoint or Edge Router
-        type: int
-        required: false
-    serverProtocol:
-        description: the transport protocol used by the server
+    clientPortRanges:
+        description: the port ranges to intercept e.g. [80, "88:99"]
+        type: list
+        required: true
+    clientProtocols:
+        description: the transport protocol to intercept. TCP is default.
         type: str
         required: false
         default: TCP
-        choices: ["TCP","UDP"]
+        choices: ["TCP","UDP", "SCTP]
+    endpoints:
+        description: a list of Endpoint names, role attributes, or UUIDs to host this Service
+        type: list
+        required: true
+    serverHostName:
+        description: optional domain name (DNS) or IPv4 of the server that is reachable by the hosting Endpoint. Client intercept address is default.
+        type: str
+        required: false
+    serverPortRange:
+        description: the listening port of the server that is reachable by the hosting Endpoint. Client intercept port is default.
+        type: int
+        required: false
+    serverProtocol:
+        description: the transport protocol expected by the server. Client intercept protocol is default.
+        type: str
+        required: false
+        default: TCP
+        choices: ["TCP","UDP", "SCTP]
     encryptionRequired:
-        description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint or Edge Router or SDK
+        description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint
         type: bool
         required: false
         default: true
@@ -73,7 +75,7 @@ options:
         required: true
         type: dict
     edge_router_attributes:
-        description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this Service.
+        description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this Service. Default is ["#all"].
         required: false
         type: list
 
@@ -85,34 +87,39 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: host a Service with a round-robin of Endpoints running on Linux servers
-    netfoundry_service:
-        name: SSO Portal
+  - name: host a Service as a range of server ports
+    netfoundry_endpoint_service:
+        name: Spice Terminal Servers
+        attributes:
+        - "#workFromAnywhere/"
+        clientHostNames:
+        - spice-console.example.com # this matches the SSL server certificate
+        clientPortRanges:
+        - 5900:5999
+        endpoints:
+        - americas-datacenter-centos12
+        - americas-datacenter-centos13
         network: "{{ netfoundry_info.network }}"
+# notably, argument `serverHostName` is omitted because the Endpoints will use the same address from clientHostNames to reach the server.
+
+  - name: host a Service with a round-robin of Endpoints
+    netfoundry_endpoint_service:
+        name: SSO Portal
         attributes:
         - "#allEmployees"
-        clientHostName: portal.example.com # this matches the SSL server certificate
-        clientPort: 443
+        clientHostNames:
+        - portal.example.com # this matches the SSL server certificate
+        clientPortRanges:
+        - 443
         endpoints:
         - americas-datacenter-centos12
         - americas-datacenter-centos13
         serverHostName: portal-load-balancer.internal.example.com
-        serverPort: 1443
-
-  - name: host a Service with an Edge Router running on the NetFoundry VM configured as a "bastion" host
-    netfoundry_service:
-        name: Finance Portal
+        serverPortRange: 1443
         network: "{{ netfoundry_info.network }}"
-        attributes:
-        - "#accounting"
-        clientHostName: finance.example.com # this matches the SSL server certificate
-        clientPort: 443
-        egressRouter: finance-bastion11
-        serverHostName: portal-load-balancer.finance.internal.example.com
-        serverPort: 18443
 
   - name: Delete all Services
-    netfoundry_service:
+    netfoundry_endpoint_service:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"
@@ -145,12 +152,12 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
         clientHostName=dict(type='str', required=False),
-        clientPort=dict(type='int', required=False),
+        clientPortRange=dict(type='int', required=False),
+        clientProtocols=dict(type='str', required=False, default="TCP", choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
         endpoints=dict(type='list', elements='str', required=False),
-        egressRouter=dict(type='str', required=False),
         serverHostName=dict(type='str', required=False),
-        serverPort=dict(type='int', required=False),
-        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
+        serverPortRange=dict(type='int', required=False),
+        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
         edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
     )
@@ -208,24 +215,14 @@ def run_module():
         "name": module.params['name'],
         "attributes": module.params['attributes'],
         "edge_router_attributes": module.params['edgeRouterAttributes'],
-        "client_host_name": module.params['clientHostName'],
-        "client_port": module.params['clientPort'],
+        "client_host_names": module.params['clientHostName'],
+        "client_port_ranges": module.params['clientPortRange'],
         "server_host_name": module.params['serverHostName'],
-        "server_port": module.params['serverPort'],
+        "server_port_range": module.params['serverPortRange'],
         "server_protocol": module.params['serverProtocol'],
         "encryption_required": module.params['encryptionRequired'],
+        "endpoints": module.params['endpoints']
     }
-
-    if module.params['endpoints'] and module.params['egressRouter']:
-        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
-    elif module.params['endpoints']:
-        service_properties['egress_router_id'] = None
-        service_properties['endpoints'] = module.params['endpoints']
-    elif module.params['egressRouter']:
-        service_properties['endpoints'] = []
-        service_properties["egress_router_id"] = module.params['egressRouter']
-    elif not module.params['state'] == "DELETED":
-        raise AnsibleError('You must specify one of "endpoints" (list) or "egressRouter" (str)')
 
     # check if UUIDv4
     try: UUID(module.params['name'], version=4)
@@ -240,7 +237,7 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_service(**service_properties)
+            result['message'] = network.create_endpoint_service(**service_properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -249,7 +246,7 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             try:
                 network.delete_resource(type="service",id=service['id'])
-                result['message'] = network.create_service(**service_properties)
+                result['message'] = network.create_endpoint_service(**service_properties)
             except Exception as e:
                 raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
