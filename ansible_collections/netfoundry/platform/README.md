@@ -5,9 +5,13 @@
 Install [the NetFoundry Python module](/guides/python).
 
 ```bash
-# for example, to install latest in HOME
-pip3 install netfoundry --user --upgrade
+pip install netfoundry
 ```
+
+## Ansible User Guide
+
+[NetFoundry API Developer Portal](https://developer.netfoundry.io/guides/ansible).
+
 
 ## Built-in Documentation
 
@@ -33,5 +37,3 @@ ansible-doc netfoundry.platform.netfoundry_router_policy
 ```
 
 For more examples please see [the playbook included in the collection](https://github.com/netfoundry/developer-tools/blob/master/ansible_collections/netfoundry/platform/playbooks/example_playbook.yml). The default install path for this file is ~/.ansible/collections/ansible_collections/netfoundry/platform/playbooks/example_playbook.yml.
-
-Discover more tools in [the Developer Portal](https://developer.netfoundry.io/guides/ansible).

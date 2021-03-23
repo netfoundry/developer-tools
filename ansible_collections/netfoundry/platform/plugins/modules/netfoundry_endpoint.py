@@ -31,6 +31,10 @@ options:
         description: Path to directory or file named like *.jwt in which to save the enrollment one-time-token JWT. If a directory is specified then it will be created if necessary and the filename will be that of the Endpoint, including whitespace, and must have filename suffix *.jwt.
         required: false
         type: path
+    sessionIdentity:
+        description: UUID of an identity that must maintain a concurrent web console session in order for this Endpoint to remain active
+        required: false
+        type: str
     state:
         description: The desired state.
         required: false
@@ -96,6 +100,7 @@ def run_module():
         attributes=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         dest=dict(type='path', required=False, default=None),
+        sessionIdentity=dict(type='str', required=False, default=None),
         network=dict(type='dict', required=True)
     )
 
@@ -151,7 +156,7 @@ def run_module():
     found = network.get_resources(type="endpoints",name=module.params['name'])
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'])
+            result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'],session_identity=module.params['sessionIdentity'])
             result['changed'] = True
             if module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
