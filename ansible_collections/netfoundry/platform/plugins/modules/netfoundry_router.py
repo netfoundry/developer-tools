@@ -286,8 +286,9 @@ def run_module():
             for key in router.keys():
                 # if there's an exact match for the existing property in
                 # our override properties then replace it before patching
-                if utility.snake(key) in properties.keys():
-                    router[key] = properties[utility.snake(key)]
+                snake_key = utility.snake(camel_str=key)
+                if snake_key in properties.keys():
+                    router[key] = properties[snake_key]
             try: result['message'] = network.patch_resource(router)
             except Exception as e:
                 raise AnsibleError('Failed to update Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
