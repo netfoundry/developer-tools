@@ -145,11 +145,11 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
         clientHostName=dict(type='str', required=False),
-        clientPort=dict(type='int', required=False),
+        clientPort=dict(type='int', required=False, aliases=["clientPortRange"]),
         endpoints=dict(type='list', elements='str', required=False),
         egressRouter=dict(type='str', required=False),
         serverHostName=dict(type='str', required=False),
-        serverPort=dict(type='int', required=False),
+        serverPort=dict(type='int', required=False, aliases=["serverPortRange"]),
         serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
         edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
@@ -171,6 +171,12 @@ def run_module():
     # supports check mode
     module = AnsibleModule(
         argument_spec=module_args,
+        mutually_exclusive=[
+            ('endpoints', 'egressRouter'),
+        ],
+        required_one_of=[
+            ('endpoints', 'egressRouter'),
+        ],
         supports_check_mode=True
     )
 
