@@ -38,15 +38,15 @@ options:
         required: true
         type: list
     clientPortRanges:
-        description: the port ranges to intercept e.g. [80, "88:99"]
+        description: port ranges to intercept e.g. ["80", "88:99"] as strings
         type: list
         required: true
     clientProtocols:
         description: the transport protocol to intercept. TCP is default.
         type: str
         required: false
-        default: TCP
-        choices: ["TCP","UDP", "SCTP]
+        default: tcp
+        choices: ["tcp","udp", "sctp"]
     endpoints:
         description: a list of Endpoint names, role attributes, or UUIDs to host this Service
         type: list
@@ -55,7 +55,7 @@ options:
         description: optional domain name (DNS) or IPv4 of the server that is reachable by the hosting Endpoint. Client intercept address is default.
         type: str
         required: false
-    serverPortRange:
+    serverPort:
         description: the listening port of the server that is reachable by the hosting Endpoint. Client intercept port is default.
         type: int
         required: false
@@ -63,8 +63,8 @@ options:
         description: the transport protocol expected by the server. Client intercept protocol is default.
         type: str
         required: false
-        default: TCP
-        choices: ["TCP","UDP", "SCTP]
+        default: same as intercept
+        choices: ["tcp","udp", "sctp"]
     encryptionRequired:
         description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint
         type: bool
@@ -115,7 +115,7 @@ EXAMPLES = r'''
         - americas-datacenter-centos12
         - americas-datacenter-centos13
         serverHostName: portal-load-balancer.internal.example.com
-        serverPortRange: 1443
+        serverPort: 1443
         network: "{{ netfoundry_info.network }}"
 
   - name: Delete all Services
@@ -141,25 +141,25 @@ from ansible.module_utils._text import to_native
 from netfoundry import Organization
 from netfoundry import NetworkGroup
 from netfoundry import Network
-#from netfoundry import Utility
+from netfoundry import Utility
 from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        attributes=dict(type='list', elements='str', required=False, default=[]),
+        attributes=dict(type='list', elements='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
-        clientHostName=dict(type='str', required=False),
-        clientPortRange=dict(type='int', required=False),
-        clientProtocols=dict(type='str', required=False, default="TCP", choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
-        endpoints=dict(type='list', elements='str', required=False),
+        clientHostNames=dict(type='list', elements='str', required=True),
+        clientPortRanges=dict(type='list', elements='str', required=True),
+        clientProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
+        endpoints=dict(type='list', elements='str', required=True),
         serverHostName=dict(type='str', required=False),
-        serverPortRange=dict(type='int', required=False),
-        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
-        encryptionRequired=dict(type='bool', required=False, default=True),
-        edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
+        serverPort=dict(type='int', required=False),
+        serverProtocol=dict(type='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
+        encryptionRequired=dict(type='bool', required=False),
+        edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
 
     # seed the result dict in the object
@@ -202,7 +202,7 @@ def run_module():
     }
 
     # instantiate some utility methods like snake(), camel() for translating styles
-#    utility = Utility()
+    utility = Utility()
 
     network_group = NetworkGroup(
         organization,
@@ -211,18 +211,27 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    service_properties = {
-        "name": module.params['name'],
-        "attributes": module.params['attributes'],
-        "edge_router_attributes": module.params['edgeRouterAttributes'],
-        "client_host_names": module.params['clientHostName'],
-        "client_port_ranges": module.params['clientPortRange'],
-        "server_host_name": module.params['serverHostName'],
-        "server_port_range": module.params['serverPortRange'],
-        "server_protocol": module.params['serverProtocol'],
-        "encryption_required": module.params['encryptionRequired'],
-        "endpoints": module.params['endpoints']
-    }
+    expected_properties = [
+        "name",
+        "attributes",
+        "edge_router_attributes",
+        "client_host_names",
+        "client_port_ranges",
+        "client_protocols",
+        "server_host_name",
+        "server_port",
+        "server_protocol",
+        "encryption_required",
+        "endpoints",
+    ]
+
+    # compose a dictionary of valid properties from the intersection of module params and expected properties
+    # method: normalize the camel-case module arg keys for comparison with snake-case expected properties
+    valid_properties = dict()
+    for prop in expected_properties:
+        camel_key = utility.camel(snake_str=prop)
+        if camel_key in module.params.keys() and module.params[camel_key]:
+            valid_properties[prop] = module.params[camel_key]
 
     # check if UUIDv4
     try: UUID(module.params['name'], version=4)
@@ -237,7 +246,7 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint_service(**service_properties)
+            result['message'] = network.create_endpoint_service(**valid_properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -246,7 +255,7 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             try:
                 network.delete_resource(type="service",id=service['id'])
-                result['message'] = network.create_endpoint_service(**service_properties)
+                result['message'] = network.create_endpoint_service(**valid_properties)
             except Exception as e:
                 raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
