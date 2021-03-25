@@ -8,6 +8,14 @@ Install [the NetFoundry Python module](/guides/python).
 pip install netfoundry
 ```
 
+Ensure you have the latest release of the collection.
+
+```bash
+# you must first delete the collection and then install to effect an "upgrade"
+rm -rf ~/.ansible/collections/ansible_collections/netfoundry/platform && \
+  ansible-galaxy collection install --force-with-deps netfoundry.platform
+```
+
 ## Ansible User Guide
 
 [NetFoundry API Developer Portal](https://developer.netfoundry.io/guides/ansible).

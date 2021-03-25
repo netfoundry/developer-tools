@@ -174,9 +174,6 @@ def run_module():
         mutually_exclusive=[
             ('endpoints', 'egressRouter'),
         ],
-        required_one_of=[
-            ('endpoints', 'egressRouter'),
-        ],
         supports_check_mode=True
     )
 
