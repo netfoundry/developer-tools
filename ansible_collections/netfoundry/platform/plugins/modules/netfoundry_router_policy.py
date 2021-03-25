@@ -182,8 +182,9 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             for key in router_policy.keys():
                 # if there's an exact match for the existing property in properties then replace it
-                if utility.snake(key) in properties.keys():
-                    router_policy[key] = properties[utility.snake(key)]
+                snake_key = utility.snake(camel_str=key)
+                if snake_key in properties.keys():
+                    router_policy[key] = properties[snake_key]
             result['message'] = network.patch_resource(router_policy)
             result['changed'] = True
         elif module.params['state'] == "DELETED":

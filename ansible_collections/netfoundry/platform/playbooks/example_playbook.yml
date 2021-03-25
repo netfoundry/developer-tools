@@ -95,7 +95,7 @@
       clientHostName: echo-exit.netfoundry
       clientPortRange: 80
       serverHostName: eth0.me
-      serverPortRange: 80
+      serverPort: 80
       serverProtocol: TCP
 
   - name: host a server port range as an array of Services
@@ -108,7 +108,7 @@
       endpoints: 
       - Exit1
       serverHostName: 192.168.0.188
-      serverPortRange: "{{ item|int }}"
+      serverPort: "{{ item|int }}"
       serverProtocol: TCP
     with_sequence: 5900-5919
     register: spice_loop
@@ -137,7 +137,7 @@
       clientPortRange: "{{ item.port }}"
       egressRouter: "{{ item.egressRouterName }}"
       serverHostName: "{{ item.serverHostName }}"
-      serverPortRange: "{{ item.port }}"
+      serverPort: "{{ item.port }}"
       serverProtocol: TCP
     loop: "{{ services.list }}"
     tags: csv
@@ -181,7 +181,7 @@
       clientPortRange: 80
       egressRouter: "Oregon {{increment}}"
       serverHostName: eth0.me
-      serverPortRange: 80
+      serverPort: 80
       serverProtocol: TCP
     
   vars:

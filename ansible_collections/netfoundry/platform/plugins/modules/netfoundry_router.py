@@ -277,17 +277,21 @@ def run_module():
             # sanity check datacenter IDs
             if module.params['datacenter']:
                 if not router['dataCenterId']:
-                    raise AnsibleError('ERROR: existing Router is customer-hosted, not NF-datacenter-hosted, and so a datacenter ID may not be assigned.')
+                    if router['status'] == "PROVISIONING":
+                        raise Warning('WARN: existing Router is still PROVISIONING and does not yet have a data center ID, and so a datacenter ID may not be assigned.')
+                    else:
+                        raise AnsibleError('ERROR: existing Router does not have a data center ID and is presumed customer-hosted, and so a datacenter ID may not be assigned.')
                 elif not router['dataCenterId'] == properties['data_center_id']:
                     raise AnsibleError('ERROR: existing Router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted Routers may not be re-located.'.format(
-                        router['dataCenterId'], 
+                        router['dataCenterId'],
                         properties['data_center_id']
                     ))
             for key in router.keys():
                 # if there's an exact match for the existing property in
                 # our override properties then replace it before patching
-                if utility.snake(key) in properties.keys():
-                    router[key] = properties[utility.snake(key)]
+                snake_key = utility.snake(camel_str=key)
+                if snake_key in properties.keys():
+                    router[key] = properties[snake_key]
             try: result['message'] = network.patch_resource(router)
             except Exception as e:
                 raise AnsibleError('Failed to update Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
