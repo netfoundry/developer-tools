@@ -216,11 +216,12 @@ def run_module():
             #         ))
             for key in result['message'].keys():
                 # if there's an exact match for a declared property in the found Network then it's an error if the values are not identical because they can't be changed
-                if utility.snake(key) in properties.keys():
-                    if not result['message'][key] == properties[utility.snake(key)]:
+                snake_key = utility.snake(camel_str=key)
+                if snake_key in properties.keys():
+                    if not result['message'][key] == properties[snake_key]:
                         raise AnsibleError('Declared property "{}: {}" does not match found Network "{}".'.format(
-                            utility.snake(key),
-                            properties[utility.snake(key)],
+                            snake_key,
+                            properties[snake_key],
                             module.params['name']))
         # if exists and deleting then delete or not changed
         elif module.params['state'] in ["DELETING", "DELETED"]:
