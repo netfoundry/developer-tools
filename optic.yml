@@ -1,0 +1,15 @@
+# api run --transparent-proxy ENV
+name: "Optic listens for BurpSuite upstream"
+tasks:
+  sandbox:
+    targetUrl: https://gateway.sandbox.netfoundry.io/
+    inboundUrl: http://localhost:4322
+
+  staging:
+    targetUrl: https://gateway.staging.netfoundry.io/
+    inboundUrl: http://localhost:4322
+
+  production:
+    targetUrl: https://gateway.production.netfoundry.io/
+    inboundUrl: http://localhost:4322
+
