@@ -92,6 +92,7 @@ from netfoundry import Network
 from os import path as Path
 from os import mkdir as mkdir
 from pathlib import Path as PathLib
+from uuid import UUID
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -153,7 +154,15 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    found = network.get_resources(type="endpoints",name=module.params['name'])
+    # check if UUIDv4
+    try: UUID(module.params['name'], version=4)
+    except ValueError:
+        # else assume is an Endpoint
+        found = network.get_resources(type="endpoints",name=module.params['name'])
+    # it's a UUID and so we assign the property directly
+    else: 
+        found = [network.get_resource(type="endpoint",id=module.params['name'])]
+
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
             result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'],session_identity=module.params['sessionIdentity'])
