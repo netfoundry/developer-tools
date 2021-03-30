@@ -240,9 +240,8 @@ def run_module():
         found = network.get_resources(type="services",name=module.params['name'])
     # it's a UUID and so we assign the property directly
     else: 
+        # discover any existing Services with the specified name
         found = [network.get_resource(type="service",id=module.params['name'])]
-    # discover any existing Services with the specified name
-#    import epdb; epdb.serve()
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
@@ -254,10 +253,16 @@ def run_module():
         service = found[0]
         if module.params['state'] == "PROVISIONED":
             try:
-                network.delete_resource(type="service",id=service['id'])
-                result['message'] = network.create_endpoint_service(**valid_properties)
+#                network.delete_resource(type="service",id=service['id'])
+#                result['message'] = network.create_endpoint_service(**valid_properties)
+                for key in valid_properties.keys():
+                    # if there's an exact match for the existing property in service_properties then replace it
+                    if utility.snake(key) in valid_properties.keys():
+                        service[key] = valid_properties[utility.snake(key)]
+                result['message'] = network.patch_resource(service)
             except Exception as e:
-                raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to patch Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+            #     raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: network.delete_resource(type="service",id=service['id'])

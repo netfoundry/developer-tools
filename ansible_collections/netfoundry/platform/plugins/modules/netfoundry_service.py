@@ -134,7 +134,7 @@ from ansible.module_utils._text import to_native
 from netfoundry import Organization
 from netfoundry import NetworkGroup
 from netfoundry import Network
-#from netfoundry import Utility
+from netfoundry import Utility
 from uuid import UUID
 
 def run_module():
@@ -198,7 +198,7 @@ def run_module():
     }
 
     # instantiate some utility methods like snake(), camel() for translating styles
-#    utility = Utility()
+    utility = Utility()
 
     network_group = NetworkGroup(
         organization,
@@ -251,10 +251,16 @@ def run_module():
         service = found[0]
         if module.params['state'] == "PROVISIONED":
             try:
-                network.delete_resource(type="service",id=service['id'])
-                result['message'] = network.create_service(**service_properties)
+#                network.delete_resource(type="service",id=service['id'])
+#                result['message'] = network.create_service(**service_properties)
+                for key in service.keys():
+                    # if there's an exact match for the existing property in service_properties then replace it
+                    if utility.snake(key) in service_properties.keys():
+                        service[key] = service_properties[utility.snake(key)]
+                result['message'] = network.patch_resource(service)
             except Exception as e:
-                raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to patch Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+#                raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: network.delete_resource(type="service",id=service['id'])
@@ -262,7 +268,10 @@ def run_module():
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one Service. Matches: {matches}'.format(
+            name=module.params['name'],
+            matches=[match['name'] for match in found]
+        ), **result)
 
     module.exit_json(**result)
 
