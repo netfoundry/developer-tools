@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
  title: untitled API
- version: '894'
+ version: '1469'
 paths:
  '/core/v2/app-wans/{appWanId}':
   get:
@@ -88,6 +88,359 @@ paths:
     required: true
     schema:
      type: string
+ /core/v2/networks:
+  get:
+   operationId: request_oiIAfX2VUs
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _embedded
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - networkList
+          properties:
+           networkList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - createdAt
+              - createdBy
+              - deletedAt
+              - deletedBy
+              - id
+              - name
+              - networkController
+              - networkGroupId
+              - o365BreakoutCategory
+              - ownerIdentityId
+              - productVersion
+              - size
+              - status
+              - updatedAt
+             properties:
+              deletedAt: {}
+              name:
+               type: string
+              updatedAt:
+               type: string
+              size:
+               type: string
+              ownerIdentityId:
+               type: string
+              productVersion:
+               type: string
+              networkGroupId:
+               type: string
+              id:
+               type: string
+              status:
+               type: string
+              createdAt:
+               type: string
+              createdBy:
+               type: string
+              deletedBy: {}
+              networkController:
+               type: object
+               required:
+                - createdAt
+                - dataCenterId
+                - deletedAt
+                - deletedBy
+                - domainName
+                - hostId
+                - id
+                - ipAddress
+                - locationMetadataId
+                - name
+                - networkId
+                - ownerIdentityId
+                - port
+                - provider
+                - providerId
+                - status
+                - updatedAt
+                - userData
+               properties:
+                deletedAt: {}
+                networkId:
+                 type: string
+                name:
+                 type: string
+                updatedAt:
+                 type: string
+                provider:
+                 type: string
+                userData: {}
+                ownerIdentityId: {}
+                domainName:
+                 type: string
+                providerId:
+                 type: string
+                id:
+                 type: string
+                port:
+                 type: number
+                ipAddress:
+                 type: string
+                status:
+                 type: string
+                hostId:
+                 type: string
+                createdAt:
+                 type: string
+                deletedBy: {}
+                locationMetadataId:
+                 type: string
+                dataCenterId:
+                 type: string
+              o365BreakoutCategory:
+               type: string
+              _links:
+               type: object
+               required:
+                - app-wans
+                - certificate-authorities
+                - edge-router-policies
+                - edge-routers
+                - endpoints
+                - network-controllers
+                - networks
+                - posture-checks
+                - process-executions
+                - self
+                - services
+               properties:
+                services:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                networks:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                app-wans:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                endpoints:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                certificate-authorities:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                process-executions:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                network-controllers:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                posture-checks:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                edge-routers:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                edge-router-policies:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+             - templated
+            properties:
+             href:
+              type: string
+             templated:
+              type: boolean
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  parameters: []
+ /core/v2/data-centers:
+  get:
+   operationId: request_VfuaDMeTRP
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _embedded
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - dataCenters
+          properties:
+           dataCenters:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - address
+              - city
+              - continentCode
+              - continentName
+              - countryCode
+              - countryName
+              - id
+              - isp
+              - lat
+              - lng
+              - locationCode
+              - locationName
+              - provider
+              - stateCode
+              - stateName
+             properties:
+              city: {}
+              continentCode: {}
+              stateCode: {}
+              lng:
+               type: number
+              provider:
+               type: string
+              stateName: {}
+              continentName: {}
+              isp: {}
+              locationCode:
+               type: string
+              countryName: {}
+              id:
+               type: string
+              countryCode: {}
+              address: {}
+              locationName:
+               type: string
+              lat:
+               type: number
+              _links:
+               type: object
+               required:
+                - self
+               properties:
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  parameters: []
  '/core/v2/services/{serviceId}':
   delete:
    operationId: request_pBaaiO3B0d
@@ -298,6 +651,187 @@ paths:
     required: true
     schema:
      type: string
+ /core/v2/endpoints:
+  get:
+   operationId: request_AYFhAQd5pn
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  post:
+   operationId: request_9sDuPizCiu
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - attributes
+        - enrollmentMethod
+        - name
+        - networkId
+       properties:
+        attributes:
+         type: array
+         items:
+          type: string
+        enrollmentMethod:
+         type: object
+         required:
+          - ott
+         properties:
+          ott:
+           type: boolean
+        name:
+         type: string
+        networkId:
+         type: string
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - appId
+         - appVersion
+         - arch
+         - attributes
+         - branch
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - hasApiSession
+         - hasEdgeRouterConnection
+         - id
+         - jwt
+         - jwtExpiresAt
+         - mfaEnabled
+         - name
+         - networkId
+         - os
+         - osRelease
+         - osVersion
+         - ownerIdentityId
+         - revision
+         - sessionActive
+         - sessionIdentityId
+         - syncId
+         - syncResourceId
+         - type
+         - updatedAt
+         - version
+         - zitiId
+        properties:
+         mfaEnabled:
+          type: boolean
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         syncId: {}
+         sessionIdentityId: {}
+         osRelease: {}
+         syncResourceId: {}
+         zitiId:
+          type: string
+         appVersion: {}
+         branch: {}
+         os: {}
+         ownerIdentityId:
+          type: string
+         hasEdgeRouterConnection:
+          type: boolean
+         attributes:
+          type: array
+          items:
+           type: string
+         hasApiSession:
+          type: boolean
+         revision: {}
+         version: {}
+         jwt:
+          type: string
+         id:
+          type: string
+         sessionActive:
+          type: boolean
+         jwtExpiresAt:
+          type: string
+         createdAt:
+          type: string
+         arch: {}
+         createdBy:
+          type: string
+         deletedBy: {}
+         type: {}
+         osVersion: {}
+         appId: {}
+         _links:
+          type: object
+          required:
+           - network
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  parameters: []
  '/rest/v1/network-groups/{networkGroupId}':
   get:
    operationId: request_VeJCBUR9iO
@@ -1049,5 +1583,298 @@ paths:
     required: true
     schema:
      type: string
+ /core/v2/network-configs:
+  get:
+   operationId: request_LOXfQSs8GE
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _embedded
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - networkConfigMetadataList
+          properties:
+           networkConfigMetadataList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - alicloudTransferNodeSize
+              - awsGatewaySize
+              - awsNetworkControllerSize
+              - awsTransferNodeSize
+              - azureTransferNodeSize
+              - gatewayVolumeSize
+              - gcpTransferNodeSize
+              - id
+              - name
+              - networkControllerVolumeSize
+              - ocpTransferNodeSize
+              - transferNodeVolumeSize
+             properties:
+              networkControllerVolumeSize:
+               type: number
+              gatewayVolumeSize:
+               type: number
+              name:
+               type: string
+              gcpTransferNodeSize:
+               type: string
+              awsNetworkControllerSize:
+               type: string
+              transferNodeVolumeSize:
+               type: number
+              awsGatewaySize:
+               type: string
+              ocpTransferNodeSize:
+               type: string
+              awsTransferNodeSize:
+               type: string
+              id:
+               type: string
+              azureTransferNodeSize:
+               type: string
+              alicloudTransferNodeSize:
+               type: string
+              _links:
+               type: object
+               required:
+                - self
+               properties:
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  parameters: []
+ /identity/v1/api-account-identities/self:
+  get:
+   operationId: request_mpyYtIiS6x
+   responses:
+    '200':
+     content:
+      application/json:
+       schema:
+        type: object
+        required:
+         - active
+         - auth0ClientId
+         - authenticationUrl
+         - awsCognitoClientId
+         - contactEmail
+         - createdAt
+         - deletedAt
+         - description
+         - email
+         - id
+         - name
+         - organizationId
+         - tenantId
+         - type
+         - updatedAt
+        properties:
+         deletedAt: {}
+         name:
+          type: string
+         updatedAt: {}
+         email:
+          type: string
+         description:
+          type: string
+         awsCognitoClientId:
+          type: string
+         auth0ClientId: {}
+         id:
+          type: string
+         contactEmail:
+          type: string
+         createdAt:
+          type: object
+          required:
+           - epochSecond
+           - nano
+          properties:
+           epochSecond:
+            type: number
+           nano:
+            type: number
+         organizationId:
+          type: string
+         tenantId:
+          type: string
+         type:
+          type: string
+         authenticationUrl:
+          type: string
+         active:
+          type: boolean
+     description: ''
+  parameters: []
+ /rest/v1/network-groups:
+  get:
+   operationId: request_K9ajDJ8vUS
+   responses:
+    '200':
+     content:
+      application/json:
+       schema:
+        type: object
+        required:
+         - _embedded
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - organizations
+          properties:
+           organizations:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - awsAutoScalingGatewayEnabled
+              - billingAccountId
+              - createdAt
+              - defaultAzureVirtualWanId
+              - deleted
+              - id
+              - mfaRequired
+              - name
+              - organizationShortName
+              - ownerIdentityId
+              - updatedAt
+              - zitiEnabled
+             properties:
+              organizationShortName:
+               type: string
+              name:
+               type: string
+              updatedAt:
+               type: string
+              zitiEnabled:
+               type: boolean
+              defaultAzureVirtualWanId: {}
+              ownerIdentityId: {}
+              billingAccountId:
+               type: string
+              id:
+               type: string
+              awsAutoScalingGatewayEnabled:
+               type: boolean
+              createdAt:
+               type: string
+              mfaRequired:
+               type: boolean
+              deleted:
+               type: boolean
+              _links:
+               type: object
+               required:
+                - azureSubscription
+                - networks
+                - self
+               properties:
+                azureSubscription:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                networks:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - first
+           - last
+          properties:
+           first:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           last:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  parameters: []
 components:
  schemas: {}
