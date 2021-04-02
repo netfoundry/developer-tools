@@ -211,7 +211,7 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    expected_properties = [
+    expected_service_params = [
         "name",
         "attributes",
         "edge_router_attributes",
@@ -225,13 +225,15 @@ def run_module():
         "endpoints",
     ]
 
-    # compose a dictionary of valid properties from the intersection of module params and expected properties
-    # method: normalize the camel-case module arg keys for comparison with snake-case expected properties
-    valid_properties = dict()
-    for prop in expected_properties:
-        camel_key = utility.camel(snake_str=prop)
-        if camel_key in module.params.keys() and module.params[camel_key]:
-            valid_properties[prop] = module.params[camel_key]
+    # compose a dictionary of validated parameters for Network.create_endpoint_service() from the
+    #  intersection of module params and expected properties method: normalize the camel-case module
+    #  args for comparison with snake-case expected properties
+    validated_service_params = dict()
+    for expected in expected_service_params:
+        expected_camel = utility.camel(snake_str=expected)
+        # if present and true
+        if expected_camel in module.params.keys() and module.params[expected_camel]:
+            validated_service_params[expected] = module.params[expected_camel]
 
     # check if UUIDv4
     try: UUID(module.params['name'], version=4)
@@ -245,27 +247,29 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint_service(**valid_properties)
+            result['message'] = network.create_endpoint_service(**validated_service_params)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
-        service = found[0]
+        found_service = found[0]
         if module.params['state'] == "PROVISIONED":
             try:
 #                network.delete_resource(type="service",id=service['id'])
-#                result['message'] = network.create_endpoint_service(**valid_properties)
-                for key in valid_properties.keys():
-                    # if there's an exact match for the existing property in service_properties then replace it
-                    if utility.snake(key) in valid_properties.keys():
-                        service[key] = valid_properties[utility.snake(key)]
-                result['message'] = network.patch_resource(service)
+#                result['message'] = network.create_endpoint_service(**validated_service_params)
+                # transform validated service params to the entity model for comparison with found service
+                create_service_model = network.create_endpoint_service(**validated_service_params, dry_run=True)
+                for create_key in create_service_model.keys():
+                    # clobber exactly-matching existing properties with desired property values
+                    if utility.snake(create_key) in found_service.keys():
+                        found_service[create_key] = create_service_model[utility.snake(create_key)]
+                result['message'] = network.patch_resource(found_service)
             except Exception as e:
                 raise AnsibleError('Failed to patch Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             #     raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="service",id=service['id'])
+            try: network.delete_resource(type="service",id=found_service['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
