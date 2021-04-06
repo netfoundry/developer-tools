@@ -1,6 +1,6 @@
 version: "3.3"
 services:
-    dialer:
+    client:
         image: docker.io/netfoundry/ziti-tunnel:latest
         restart: unless-stopped
         volumes:
@@ -11,7 +11,7 @@ services:
         environment:
         - NF_REG_NAME=Linux1
         - PFXLOG_NO_JSON=true
-        command: tproxy --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use dialer1
+        command: tproxy --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use client
     exit:
         image: docker.io/netfoundry/ziti-tunnel:latest
         restart: unless-stopped
