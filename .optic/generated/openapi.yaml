@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
  title: untitled API
- version: '1469'
+ version: '3444'
 paths:
  '/core/v2/app-wans/{appWanId}':
   get:
@@ -335,6 +335,188 @@ paths:
             type: number
            totalPages:
             type: number
+     description: ''
+  post:
+   operationId: request_FWlFMQIDPX
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - locationCode
+        - name
+        - networkGroupId
+        - productVersion
+        - size
+       properties:
+        name:
+         type: string
+        size:
+         type: string
+        locationCode:
+         type: string
+        productVersion:
+         type: string
+        networkGroupId:
+         type: string
+   responses:
+    '202':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - id
+         - name
+         - networkController
+         - networkGroupId
+         - o365BreakoutCategory
+         - ownerIdentityId
+         - productVersion
+         - size
+         - status
+         - updatedAt
+        properties:
+         deletedAt: {}
+         name:
+          type: string
+         updatedAt:
+          type: string
+         size:
+          type: string
+         ownerIdentityId:
+          type: string
+         productVersion:
+          type: string
+         networkGroupId:
+          type: string
+         id:
+          type: string
+         status:
+          type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         networkController: {}
+         o365BreakoutCategory:
+          type: string
+         _links:
+          type: object
+          required:
+           - app-wans
+           - certificate-authorities
+           - edge-router-policies
+           - edge-routers
+           - endpoints
+           - network-controllers
+           - networks
+           - posture-checks
+           - process
+           - process-executions
+           - self
+           - services
+          properties:
+           services:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           networks:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           app-wans:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           process:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           endpoints:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           certificate-authorities:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           process-executions:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           network-controllers:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           posture-checks:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           edge-routers:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+           edge-router-policies:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
      description: ''
   parameters: []
  /core/v2/data-centers:
@@ -1874,6 +2056,2847 @@ paths:
             type: number
            totalPages:
             type: number
+     description: ''
+  parameters: []
+ /product-metadata/v2/download-urls.json:
+  get:
+   operationId: request_A8syyaPZnw
+   responses:
+    '200':
+     content:
+      application/json:
+       schema:
+        type: object
+        required:
+         - 7.0.0
+         - 7.1.0
+         - 7.2.0
+         - 7.2.1
+         - 7.3.0
+         - 7.3.1
+         - 7.3.10
+         - 7.3.11
+         - 7.3.12
+         - 7.3.13
+         - 7.3.14
+         - 7.3.15
+         - 7.3.16
+         - 7.3.17
+         - 7.3.18
+         - 7.3.19
+         - 7.3.2
+         - 7.3.20
+         - 7.3.21
+         - 7.3.22
+         - 7.3.23
+         - 7.3.3
+         - 7.3.4
+         - 7.3.5
+         - 7.3.6
+         - 7.3.7
+         - 7.3.8
+         - 7.3.9
+        properties:
+         7.3.4:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.11:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.16:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.1.0:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.22:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.23:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.8:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.12:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.2.1:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.13:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.0.0:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.17:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.5:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.20:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.2:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.9:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.2.0:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.0:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.14:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.6:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.1:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.19:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.15:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.10:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.7:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.21:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.3:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiVersion:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.18:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
      description: ''
   parameters: []
 components:
