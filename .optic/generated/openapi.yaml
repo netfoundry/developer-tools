@@ -1,11 +1,12 @@
 openapi: 3.0.1
 info:
  title: untitled API
- version: '3444'
+ version: '5168'
 paths:
  '/core/v2/app-wans/{appWanId}':
   get:
    operationId: request_KkeR9gNy25
+   summary: Get an AppWAN
    responses:
     '200':
      content:
@@ -91,6 +92,7 @@ paths:
  /core/v2/networks:
   get:
    operationId: request_oiIAfX2VUs
+   summary: Get the list of Networks
    responses:
     '200':
      content:
@@ -119,7 +121,6 @@ paths:
               - deletedBy
               - id
               - name
-              - networkController
               - networkGroupId
               - o365BreakoutCategory
               - ownerIdentityId
@@ -150,60 +151,7 @@ paths:
               createdBy:
                type: string
               deletedBy: {}
-              networkController:
-               type: object
-               required:
-                - createdAt
-                - dataCenterId
-                - deletedAt
-                - deletedBy
-                - domainName
-                - hostId
-                - id
-                - ipAddress
-                - locationMetadataId
-                - name
-                - networkId
-                - ownerIdentityId
-                - port
-                - provider
-                - providerId
-                - status
-                - updatedAt
-                - userData
-               properties:
-                deletedAt: {}
-                networkId:
-                 type: string
-                name:
-                 type: string
-                updatedAt:
-                 type: string
-                provider:
-                 type: string
-                userData: {}
-                ownerIdentityId: {}
-                domainName:
-                 type: string
-                providerId:
-                 type: string
-                id:
-                 type: string
-                port:
-                 type: number
-                ipAddress:
-                 type: string
-                status:
-                 type: string
-                hostId:
-                 type: string
-                createdAt:
-                 type: string
-                deletedBy: {}
-                locationMetadataId:
-                 type: string
-                dataCenterId:
-                 type: string
+              networkController: {}
               o365BreakoutCategory:
                type: string
               _links:
@@ -338,6 +286,7 @@ paths:
      description: ''
   post:
    operationId: request_FWlFMQIDPX
+   summary: Create a Network
    requestBody:
     content:
      application/json:
@@ -522,6 +471,7 @@ paths:
  /core/v2/data-centers:
   get:
    operationId: request_VfuaDMeTRP
+   summary: Get the list of data centers
    responses:
     '200':
      content:
@@ -623,9 +573,728 @@ paths:
             type: number
      description: ''
   parameters: []
+ /core/v2/services:
+  get:
+   operationId: request_E1IexRfvZg
+   summary: Get the list of Services
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - serviceList
+          properties:
+           serviceList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - attributes
+              - authority
+              - configIdByConfigTypeId
+              - createdAt
+              - createdBy
+              - deletedAt
+              - deletedBy
+              - encryptionRequired
+              - id
+              - model
+              - modelType
+              - name
+              - networkId
+              - ownerIdentityId
+              - updatedAt
+              - zitiId
+             properties:
+              deletedAt: {}
+              networkId:
+               type: string
+              name:
+               type: string
+              updatedAt:
+               type: string
+              model:
+               type: object
+               required:
+                - clientIngress
+                - edgeRouterAttributes
+               properties:
+                edgeRouterAttributes:
+                 type: array
+                 items:
+                  type: string
+                serverEgress:
+                 type: object
+                 required:
+                  - port
+                  - protocol
+                 properties:
+                  host:
+                   type: string
+                  dialInterceptAddress: {}
+                  dialInterceptPort: {}
+                  port:
+                   type: number
+                  dialInterceptProtocol:
+                   type: boolean
+                  address:
+                   type: string
+                  protocol: {}
+                bindEndpointAttributes:
+                 type: array
+                 items:
+                  type: string
+                clientIngress:
+                 type: object
+                 properties:
+                  protocols:
+                   type: array
+                   items:
+                    type: string
+                  host:
+                   type: string
+                  ports:
+                   type: array
+                   items:
+                    type: object
+                    required:
+                     - high
+                     - low
+                    properties:
+                     high:
+                      type: number
+                     low:
+                      type: number
+                  port:
+                   type: number
+                  addresses:
+                   type: array
+                   items:
+                    type: string
+                edgeRouterHosts:
+                 type: array
+                 items:
+                  type: object
+                  required:
+                   - edgeRouterId
+                   - serverEgress
+                  properties:
+                   edgeRouterId:
+                    type: string
+                   serverEgress:
+                    type: object
+                    required:
+                     - host
+                     - port
+                     - protocol
+                    properties:
+                     host:
+                      type: string
+                     port:
+                      type: number
+                     protocol:
+                      type: string
+              zitiId: {}
+              ownerIdentityId:
+               type: string
+              attributes:
+               type: array
+               items:
+                type: string
+              modelType:
+               type: string
+              id:
+               type: string
+              configIdByConfigTypeId:
+               type: object
+               properties:
+                d75e27f0-ebab-4567-8440-c24f02f2eca5:
+                 type: string
+                2c1998a1-32e2-4084-b20a-b580570f4fbf:
+                 type: string
+                4c42c4db-f039-4a57-8264-5f57af512614:
+                 type: string
+                7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc:
+                 type: string
+                714a918a-7935-4b4f-82c3-afbadcd9e59b:
+                 type: string
+                b1582680-ab7b-45d0-ac36-b00f82df8e79:
+                 type: string
+                6fa5c2bc-b7f7-47f8-9229-e927722adb27:
+                 type: string
+                170c6b9b-f010-46a1-a2ee-cd6729e1f5dc:
+                 type: string
+                ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+                 type: string
+              createdAt:
+               type: string
+              createdBy:
+               type: string
+              deletedBy: {}
+              encryptionRequired:
+               type: boolean
+              authority: {}
+              _links:
+               type: object
+               required:
+                - network
+                - self
+               properties:
+                network:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  post:
+   operationId: request_LopoFtq4ih
+   summary: Create a Service
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - attributes
+        - encryptionRequired
+        - model
+        - modelType
+        - name
+        - networkId
+       properties:
+        networkId:
+         type: string
+        name:
+         type: string
+        model:
+         type: object
+         required:
+          - clientIngress
+          - edgeRouterAttributes
+         properties:
+          edgeRouterAttributes:
+           type: array
+           items:
+            type: string
+          serverEgress:
+           type: object
+           required:
+            - port
+            - protocol
+           properties:
+            host:
+             type: string
+            dialInterceptAddress: {}
+            dialInterceptPort: {}
+            port:
+             type: number
+            dialInterceptProtocol:
+             type: boolean
+            address:
+             type: string
+            protocol: {}
+          bindEndpointAttributes:
+           type: array
+           items:
+            type: string
+          clientIngress:
+           type: object
+           properties:
+            protocols:
+             type: array
+             items:
+              type: string
+            host:
+             type: string
+            ports:
+             type: array
+             items:
+              type: object
+              required:
+               - high
+               - low
+              properties:
+               high:
+                type: string
+               low:
+                type: string
+            port: {}
+            addresses:
+             type: array
+             items:
+              type: string
+          edgeRouterHosts:
+           type: array
+           items:
+            type: object
+            required:
+             - edgeRouterId
+             - serverEgress
+            properties:
+             edgeRouterId:
+              type: string
+             serverEgress:
+              type: object
+              required:
+               - host
+               - port
+               - protocol
+              properties:
+               host:
+                type: string
+               port: {}
+               protocol:
+                type: string
+        attributes:
+         type: array
+         items:
+          type: string
+        modelType:
+         type: string
+        encryptionRequired:
+         type: boolean
+   responses:
+    '202':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - attributes
+         - authority
+         - configIdByConfigTypeId
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - encryptionRequired
+         - id
+         - model
+         - modelType
+         - name
+         - networkId
+         - ownerIdentityId
+         - updatedAt
+         - zitiId
+        properties:
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         model:
+          type: object
+          required:
+           - clientIngress
+           - edgeRouterAttributes
+          properties:
+           edgeRouterAttributes:
+            type: array
+            items:
+             type: string
+           serverEgress:
+            type: object
+            required:
+             - port
+             - protocol
+            properties:
+             host:
+              type: string
+             dialInterceptAddress: {}
+             dialInterceptPort: {}
+             port:
+              type: number
+             dialInterceptProtocol:
+              type: boolean
+             address:
+              type: string
+             protocol: {}
+           bindEndpointAttributes:
+            type: array
+            items:
+             type: string
+           clientIngress:
+            type: object
+            properties:
+             protocols:
+              type: array
+              items:
+               type: string
+             host:
+              type: string
+             ports:
+              type: array
+              items:
+               type: object
+               required:
+                - high
+                - low
+               properties:
+                high:
+                 type: number
+                low:
+                 type: number
+             port:
+              type: number
+             addresses:
+              type: array
+              items:
+               type: string
+           edgeRouterHosts:
+            type: array
+            items:
+             type: object
+             required:
+              - edgeRouterId
+              - serverEgress
+             properties:
+              edgeRouterId:
+               type: string
+              serverEgress:
+               type: object
+               required:
+                - host
+                - port
+                - protocol
+               properties:
+                host:
+                 type: string
+                port:
+                 type: number
+                protocol:
+                 type: string
+         zitiId: {}
+         ownerIdentityId:
+          type: string
+         attributes:
+          type: array
+          items:
+           type: string
+         modelType:
+          type: string
+         id:
+          type: string
+         configIdByConfigTypeId:
+          type: object
+          properties:
+           6fa5c2bc-b7f7-47f8-9229-e927722adb27:
+            type: string
+           b1582680-ab7b-45d0-ac36-b00f82df8e79:
+            type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         encryptionRequired:
+          type: boolean
+         authority: {}
+         _links:
+          type: object
+          required:
+           - network
+           - process
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           process:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  parameters: []
+ /core/v2/edge-router-policies:
+  get:
+   operationId: request_Hp1b9GiLax
+   summary: Get an Edge Router Policy
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - edgeRouterPolicyList
+          properties:
+           edgeRouterPolicyList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - createdAt
+              - createdBy
+              - deletedAt
+              - deletedBy
+              - edgeRouterAttributes
+              - endpointAttributes
+              - id
+              - name
+              - networkId
+              - ownerIdentityId
+              - updatedAt
+              - zitiId
+             properties:
+              deletedAt: {}
+              networkId:
+               type: string
+              name:
+               type: string
+              edgeRouterAttributes:
+               type: array
+               items:
+                type: string
+              updatedAt:
+               type: string
+              zitiId:
+               type: string
+              ownerIdentityId:
+               type: string
+              id:
+               type: string
+              createdAt:
+               type: string
+              createdBy:
+               type: string
+              deletedBy: {}
+              endpointAttributes:
+               type: array
+               items:
+                type: string
+              _links:
+               type: object
+               required:
+                - network
+                - self
+               properties:
+                network:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  post:
+   operationId: request_lgKxU4ph9t
+   summary: Create an Edge Router Policy
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - edgeRouterAttributes
+        - endpointAttributes
+        - name
+        - networkId
+       properties:
+        edgeRouterAttributes:
+         type: array
+         items:
+          type: string
+        endpointAttributes:
+         type: array
+         items:
+          type: string
+        name:
+         type: string
+        networkId:
+         type: string
+   responses:
+    '202':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - edgeRouterAttributes
+         - endpointAttributes
+         - id
+         - name
+         - networkId
+         - ownerIdentityId
+         - updatedAt
+         - zitiId
+        properties:
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         edgeRouterAttributes:
+          type: array
+          items:
+           type: string
+         updatedAt:
+          type: string
+         zitiId:
+          type: string
+         ownerIdentityId:
+          type: string
+         id:
+          type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         endpointAttributes:
+          type: array
+          items:
+           type: string
+         _links:
+          type: object
+          required:
+           - network
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  parameters: []
  '/core/v2/services/{serviceId}':
   delete:
    operationId: request_pBaaiO3B0d
+   summary: Delete a Service
    responses:
     '202':
      content:
@@ -745,6 +1414,424 @@ paths:
          timestamp:
           type: string
      description: ''
+  get:
+   operationId: request_yLsf4m9TTT
+   summary: Get a Service
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - attributes
+         - authority
+         - configIdByConfigTypeId
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - encryptionRequired
+         - id
+         - model
+         - modelType
+         - name
+         - networkId
+         - ownerIdentityId
+         - updatedAt
+         - zitiId
+        properties:
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         model:
+          type: object
+          required:
+           - clientIngress
+           - edgeRouterAttributes
+          properties:
+           edgeRouterAttributes:
+            type: array
+            items:
+             type: string
+           serverEgress:
+            type: object
+            required:
+             - port
+             - protocol
+            properties:
+             host:
+              type: string
+             dialInterceptAddress: {}
+             dialInterceptPort: {}
+             port:
+              type: number
+             dialInterceptProtocol:
+              type: boolean
+             address:
+              type: string
+             protocol: {}
+           bindEndpointAttributes:
+            type: array
+            items:
+             type: string
+           clientIngress:
+            type: object
+            properties:
+             protocols:
+              type: array
+              items:
+               type: string
+             host:
+              type: string
+             ports:
+              type: array
+              items:
+               type: object
+               required:
+                - high
+                - low
+               properties:
+                high:
+                 type: number
+                low:
+                 type: number
+             port:
+              type: number
+             addresses:
+              type: array
+              items:
+               type: string
+           edgeRouterHosts:
+            type: array
+            items:
+             type: object
+             required:
+              - edgeRouterId
+              - serverEgress
+             properties:
+              edgeRouterId:
+               type: string
+              serverEgress:
+               type: object
+               required:
+                - host
+                - port
+                - protocol
+               properties:
+                host:
+                 type: string
+                port:
+                 type: number
+                protocol:
+                 type: string
+         zitiId:
+          type: string
+         ownerIdentityId:
+          type: string
+         attributes:
+          type: array
+          items:
+           type: string
+         modelType:
+          type: string
+         id:
+          type: string
+         configIdByConfigTypeId:
+          type: object
+          properties:
+           d75e27f0-ebab-4567-8440-c24f02f2eca5:
+            type: string
+           2c1998a1-32e2-4084-b20a-b580570f4fbf:
+            type: string
+           4c42c4db-f039-4a57-8264-5f57af512614:
+            type: string
+           7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc:
+            type: string
+           714a918a-7935-4b4f-82c3-afbadcd9e59b:
+            type: string
+           b1582680-ab7b-45d0-ac36-b00f82df8e79:
+            type: string
+           6fa5c2bc-b7f7-47f8-9229-e927722adb27:
+            type: string
+           ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+            type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         encryptionRequired:
+          type: boolean
+         authority: {}
+         _links:
+          type: object
+          required:
+           - network
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  patch:
+   operationId: request_VIzB1k6Uqb
+   summary: Change some properties of a Service
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - model
+        - modelType
+        - name
+       properties:
+        model:
+         type: object
+         required:
+          - bindEndpointAttributes
+          - clientIngress
+          - edgeRouterAttributes
+          - serverEgress
+         properties:
+          bindEndpointAttributes:
+           type: array
+           items:
+            type: string
+          clientIngress:
+           type: object
+           required:
+            - addresses
+            - ports
+            - protocols
+           properties:
+            addresses:
+             type: array
+             items:
+              type: string
+            ports:
+             type: array
+             items:
+              type: object
+              required:
+               - high
+               - low
+              properties:
+               high:
+                type: string
+               low:
+                type: string
+            protocols:
+             type: array
+             items:
+              type: string
+          edgeRouterAttributes:
+           type: array
+           items:
+            type: string
+          serverEgress:
+           type: object
+           required:
+            - address
+            - dialInterceptAddress
+            - dialInterceptPort
+            - dialInterceptProtocol
+            - port
+            - protocol
+           properties:
+            dialInterceptAddress: {}
+            dialInterceptPort: {}
+            port:
+             type: number
+            dialInterceptProtocol:
+             type: boolean
+            address:
+             type: string
+            protocol: {}
+        modelType:
+         type: string
+        name:
+         type: string
+   responses:
+    '202':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - attributes
+         - authority
+         - configIdByConfigTypeId
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - encryptionRequired
+         - id
+         - model
+         - modelType
+         - name
+         - networkId
+         - ownerIdentityId
+         - updatedAt
+         - zitiId
+        properties:
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         model:
+          type: object
+          required:
+           - bindEndpointAttributes
+           - clientIngress
+           - edgeRouterAttributes
+           - serverEgress
+          properties:
+           bindEndpointAttributes:
+            type: array
+            items:
+             type: string
+           clientIngress:
+            type: object
+            required:
+             - addresses
+             - ports
+             - protocols
+            properties:
+             addresses:
+              type: array
+              items:
+               type: string
+             ports:
+              type: array
+              items:
+               type: object
+               required:
+                - high
+                - low
+               properties:
+                high:
+                 type: number
+                low:
+                 type: number
+             protocols:
+              type: array
+              items:
+               type: string
+           edgeRouterAttributes:
+            type: array
+            items:
+             type: string
+           serverEgress:
+            type: object
+            required:
+             - address
+             - dialInterceptAddress
+             - dialInterceptPort
+             - dialInterceptProtocol
+             - port
+             - protocol
+            properties:
+             dialInterceptAddress: {}
+             dialInterceptPort: {}
+             port:
+              type: number
+             dialInterceptProtocol:
+              type: boolean
+             address:
+              type: string
+             protocol: {}
+         zitiId:
+          type: string
+         ownerIdentityId:
+          type: string
+         attributes:
+          type: array
+          items:
+           type: string
+         modelType:
+          type: string
+         id:
+          type: string
+         configIdByConfigTypeId:
+          type: object
+          properties:
+           714a918a-7935-4b4f-82c3-afbadcd9e59b:
+            type: string
+           7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc:
+            type: string
+           d75e27f0-ebab-4567-8440-c24f02f2eca5:
+            type: string
+           ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+            type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         encryptionRequired:
+          type: boolean
+         authority: {}
+         _links:
+          type: object
+          required:
+           - network
+           - process
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           process:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
   parameters:
    -
     in: path
@@ -752,9 +1839,236 @@ paths:
     required: true
     schema:
      type: string
+ /core/v2/app-wans:
+  get:
+   operationId: request_gijVCEoMlM
+   summary: Get the list of AppWANs
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - appWanList
+          properties:
+           appWanList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - createdAt
+              - createdBy
+              - deletedAt
+              - deletedBy
+              - endpointAttributes
+              - id
+              - name
+              - networkId
+              - ownerIdentityId
+              - postureCheckAttributes
+              - serviceAttributes
+              - updatedAt
+              - zitiId
+             properties:
+              serviceAttributes:
+               type: array
+               items:
+                type: string
+              deletedAt: {}
+              networkId:
+               type: string
+              name:
+               type: string
+              updatedAt:
+               type: string
+              postureCheckAttributes:
+               type: array
+               items: {}
+              zitiId:
+               type: string
+              ownerIdentityId:
+               type: string
+              id:
+               type: string
+              createdAt:
+               type: string
+              createdBy:
+               type: string
+              deletedBy: {}
+              endpointAttributes:
+               type: array
+               items:
+                type: string
+              _links:
+               type: object
+               required:
+                - network
+                - self
+               properties:
+                network:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  post:
+   operationId: request_NXoV6K2f0Q
+   summary: Create an AppWAN
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - endpointAttributes
+        - name
+        - networkId
+        - postureCheckAttributes
+        - serviceAttributes
+       properties:
+        serviceAttributes:
+         type: array
+         items:
+          type: string
+        networkId:
+         type: string
+        name:
+         type: string
+        postureCheckAttributes:
+         type: array
+         items: {}
+        endpointAttributes:
+         type: array
+         items:
+          type: string
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - createdAt
+         - createdBy
+         - deletedAt
+         - deletedBy
+         - endpointAttributes
+         - id
+         - name
+         - networkId
+         - ownerIdentityId
+         - postureCheckAttributes
+         - serviceAttributes
+         - updatedAt
+         - zitiId
+        properties:
+         serviceAttributes:
+          type: array
+          items:
+           type: string
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         postureCheckAttributes:
+          type: array
+          items: {}
+         zitiId:
+          type: string
+         ownerIdentityId:
+          type: string
+         id:
+          type: string
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         endpointAttributes:
+          type: array
+          items:
+           type: string
+         _links:
+          type: object
+          required:
+           - network
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  parameters: []
  '/core/v2/edge-router-policies/{edgeRouterPolicyId}':
   get:
    operationId: request_btgg9ZlC0e
+   summary: Get an Edge Router Policy
    responses:
     '200':
      content:
@@ -836,6 +2150,7 @@ paths:
  /core/v2/endpoints:
   get:
    operationId: request_AYFhAQd5pn
+   summary: Get an Endpoint
    responses:
     '200':
      content:
@@ -846,6 +2161,116 @@ paths:
          - _links
          - page
         properties:
+         _embedded:
+          type: object
+          required:
+           - endpointList
+          properties:
+           endpointList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - appId
+              - appVersion
+              - arch
+              - attributes
+              - branch
+              - createdAt
+              - createdBy
+              - deletedAt
+              - deletedBy
+              - hasApiSession
+              - hasEdgeRouterConnection
+              - id
+              - jwt
+              - jwtExpiresAt
+              - mfaEnabled
+              - name
+              - networkId
+              - os
+              - osRelease
+              - osVersion
+              - ownerIdentityId
+              - revision
+              - sessionActive
+              - sessionIdentityId
+              - syncId
+              - syncResourceId
+              - type
+              - updatedAt
+              - version
+              - zitiId
+             properties:
+              mfaEnabled:
+               type: boolean
+              deletedAt: {}
+              networkId:
+               type: string
+              name:
+               type: string
+              updatedAt:
+               type: string
+              syncId: {}
+              sessionIdentityId: {}
+              osRelease: {}
+              syncResourceId: {}
+              zitiId:
+               type: string
+              appVersion: {}
+              branch: {}
+              os: {}
+              ownerIdentityId:
+               type: string
+              hasEdgeRouterConnection:
+               type: boolean
+              attributes:
+               type: array
+               items:
+                type: string
+              hasApiSession:
+               type: boolean
+              revision: {}
+              version: {}
+              jwt: {}
+              id:
+               type: string
+              sessionActive:
+               type: boolean
+              jwtExpiresAt: {}
+              createdAt:
+               type: string
+              arch: {}
+              createdBy:
+               type: string
+              deletedBy: {}
+              type: {}
+              osVersion: {}
+              appId: {}
+              _links:
+               type: object
+               required:
+                - network
+                - self
+               properties:
+                network:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
          _links:
           type: object
           required:
@@ -877,6 +2302,7 @@ paths:
      description: ''
   post:
    operationId: request_9sDuPizCiu
+   summary: Create an Endpoint
    requestBody:
     content:
      application/json:
@@ -1014,9 +2440,80 @@ paths:
               type: string
      description: ''
   parameters: []
+ '/core/v2/edge-routers/{edgeRouterId}/registration-key':
+  post:
+   operationId: request_auarCsIhkJ
+   summary: Get the registration information for an Edge Router
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - expiresAt
+         - registrationKey
+        properties:
+         expiresAt:
+          type: string
+         registrationKey:
+          type: string
+     description: ''
+  parameters:
+   -
+    in: path
+    name: edgeRouterId
+    required: true
+    schema:
+     type: string
+ /core/v2/posture-checks:
+  get:
+   operationId: request_Q0b3cbDW8S
+   summary: Get the list of Posture Checks
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  parameters: []
  '/rest/v1/network-groups/{networkGroupId}':
   get:
    operationId: request_VeJCBUR9iO
+   summary: Get a Network Group
    responses:
     '200':
      content:
@@ -1098,6 +2595,7 @@ paths:
  '/core/v2/edge-routers/{edgeRouterId}':
   get:
    operationId: request_4Q1qU3c4dk
+   summary: Get an Edge Router
    responses:
     '200':
      content:
@@ -1202,6 +2700,7 @@ paths:
  '/core/v2/networks/{networkId}':
   delete:
    operationId: request_IAJViYLviu
+   summary: Delete a Network
    responses:
     '202':
      content:
@@ -1216,6 +2715,7 @@ paths:
          - deletedBy
          - id
          - name
+         - networkController
          - networkGroupId
          - o365BreakoutCategory
          - ownerIdentityId
@@ -1246,6 +2746,60 @@ paths:
          createdBy:
           type: string
          deletedBy: {}
+         networkController:
+          type: object
+          required:
+           - createdAt
+           - dataCenterId
+           - deletedAt
+           - deletedBy
+           - domainName
+           - hostId
+           - id
+           - ipAddress
+           - locationMetadataId
+           - name
+           - networkId
+           - ownerIdentityId
+           - port
+           - provider
+           - providerId
+           - status
+           - updatedAt
+           - userData
+          properties:
+           deletedAt: {}
+           networkId:
+            type: string
+           name:
+            type: string
+           updatedAt:
+            type: string
+           provider:
+            type: string
+           userData: {}
+           ownerIdentityId: {}
+           domainName:
+            type: string
+           providerId:
+            type: string
+           id:
+            type: string
+           port:
+            type: number
+           ipAddress:
+            type: string
+           status:
+            type: string
+           hostId:
+            type: string
+           createdAt:
+            type: string
+           deletedBy: {}
+           locationMetadataId:
+            type: string
+           dataCenterId:
+            type: string
          o365BreakoutCategory:
           type: string
          _links:
@@ -1360,6 +2914,7 @@ paths:
      description: ''
   get:
    operationId: request_TeqMGeER5F
+   summary: Get a Network
    responses:
     '200':
      content:
@@ -1547,6 +3102,7 @@ paths:
  '/core/v2/endpoints/{endpointId}':
   get:
    operationId: request_tsyuwlAejK
+   summary: Get an Endpoint
    responses:
     '200':
      content:
@@ -1665,6 +3221,7 @@ paths:
  '/identity/v1/organizations/{organizationId}':
   get:
    operationId: request_N6GjgPLO4v
+   summary: Get an Organization
    responses:
     '200':
      content:
@@ -1768,6 +3325,8 @@ paths:
  /core/v2/network-configs:
   get:
    operationId: request_LOXfQSs8GE
+   summary: Get a Network Configuration profile
+   description: 'e.g. small, medium, large'
    responses:
     '200':
      content:
@@ -1872,6 +3431,7 @@ paths:
  /identity/v1/api-account-identities/self:
   get:
    operationId: request_mpyYtIiS6x
+   summary: Get the identity of the caller's API account
    responses:
     '200':
      content:
@@ -1935,6 +3495,7 @@ paths:
  /rest/v1/network-groups:
   get:
    operationId: request_K9ajDJ8vUS
+   summary: Get the list of Network Groups
    responses:
     '200':
      content:
@@ -2058,9 +3619,280 @@ paths:
             type: number
      description: ''
   parameters: []
+ /core/v2/edge-routers:
+  get:
+   operationId: request_YhzDAw1Ks4
+   summary: Get an Edge Router
+   responses:
+    '200':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - page
+        properties:
+         _embedded:
+          type: object
+          required:
+           - edgeRouterList
+          properties:
+           edgeRouterList:
+            type: array
+            items:
+             type: object
+             required:
+              - _links
+              - attributes
+              - createdAt
+              - createdBy
+              - dataCenterId
+              - deletedAt
+              - deletedBy
+              - hostId
+              - id
+              - ipAddress
+              - jwt
+              - linkListener
+              - locationMetadataId
+              - name
+              - networkId
+              - online
+              - ownerIdentityId
+              - provider
+              - providerId
+              - status
+              - updatedAt
+              - userData
+              - verified
+              - zitiId
+             properties:
+              deletedAt: {}
+              networkId:
+               type: string
+              name:
+               type: string
+              updatedAt:
+               type: string
+              provider: {}
+              online:
+               type: boolean
+              zitiId:
+               type: string
+              userData: {}
+              ownerIdentityId:
+               type: string
+              attributes:
+               type: array
+               items:
+                type: string
+              providerId: {}
+              jwt: {}
+              id:
+               type: string
+              ipAddress: {}
+              status:
+               type: string
+              hostId: {}
+              createdAt:
+               type: string
+              createdBy:
+               type: string
+              deletedBy: {}
+              locationMetadataId: {}
+              linkListener:
+               type: boolean
+              dataCenterId: {}
+              verified:
+               type: boolean
+              _links:
+               type: object
+               required:
+                - network
+                - self
+               properties:
+                network:
+                 type: object
+                 required:
+                  - href
+                  - profile
+                 properties:
+                  href:
+                   type: string
+                  profile:
+                   type: string
+                self:
+                 type: object
+                 required:
+                  - href
+                 properties:
+                  href:
+                   type: string
+         _links:
+          type: object
+          required:
+           - self
+          properties:
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+         page:
+          type: object
+          required:
+           - number
+           - size
+           - totalElements
+           - totalPages
+          properties:
+           number:
+            type: number
+           size:
+            type: number
+           totalElements:
+            type: number
+           totalPages:
+            type: number
+     description: ''
+  post:
+   operationId: request_pyR6aUP5mi
+   summary: Create an Edge Router
+   requestBody:
+    content:
+     application/json:
+      schema:
+       type: object
+       required:
+        - attributes
+        - linkListener
+        - name
+        - networkId
+       properties:
+        networkId:
+         type: string
+        name:
+         type: string
+        attributes:
+         type: array
+         items:
+          type: string
+        linkListener:
+         type: boolean
+        dataCenterId:
+         type: string
+   responses:
+    '202':
+     content:
+      application/hal+json:
+       schema:
+        type: object
+        required:
+         - _links
+         - attributes
+         - createdAt
+         - createdBy
+         - dataCenterId
+         - deletedAt
+         - deletedBy
+         - hostId
+         - id
+         - ipAddress
+         - jwt
+         - linkListener
+         - locationMetadataId
+         - name
+         - networkId
+         - online
+         - ownerIdentityId
+         - provider
+         - providerId
+         - status
+         - updatedAt
+         - userData
+         - verified
+         - zitiId
+        properties:
+         deletedAt: {}
+         networkId:
+          type: string
+         name:
+          type: string
+         updatedAt:
+          type: string
+         provider: {}
+         online:
+          type: boolean
+         zitiId: {}
+         userData: {}
+         ownerIdentityId:
+          type: string
+         attributes:
+          type: array
+          items:
+           type: string
+         providerId: {}
+         jwt: {}
+         id:
+          type: string
+         ipAddress: {}
+         status:
+          type: string
+         hostId: {}
+         createdAt:
+          type: string
+         createdBy:
+          type: string
+         deletedBy: {}
+         locationMetadataId: {}
+         linkListener:
+          type: boolean
+         dataCenterId: {}
+         verified:
+          type: boolean
+         _links:
+          type: object
+          required:
+           - network
+           - process
+           - self
+          properties:
+           network:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           process:
+            type: object
+            required:
+             - href
+             - profile
+            properties:
+             href:
+              type: string
+             profile:
+              type: string
+           self:
+            type: object
+            required:
+             - href
+            properties:
+             href:
+              type: string
+     description: ''
+  parameters: []
  /product-metadata/v2/download-urls.json:
   get:
    operationId: request_A8syyaPZnw
+   summary: Get the list of Network product versions
    responses:
     '200':
      content:
@@ -2089,6 +3921,7 @@ paths:
          - 7.3.21
          - 7.3.22
          - 7.3.23
+         - 7.3.24
          - 7.3.3
          - 7.3.4
          - 7.3.5
@@ -3700,6 +5533,124 @@ paths:
            zitiTunnelLinuxBinary.md5:
             type: string
            zitiRouterLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.md5:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-256:
+            type: string
+           zitiCliLinuxBinary.sha-256:
+            type: string
+           active:
+            type: boolean
+         7.3.24:
+          type: object
+          required:
+           - active
+           - zitiAndroidEdge
+           - zitiCliLinuxArmBinary
+           - zitiCliLinuxArmBinary.md5
+           - zitiCliLinuxArmBinary.sha-1
+           - zitiCliLinuxArmBinary.sha-256
+           - zitiCliLinuxBinary
+           - zitiCliLinuxBinary.md5
+           - zitiCliLinuxBinary.sha-1
+           - zitiCliLinuxBinary.sha-256
+           - zitiControllerBinary
+           - zitiControllerBinary.md5
+           - zitiControllerBinary.sha-1
+           - zitiControllerBinary.sha-256
+           - zitiFabricBinary
+           - zitiFabricBinary.md5
+           - zitiFabricBinary.sha-1
+           - zitiFabricBinary.sha-256
+           - zitiIosEdge
+           - zitiMacDesktopEdge
+           - zitiRouterLinuxArmBinary
+           - zitiRouterLinuxArmBinary.md5
+           - zitiRouterLinuxArmBinary.sha-1
+           - zitiRouterLinuxArmBinary.sha-256
+           - zitiRouterLinuxBinary
+           - zitiRouterLinuxBinary.md5
+           - zitiRouterLinuxBinary.sha-1
+           - zitiRouterLinuxBinary.sha-256
+           - zitiTunnelLinuxArmBinary
+           - zitiTunnelLinuxArmBinary.md5
+           - zitiTunnelLinuxArmBinary.sha-1
+           - zitiTunnelLinuxArmBinary.sha-256
+           - zitiTunnelLinuxBinary
+           - zitiTunnelLinuxBinary.md5
+           - zitiTunnelLinuxBinary.sha-1
+           - zitiTunnelLinuxBinary.sha-256
+           - zitiVersion
+           - zitiWindowsDesktopEdge
+          properties:
+           zitiCliLinuxBinary.sha-1:
+            type: string
+           zitiTunnelLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-1:
+            type: string
+           zitiControllerBinary:
+            type: string
+           zitiCliLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-1:
+            type: string
+           zitiRouterLinuxArmBinary.md5:
+            type: string
+           zitiRouterLinuxBinary.sha-256:
+            type: string
+           zitiCliLinuxArmBinary:
+            type: string
+           zitiRouterLinuxBinary.md5:
+            type: string
+           zitiWindowsDesktopEdge:
+            type: string
+           zitiRouterLinuxArmBinary.sha-256:
+            type: string
+           zitiMacDesktopEdge:
+            type: string
+           zitiControllerBinary.sha-1:
+            type: string
+           zitiControllerBinary.md5:
+            type: string
+           zitiControllerBinary.sha-256:
+            type: string
+           zitiIosEdge:
+            type: string
+           zitiCliLinuxBinary:
+            type: string
+           zitiRouterLinuxArmBinary.sha-1:
+            type: string
+           zitiVersion:
+            type: string
+           zitiFabricBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary.sha-1:
+            type: string
+           zitiTunnelLinuxArmBinary:
+            type: string
+           zitiCliLinuxArmBinary.sha-256:
+            type: string
+           zitiFabricBinary.sha-256:
+            type: string
+           zitiRouterLinuxBinary:
+            type: string
+           zitiTunnelLinuxBinary.sha-256:
+            type: string
+           zitiAndroidEdge:
+            type: string
+           zitiTunnelLinuxArmBinary.md5:
+            type: string
+           zitiFabricBinary.md5:
+            type: string
+           zitiTunnelLinuxBinary.md5:
+            type: string
+           zitiRouterLinuxArmBinary:
+            type: string
+           zitiFabricBinary.sha-1:
             type: string
            zitiCliLinuxArmBinary.md5:
             type: string
