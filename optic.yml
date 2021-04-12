@@ -1,5 +1,5 @@
+name: "NetFoundry API"
 # api run --transparent-proxy ENV
-name: NetFoundry API
 tasks:
   sandbox:
     targetUrl: https://gateway.sandbox.netfoundry.io/
@@ -13,3 +13,15 @@ tasks:
     targetUrl: https://gateway.production.netfoundry.io/
     inboundUrl: http://localhost:4322
 
+scripts:
+  render:
+    command: "widdershins $OPENAPI_JSON -o /tmp/api.md && shins  --inline -o docs/index.html /tmp/api.md"
+    dependsOn:
+      - widdershins
+      - shins
+    install: npm install --global widdershins shins
+
+  multiclient:
+    command: "(for gen_lang in bash c csharp clojure dart erlang-client go groovy java javascript kotlin perl php powershell python r ruby rust swift4 typescript-node; do openapi-generator generate -i $OPENAPI_YAML -g $gen_lang -o clients/$gen_lang; done)"
+    dependsOn: openapi-generator
+    install: "brew install openapi-generator"
