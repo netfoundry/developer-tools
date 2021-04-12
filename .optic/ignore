@@ -14,3 +14,5 @@ GET (.*).jpg
 GET (.*).jpeg
 GET (.*).svg
 GET (.*).gif
+GET (.*).json
+

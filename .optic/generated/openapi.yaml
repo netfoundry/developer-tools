@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
- title: NetFoundry API
- version: '5168'
+ title: untitled API
+ version: '5170'
 paths:
  '/core/v2/app-wans/{appWanId}':
   get:

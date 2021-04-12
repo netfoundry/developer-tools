@@ -1,5 +1,5 @@
 # api run --transparent-proxy ENV
-name: "Optic listens for BurpSuite upstream"
+name: NetFoundry API
 tasks:
   sandbox:
     targetUrl: https://gateway.sandbox.netfoundry.io/
