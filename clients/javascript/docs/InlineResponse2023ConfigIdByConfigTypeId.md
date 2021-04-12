@@ -1,0 +1,12 @@
+# UntitledApi.InlineResponse2023ConfigIdByConfigTypeId
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**_714a918a79354b4f82c3Afbadcd9e59b** | **String** |  | [optional] 
+**_7cafedc517b84c1e8b6f0d9bc1b4b7bc** | **String** |  | [optional] 
+**d75e27f0Ebab45678440C24f02f2eca5** | **String** |  | [optional] 
+**ea6e632bD8e1420fBd8fAd50b067bad6** | **String** |  | [optional] 
+
+

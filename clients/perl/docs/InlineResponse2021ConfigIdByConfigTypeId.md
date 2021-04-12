@@ -1,0 +1,16 @@
+# WWW::OpenAPIClient::Object::InlineResponse2021ConfigIdByConfigTypeId
+
+## Load the model package
+```perl
+use WWW::OpenAPIClient::Object::InlineResponse2021ConfigIdByConfigTypeId;
+```
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**_6fa5c2bc_b7f7_47f8_9229_e927722adb27** | **string** |  | [optional] 
+**b1582680_ab7b_45d0_ac36_b00f82df8e79** | **string** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
