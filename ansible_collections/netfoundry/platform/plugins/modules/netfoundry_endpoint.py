@@ -85,10 +85,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
-from netfoundry import Organization
-from netfoundry import NetworkGroup
-from netfoundry import Network
-#from netfoundry import Utility
+from netfoundry.organization import Organization
+from netfoundry.network_group import NetworkGroup
+from netfoundry.network import Network
+#from netfoundry.utility import Utility
 from os import path as Path
 from os import mkdir as mkdir
 from pathlib import Path as PathLib

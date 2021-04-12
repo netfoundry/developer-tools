@@ -3,6 +3,8 @@
 # Copyright: (c) 2021, Kenneth Bingham <kenneth.bingham@netfoundry.io>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
+
+import netfoundry
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -99,10 +101,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.module_utils._text import to_native
 from ansible.errors import AnsibleError
-from netfoundry import Organization
-from netfoundry import NetworkGroup
-from netfoundry import Network
-from netfoundry import Utility
+from netfoundry.organization import Organization
+from netfoundry.network_group import NetworkGroup
+from netfoundry.network import Network
+from netfoundry.utility import Utility
 from uuid import UUID
 
 def run_module():
