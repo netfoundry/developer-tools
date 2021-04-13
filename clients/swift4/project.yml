@@ -7,7 +7,7 @@ targets:
     sources: [OpenAPIClient]
     info:
       path: ./Info.plist
-      version: 5170
+      version: 5227
     settings:
       APPLICATION_EXTENSION_API_ONLY: true
     scheme: {}

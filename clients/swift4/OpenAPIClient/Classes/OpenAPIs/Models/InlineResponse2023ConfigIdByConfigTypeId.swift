@@ -11,22 +11,28 @@ import Foundation
 public struct InlineResponse2023ConfigIdByConfigTypeId: Codable { 
 
 
-    public var _714a918a79354b4f82c3Afbadcd9e59b: String?
-    public var _7cafedc517b84c1e8b6f0d9bc1b4b7bc: String?
     public var d75e27f0Ebab45678440C24f02f2eca5: String?
+    public var cf3962b1A98e4adeAe25Cdc388e7feb3: String
+    public var _7cafedc517b84c1e8b6f0d9bc1b4b7bc: String?
+    public var _714a918a79354b4f82c3Afbadcd9e59b: String?
+    public var _64a39300B672413b9d8c42175f7e84dd: String
     public var ea6e632bD8e1420fBd8fAd50b067bad6: String?
 
-    public init(_714a918a79354b4f82c3Afbadcd9e59b: String?, _7cafedc517b84c1e8b6f0d9bc1b4b7bc: String?, d75e27f0Ebab45678440C24f02f2eca5: String?, ea6e632bD8e1420fBd8fAd50b067bad6: String?) {
-        self._714a918a79354b4f82c3Afbadcd9e59b = _714a918a79354b4f82c3Afbadcd9e59b
-        self._7cafedc517b84c1e8b6f0d9bc1b4b7bc = _7cafedc517b84c1e8b6f0d9bc1b4b7bc
+    public init(d75e27f0Ebab45678440C24f02f2eca5: String?, cf3962b1A98e4adeAe25Cdc388e7feb3: String, _7cafedc517b84c1e8b6f0d9bc1b4b7bc: String?, _714a918a79354b4f82c3Afbadcd9e59b: String?, _64a39300B672413b9d8c42175f7e84dd: String, ea6e632bD8e1420fBd8fAd50b067bad6: String?) {
         self.d75e27f0Ebab45678440C24f02f2eca5 = d75e27f0Ebab45678440C24f02f2eca5
+        self.cf3962b1A98e4adeAe25Cdc388e7feb3 = cf3962b1A98e4adeAe25Cdc388e7feb3
+        self._7cafedc517b84c1e8b6f0d9bc1b4b7bc = _7cafedc517b84c1e8b6f0d9bc1b4b7bc
+        self._714a918a79354b4f82c3Afbadcd9e59b = _714a918a79354b4f82c3Afbadcd9e59b
+        self._64a39300B672413b9d8c42175f7e84dd = _64a39300B672413b9d8c42175f7e84dd
         self.ea6e632bD8e1420fBd8fAd50b067bad6 = ea6e632bD8e1420fBd8fAd50b067bad6
     }
 
     public enum CodingKeys: String, CodingKey { 
-        case _714a918a79354b4f82c3Afbadcd9e59b = "714a918a-7935-4b4f-82c3-afbadcd9e59b"
-        case _7cafedc517b84c1e8b6f0d9bc1b4b7bc = "7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc"
         case d75e27f0Ebab45678440C24f02f2eca5 = "d75e27f0-ebab-4567-8440-c24f02f2eca5"
+        case cf3962b1A98e4adeAe25Cdc388e7feb3 = "cf3962b1-a98e-4ade-ae25-cdc388e7feb3"
+        case _7cafedc517b84c1e8b6f0d9bc1b4b7bc = "7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc"
+        case _714a918a79354b4f82c3Afbadcd9e59b = "714a918a-7935-4b4f-82c3-afbadcd9e59b"
+        case _64a39300B672413b9d8c42175f7e84dd = "64a39300-b672-413b-9d8c-42175f7e84dd"
         case ea6e632bD8e1420fBd8fAd50b067bad6 = "ea6e632b-d8e1-420f-bd8f-ad50b067bad6"
     }
 
