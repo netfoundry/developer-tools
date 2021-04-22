@@ -6,6 +6,7 @@ import jwt
 from datetime import datetime
 import time
 import netfoundry
+from netfoundry import network_group
 
 #
 # inviteZitiEndpoints.py
@@ -84,16 +85,18 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-session = netfoundry.Session(
-    credentials=args.credentials if args.credentials is not None else None
+organization = netfoundry.Organization(
+    credentials=args.credentials if args.credentials else None
 )
+
+network_group = netfoundry.NetworkGroup(organization)
 
 if args.network_name and args.network_id:
     raise Exception("ERROR: need one of network-name or network-id")
 elif args.network_name:
-    network = netfoundry.Network(session, network_name=args.network_name)
+    network = netfoundry.Network(network_group, network_name=args.network_name)
 elif args.network_id:
-    network = netfoundry.Network(session, network_id=args.network_id)
+    network = netfoundry.Network(network_group, network_id=args.network_id)
 else:
     raise Exception("ERROR: need one of network-name or network-id")
 
@@ -151,7 +154,7 @@ for invitee in invitees:
             endpoint = network.create_endpoint(name=endpoint_name,attributes=attributes)
 
         # decode the JWT
-        expiry_epoch = jwt.decode(endpoint['jwt'], verify=False)['exp']
+        expiry_epoch = jwt.decode(endpoint['jwt'], algorithms=["RS256"], options={"verify_signature": False})['exp']
         # parse the expiry time
         expiry_timestamp = datetime.fromtimestamp(expiry_epoch)
         # recreate if expiring in less than 12 hours

@@ -1,0 +1,4406 @@
+openapi: 3.0.1
+info:
+  title: untitled API
+  version: "5227"
+servers:
+- url: /
+paths:
+  /core/v2/app-wans/{appWanId}:
+    get:
+      operationId: request_KkeR9gNy25
+      parameters:
+      - explode: false
+        in: path
+        name: appWanId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+      summary: Get an AppWAN
+  /core/v2/networks:
+    get:
+      operationId: request_oiIAfX2VUs
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+      summary: Get the list of Networks
+    post:
+      operationId: request_FWlFMQIDPX
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                size:
+                  type: string
+                locationCode:
+                  type: string
+                productVersion:
+                  type: string
+                networkGroupId:
+                  type: string
+              required:
+              - locationCode
+              - name
+              - networkGroupId
+              - productVersion
+              - size
+              type: object
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202'
+      summary: Create a Network
+  /core/v2/data-centers:
+    get:
+      operationId: request_VfuaDMeTRP
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+      summary: Get the list of data centers
+  /core/v2/services:
+    get:
+      operationId: request_E1IexRfvZg
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+      summary: Get the list of Services
+    post:
+      operationId: request_LopoFtq4ih
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_1'
+        content:
+          application/json:
+            schema:
+              properties:
+                networkId:
+                  type: string
+                name:
+                  type: string
+                model:
+                  $ref: '#/components/schemas/_core_v2_services_model'
+                attributes:
+                  items:
+                    type: string
+                  type: array
+                modelType:
+                  type: string
+                encryptionRequired:
+                  type: boolean
+              required:
+              - attributes
+              - encryptionRequired
+              - model
+              - modelType
+              - name
+              - networkId
+              type: object
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202_1'
+      summary: Create a Service
+  /core/v2/edge-router-policies:
+    get:
+      operationId: request_Hp1b9GiLax
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4'
+      summary: Get an Edge Router Policy
+    post:
+      operationId: request_lgKxU4ph9t
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_2'
+        content:
+          application/json:
+            schema:
+              properties:
+                edgeRouterAttributes:
+                  items:
+                    type: string
+                  type: array
+                endpointAttributes:
+                  items:
+                    type: string
+                  type: array
+                name:
+                  type: string
+                networkId:
+                  type: string
+              required:
+              - edgeRouterAttributes
+              - endpointAttributes
+              - name
+              - networkId
+              type: object
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4__embedded_edgeRouterPolicyList'
+      summary: Create an Edge Router Policy
+  /core/v2/services/{serviceId}:
+    delete:
+      operationId: request_pBaaiO3B0d
+      parameters:
+      - explode: false
+        in: path
+        name: serviceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202_2'
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+      summary: Delete a Service
+    get:
+      operationId: request_yLsf4m9TTT
+      parameters:
+      - explode: false
+        in: path
+        name: serviceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+      summary: Get a Service
+    patch:
+      operationId: request_VIzB1k6Uqb
+      parameters:
+      - explode: false
+        in: path
+        name: serviceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_3'
+        content:
+          application/json:
+            schema:
+              properties:
+                model:
+                  $ref: '#/components/schemas/_core_v2_services__serviceId__model'
+                modelType:
+                  type: string
+                name:
+                  type: string
+              required:
+              - model
+              - modelType
+              - name
+              type: object
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202_3'
+      summary: Change some properties of a Service
+  /core/v2/app-wans:
+    get:
+      operationId: request_gijVCEoMlM
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+      summary: Get the list of AppWANs
+    post:
+      operationId: request_NXoV6K2f0Q
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_4'
+        content:
+          application/json:
+            schema:
+              properties:
+                serviceAttributes:
+                  items:
+                    type: string
+                  type: array
+                networkId:
+                  type: string
+                name:
+                  type: string
+                postureCheckAttributes:
+                  items: {}
+                  type: array
+                endpointAttributes:
+                  items:
+                    type: string
+                  type: array
+              required:
+              - endpointAttributes
+              - name
+              - networkId
+              - postureCheckAttributes
+              - serviceAttributes
+              type: object
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+      summary: Create an AppWAN
+  /core/v2/edge-router-policies/{edgeRouterPolicyId}:
+    get:
+      operationId: request_btgg9ZlC0e
+      parameters:
+      - explode: false
+        in: path
+        name: edgeRouterPolicyId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4__embedded_edgeRouterPolicyList'
+      summary: Get an Edge Router Policy
+  /core/v2/endpoints:
+    get:
+      operationId: request_AYFhAQd5pn
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+      summary: Get an Endpoint
+    post:
+      operationId: request_9sDuPizCiu
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_5'
+        content:
+          application/json:
+            schema:
+              properties:
+                attributes:
+                  items:
+                    type: string
+                  type: array
+                enrollmentMethod:
+                  $ref: '#/components/schemas/_core_v2_endpoints_enrollmentMethod'
+                name:
+                  type: string
+                networkId:
+                  type: string
+              required:
+              - attributes
+              - enrollmentMethod
+              - name
+              - networkId
+              type: object
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+      summary: Create an Endpoint
+  /core/v2/edge-routers/{edgeRouterId}/registration-key:
+    post:
+      operationId: request_auarCsIhkJ
+      parameters:
+      - explode: false
+        in: path
+        name: edgeRouterId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_9'
+      summary: Get the registration information for an Edge Router
+  /core/v2/posture-checks:
+    get:
+      operationId: request_Q0b3cbDW8S
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_10'
+      summary: Get the list of Posture Checks
+  /rest/v1/network-groups/{networkGroupId}:
+    get:
+      operationId: request_VeJCBUR9iO
+      parameters:
+      - explode: false
+        in: path
+        name: networkGroupId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_11'
+      summary: Get a Network Group
+  /core/v2/edge-routers/{edgeRouterId}:
+    get:
+      operationId: request_4Q1qU3c4dk
+      parameters:
+      - explode: false
+        in: path
+        name: edgeRouterId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_12'
+      summary: Get an Edge Router
+  /core/v2/networks/{networkId}:
+    delete:
+      operationId: request_IAJViYLviu
+      parameters:
+      - explode: false
+        in: path
+        name: networkId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202_4'
+      summary: Delete a Network
+    get:
+      operationId: request_TeqMGeER5F
+      parameters:
+      - explode: false
+        in: path
+        name: networkId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_13'
+        "500":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500_1'
+      summary: Get a Network
+  /core/v2/endpoints/{endpointId}:
+    get:
+      operationId: request_tsyuwlAejK
+      parameters:
+      - explode: false
+        in: path
+        name: endpointId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7__embedded_endpointList'
+      summary: Get an Endpoint
+  /identity/v1/organizations/{organizationId}:
+    get:
+      operationId: request_N6GjgPLO4v
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_14'
+        "502": {}
+      summary: Get an Organization
+  /core/v2/network-configs:
+    get:
+      description: e.g. small, medium, large
+      operationId: request_LOXfQSs8GE
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_15'
+      summary: Get a Network Configuration profile
+  /identity/v1/api-account-identities/self:
+    get:
+      operationId: request_mpyYtIiS6x
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_16'
+      summary: Get the identity of the caller's API account
+  /rest/v1/network-groups:
+    get:
+      operationId: request_K9ajDJ8vUS
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_17'
+      summary: Get the list of Network Groups
+  /core/v2/edge-routers:
+    get:
+      operationId: request_YhzDAw1Ks4
+      responses:
+        "200":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_18'
+      summary: Get an Edge Router
+    post:
+      operationId: request_pyR6aUP5mi
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_6'
+        content:
+          application/json:
+            schema:
+              properties:
+                networkId:
+                  type: string
+                name:
+                  type: string
+                attributes:
+                  items:
+                    type: string
+                  type: array
+                linkListener:
+                  type: boolean
+                dataCenterId:
+                  type: string
+              required:
+              - attributes
+              - linkListener
+              - name
+              - networkId
+              type: object
+      responses:
+        "202":
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_202_5'
+      summary: Create an Edge Router
+  /product-metadata/v2/download-urls.json:
+    get:
+      operationId: request_A8syyaPZnw
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_19'
+      summary: Get the list of Network product versions
+components:
+  requestBodies:
+    inline_object_1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_1'
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+    inline_object_6:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_6'
+    inline_object_5:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_5'
+    inline_object_4:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_4'
+    inline_object_3:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_3'
+    inline_object_2:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_2'
+  schemas:
+    inline_response_200__links_network:
+      example:
+        profile: profile
+        href: href
+      properties:
+        href:
+          type: string
+        profile:
+          type: string
+      required:
+      - href
+      - profile
+    inline_response_200__links_self:
+      example:
+        href: href
+      properties:
+        href:
+          type: string
+      required:
+      - href
+    inline_response_200__links:
+      properties:
+        network:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - network
+      - self
+    inline_response_200:
+      properties:
+        serviceAttributes:
+          items:
+            type: string
+          type: array
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        postureCheckAttributes:
+          items: {}
+          type: array
+        zitiId:
+          type: string
+        ownerIdentityId:
+          type: string
+        id:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        endpointAttributes:
+          items:
+            type: string
+          type: array
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - endpointAttributes
+      - id
+      - name
+      - networkId
+      - ownerIdentityId
+      - postureCheckAttributes
+      - serviceAttributes
+      - updatedAt
+      - zitiId
+    inline_response_200_1__embedded__links:
+      properties:
+        services:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        networks:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        app-wans:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        endpoints:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        certificate-authorities:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        process-executions:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        network-controllers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        posture-checks:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-routers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-router-policies:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - app-wans
+      - certificate-authorities
+      - edge-router-policies
+      - edge-routers
+      - endpoints
+      - network-controllers
+      - networks
+      - posture-checks
+      - process-executions
+      - self
+      - services
+    inline_response_200_1__embedded_networkList:
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt:
+          type: string
+        size:
+          type: string
+        ownerIdentityId:
+          type: string
+        productVersion:
+          type: string
+        networkGroupId:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        networkController: {}
+        o365BreakoutCategory:
+          type: string
+        _links:
+          $ref: '#/components/schemas/inline_response_200_1__embedded__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - id
+      - name
+      - networkGroupId
+      - o365BreakoutCategory
+      - ownerIdentityId
+      - productVersion
+      - size
+      - status
+      - updatedAt
+    inline_response_200_1__embedded:
+      properties:
+        networkList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_1__embedded_networkList'
+          type: array
+      required:
+      - networkList
+    inline_response_200_1__links_self:
+      properties:
+        href:
+          type: string
+        templated:
+          type: boolean
+      required:
+      - href
+      - templated
+    inline_response_200_1__links:
+      properties:
+        self:
+          $ref: '#/components/schemas/inline_response_200_1__links_self'
+      required:
+      - self
+    inline_response_200_1_page:
+      example:
+        number: 0.8008281904610115
+        size: 6.027456183070403
+        totalPages: 5.962133916683182
+        totalElements: 1.4658129805029452
+      properties:
+        number:
+          type: number
+        size:
+          type: number
+        totalElements:
+          type: number
+        totalPages:
+          type: number
+      required:
+      - number
+      - size
+      - totalElements
+      - totalPages
+    inline_response_200_1:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_1__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_1__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _embedded
+      - _links
+      - page
+    inline_object:
+      properties:
+        name:
+          type: string
+        size:
+          type: string
+        locationCode:
+          type: string
+        productVersion:
+          type: string
+        networkGroupId:
+          type: string
+      required:
+      - locationCode
+      - name
+      - networkGroupId
+      - productVersion
+      - size
+      type: object
+    inline_response_202__links:
+      properties:
+        services:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        networks:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        app-wans:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        process:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        endpoints:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        certificate-authorities:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        process-executions:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        network-controllers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        posture-checks:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-routers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-router-policies:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - app-wans
+      - certificate-authorities
+      - edge-router-policies
+      - edge-routers
+      - endpoints
+      - network-controllers
+      - networks
+      - posture-checks
+      - process
+      - process-executions
+      - self
+      - services
+    inline_response_202:
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt:
+          type: string
+        size:
+          type: string
+        ownerIdentityId:
+          type: string
+        productVersion:
+          type: string
+        networkGroupId:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        networkController: {}
+        o365BreakoutCategory:
+          type: string
+        _links:
+          $ref: '#/components/schemas/inline_response_202__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - id
+      - name
+      - networkController
+      - networkGroupId
+      - o365BreakoutCategory
+      - ownerIdentityId
+      - productVersion
+      - size
+      - status
+      - updatedAt
+    inline_response_200_2__embedded__links:
+      properties:
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - self
+    inline_response_200_2__embedded_dataCenters:
+      properties:
+        city: {}
+        continentCode: {}
+        stateCode: {}
+        lng:
+          type: number
+        provider:
+          type: string
+        stateName: {}
+        continentName: {}
+        isp: {}
+        locationCode:
+          type: string
+        countryName: {}
+        id:
+          type: string
+        countryCode: {}
+        address: {}
+        locationName:
+          type: string
+        lat:
+          type: number
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+      required:
+      - _links
+      - address
+      - city
+      - continentCode
+      - continentName
+      - countryCode
+      - countryName
+      - id
+      - isp
+      - lat
+      - lng
+      - locationCode
+      - locationName
+      - provider
+      - stateCode
+      - stateName
+    inline_response_200_2__embedded:
+      properties:
+        dataCenters:
+          items:
+            $ref: '#/components/schemas/inline_response_200_2__embedded_dataCenters'
+          type: array
+      required:
+      - dataCenters
+    inline_response_200_2:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_2__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _embedded
+      - _links
+      - page
+    inline_response_200_3__embedded_model_serverEgress:
+      properties:
+        host:
+          type: string
+        dialInterceptAddress: {}
+        dialInterceptPort: {}
+        port:
+          type: number
+        dialInterceptProtocol:
+          type: boolean
+        address:
+          type: string
+        protocol: {}
+      required:
+      - port
+      - protocol
+    inline_response_200_3__embedded_model_clientIngress_ports:
+      properties:
+        high:
+          type: number
+        low:
+          type: number
+      required:
+      - high
+      - low
+    inline_response_200_3__embedded_model_clientIngress:
+      properties:
+        protocols:
+          items:
+            type: string
+          type: array
+        host:
+          type: string
+        ports:
+          items:
+            $ref: '#/components/schemas/inline_response_200_3__embedded_model_clientIngress_ports'
+          type: array
+        port:
+          type: number
+        addresses:
+          items:
+            type: string
+          type: array
+    inline_response_200_3__embedded_model_serverEgress_1:
+      properties:
+        host:
+          type: string
+        port:
+          type: number
+        protocol:
+          type: string
+      required:
+      - host
+      - port
+      - protocol
+    inline_response_200_3__embedded_model_edgeRouterHosts:
+      properties:
+        edgeRouterId:
+          type: string
+        serverEgress:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model_serverEgress_1'
+      required:
+      - edgeRouterId
+      - serverEgress
+    inline_response_200_3__embedded_model:
+      properties:
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        serverEgress:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model_serverEgress'
+        bindEndpointAttributes:
+          items:
+            type: string
+          type: array
+        clientIngress:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model_clientIngress'
+        edgeRouterHosts:
+          items:
+            $ref: '#/components/schemas/inline_response_200_3__embedded_model_edgeRouterHosts'
+          type: array
+      required:
+      - clientIngress
+      - edgeRouterAttributes
+    inline_response_200_3__embedded_configIdByConfigTypeId:
+      properties:
+        d75e27f0-ebab-4567-8440-c24f02f2eca5:
+          type: string
+        cf3962b1-a98e-4ade-ae25-cdc388e7feb3:
+          type: string
+        "2c1998a1-32e2-4084-b20a-b580570f4fbf":
+          type: string
+        "4c42c4db-f039-4a57-8264-5f57af512614":
+          type: string
+        "7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc":
+          type: string
+        "714a918a-7935-4b4f-82c3-afbadcd9e59b":
+          type: string
+        b1582680-ab7b-45d0-ac36-b00f82df8e79:
+          type: string
+        e7f6ef8d-da57-444c-b677-f03974f5d8be:
+          type: string
+        "6fa5c2bc-b7f7-47f8-9229-e927722adb27":
+          type: string
+        "170c6b9b-f010-46a1-a2ee-cd6729e1f5dc":
+          type: string
+        "64a39300-b672-413b-9d8c-42175f7e84dd":
+          type: string
+        ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+          type: string
+        "7491e52d-97e8-4759-8a63-c8ea8a75f822":
+          type: string
+    inline_response_200_3__embedded_serviceList:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        model:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model'
+        zitiId: {}
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        modelType:
+          type: string
+        id:
+          type: string
+        configIdByConfigTypeId:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_configIdByConfigTypeId'
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        encryptionRequired:
+          type: boolean
+        authority: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - attributes
+      - authority
+      - configIdByConfigTypeId
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - encryptionRequired
+      - id
+      - model
+      - modelType
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_200_3__embedded:
+      properties:
+        serviceList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_3__embedded_serviceList'
+          type: array
+      required:
+      - serviceList
+    inline_response_200_3:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_3__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    _core_v2_services_model_clientIngress_ports:
+      properties:
+        high:
+          type: string
+        low:
+          type: string
+      required:
+      - high
+      - low
+    _core_v2_services_model_clientIngress:
+      properties:
+        protocols:
+          items:
+            type: string
+          type: array
+        host:
+          type: string
+        ports:
+          items:
+            $ref: '#/components/schemas/_core_v2_services_model_clientIngress_ports'
+          type: array
+        port: {}
+        addresses:
+          items:
+            type: string
+          type: array
+    _core_v2_services_model_serverEgress:
+      properties:
+        host:
+          type: string
+        port: {}
+        protocol:
+          type: string
+      required:
+      - host
+      - port
+      - protocol
+    _core_v2_services_model_edgeRouterHosts:
+      properties:
+        edgeRouterId:
+          type: string
+        serverEgress:
+          $ref: '#/components/schemas/_core_v2_services_model_serverEgress'
+      required:
+      - edgeRouterId
+      - serverEgress
+    _core_v2_services_model:
+      properties:
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        serverEgress:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model_serverEgress'
+        bindEndpointAttributes:
+          items:
+            type: string
+          type: array
+        clientIngress:
+          $ref: '#/components/schemas/_core_v2_services_model_clientIngress'
+        edgeRouterHosts:
+          items:
+            $ref: '#/components/schemas/_core_v2_services_model_edgeRouterHosts'
+          type: array
+      required:
+      - clientIngress
+      - edgeRouterAttributes
+    inline_object_1:
+      properties:
+        networkId:
+          type: string
+        name:
+          type: string
+        model:
+          $ref: '#/components/schemas/_core_v2_services_model'
+        attributes:
+          items:
+            type: string
+          type: array
+        modelType:
+          type: string
+        encryptionRequired:
+          type: boolean
+      required:
+      - attributes
+      - encryptionRequired
+      - model
+      - modelType
+      - name
+      - networkId
+      type: object
+    inline_response_202_1_configIdByConfigTypeId:
+      properties:
+        "6fa5c2bc-b7f7-47f8-9229-e927722adb27":
+          type: string
+        "7491e52d-97e8-4759-8a63-c8ea8a75f822":
+          type: string
+        b1582680-ab7b-45d0-ac36-b00f82df8e79:
+          type: string
+        e7f6ef8d-da57-444c-b677-f03974f5d8be:
+          type: string
+      required:
+      - e7f6ef8d-da57-444c-b677-f03974f5d8be
+    inline_response_202_1__links:
+      example:
+        process:
+          profile: profile
+          href: href
+        self:
+          href: href
+        network:
+          profile: profile
+          href: href
+      properties:
+        network:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        process:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - network
+      - process
+      - self
+    inline_response_202_1:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        model:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model'
+        zitiId: {}
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        modelType:
+          type: string
+        id:
+          type: string
+        configIdByConfigTypeId:
+          $ref: '#/components/schemas/inline_response_202_1_configIdByConfigTypeId'
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        encryptionRequired:
+          type: boolean
+        authority: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_202_1__links'
+      required:
+      - _links
+      - attributes
+      - authority
+      - configIdByConfigTypeId
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - encryptionRequired
+      - id
+      - model
+      - modelType
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_200_4__embedded_edgeRouterPolicyList:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        updatedAt:
+          type: string
+        zitiId:
+          type: string
+        ownerIdentityId:
+          type: string
+        id:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        endpointAttributes:
+          items:
+            type: string
+          type: array
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - edgeRouterAttributes
+      - endpointAttributes
+      - id
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_200_4__embedded:
+      properties:
+        edgeRouterPolicyList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_4__embedded_edgeRouterPolicyList'
+          type: array
+      required:
+      - edgeRouterPolicyList
+    inline_response_200_4:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_4__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    inline_object_2:
+      properties:
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        endpointAttributes:
+          items:
+            type: string
+          type: array
+        name:
+          type: string
+        networkId:
+          type: string
+      required:
+      - edgeRouterAttributes
+      - endpointAttributes
+      - name
+      - networkId
+      type: object
+    inline_response_200_5_configIdByConfigTypeId:
+      properties:
+        d75e27f0-ebab-4567-8440-c24f02f2eca5:
+          type: string
+        cf3962b1-a98e-4ade-ae25-cdc388e7feb3:
+          type: string
+        "2c1998a1-32e2-4084-b20a-b580570f4fbf":
+          type: string
+        "4c42c4db-f039-4a57-8264-5f57af512614":
+          type: string
+        "7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc":
+          type: string
+        "714a918a-7935-4b4f-82c3-afbadcd9e59b":
+          type: string
+        b1582680-ab7b-45d0-ac36-b00f82df8e79:
+          type: string
+        e7f6ef8d-da57-444c-b677-f03974f5d8be:
+          type: string
+        "6fa5c2bc-b7f7-47f8-9229-e927722adb27":
+          type: string
+        "64a39300-b672-413b-9d8c-42175f7e84dd":
+          type: string
+        ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+          type: string
+        "7491e52d-97e8-4759-8a63-c8ea8a75f822":
+          type: string
+    inline_response_200_5:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        model:
+          $ref: '#/components/schemas/inline_response_200_3__embedded_model'
+        zitiId:
+          type: string
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        modelType:
+          type: string
+        id:
+          type: string
+        configIdByConfigTypeId:
+          $ref: '#/components/schemas/inline_response_200_5_configIdByConfigTypeId'
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        encryptionRequired:
+          type: boolean
+        authority: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - attributes
+      - authority
+      - configIdByConfigTypeId
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - encryptionRequired
+      - id
+      - model
+      - modelType
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_202_2_configIdByConfigTypeId:
+      example:
+        feb075cd-dd2b-47c5-922c-86ef3b06fb16: feb075cd-dd2b-47c5-922c-86ef3b06fb16
+        "888d6565-4359-4d91-b38d-0a24124e4456": 888d6565-4359-4d91-b38d-0a24124e4456
+        "6cd51ae0-cfe4-499d-88d8-d02a9e18b25f": 6cd51ae0-cfe4-499d-88d8-d02a9e18b25f
+        aca7f705-9f00-4ff6-8b86-63a4d44bde8a: aca7f705-9f00-4ff6-8b86-63a4d44bde8a
+        d28725c0-9771-47d7-a9da-e408bd0adf4e: d28725c0-9771-47d7-a9da-e408bd0adf4e
+      properties:
+        aca7f705-9f00-4ff6-8b86-63a4d44bde8a:
+          type: string
+        "6cd51ae0-cfe4-499d-88d8-d02a9e18b25f":
+          type: string
+        d28725c0-9771-47d7-a9da-e408bd0adf4e:
+          type: string
+        "888d6565-4359-4d91-b38d-0a24124e4456":
+          type: string
+        feb075cd-dd2b-47c5-922c-86ef3b06fb16:
+          type: string
+    inline_response_202_2:
+      example:
+        _links:
+          process:
+            profile: profile
+            href: href
+          self:
+            href: href
+          network:
+            profile: profile
+            href: href
+        encryptionRequired: true
+        modelType: modelType
+        deletedBy: deletedBy
+        configIdByConfigTypeId:
+          feb075cd-dd2b-47c5-922c-86ef3b06fb16: feb075cd-dd2b-47c5-922c-86ef3b06fb16
+          "888d6565-4359-4d91-b38d-0a24124e4456": 888d6565-4359-4d91-b38d-0a24124e4456
+          "6cd51ae0-cfe4-499d-88d8-d02a9e18b25f": 6cd51ae0-cfe4-499d-88d8-d02a9e18b25f
+          aca7f705-9f00-4ff6-8b86-63a4d44bde8a: aca7f705-9f00-4ff6-8b86-63a4d44bde8a
+          d28725c0-9771-47d7-a9da-e408bd0adf4e: d28725c0-9771-47d7-a9da-e408bd0adf4e
+        createdAt: createdAt
+        deletedAt: deletedAt
+        zitiId: ""
+        createdBy: createdBy
+        authority: ""
+        name: name
+        networkId: networkId
+        model: ""
+        attributes: ""
+        ownerIdentityId: ownerIdentityId
+        id: id
+        updatedAt: updatedAt
+      properties:
+        deletedAt:
+          type: string
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        model: {}
+        zitiId: {}
+        ownerIdentityId:
+          type: string
+        attributes: {}
+        modelType:
+          type: string
+        id:
+          type: string
+        configIdByConfigTypeId:
+          $ref: '#/components/schemas/inline_response_202_2_configIdByConfigTypeId'
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy:
+          type: string
+        encryptionRequired:
+          type: boolean
+        authority: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_202_1__links'
+      required:
+      - _links
+      - attributes
+      - authority
+      - configIdByConfigTypeId
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - encryptionRequired
+      - id
+      - model
+      - modelType
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_500:
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        status:
+          type: number
+        timestamp:
+          type: string
+      required:
+      - error
+      - message
+      - status
+      - timestamp
+    _core_v2_services__serviceId__model_clientIngress:
+      properties:
+        addresses:
+          items:
+            type: string
+          type: array
+        ports:
+          items:
+            $ref: '#/components/schemas/_core_v2_services_model_clientIngress_ports'
+          type: array
+        protocols:
+          items:
+            type: string
+          type: array
+      required:
+      - addresses
+      - ports
+      - protocols
+    _core_v2_services__serviceId__model_serverEgress:
+      properties:
+        dialInterceptAddress: {}
+        dialInterceptPort: {}
+        port:
+          type: number
+        dialInterceptProtocol:
+          type: boolean
+        address:
+          type: string
+        protocol: {}
+      required:
+      - address
+      - dialInterceptAddress
+      - dialInterceptPort
+      - dialInterceptProtocol
+      - port
+      - protocol
+    _core_v2_services__serviceId__model:
+      properties:
+        bindEndpointAttributes:
+          items:
+            type: string
+          type: array
+        clientIngress:
+          $ref: '#/components/schemas/_core_v2_services__serviceId__model_clientIngress'
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        serverEgress:
+          $ref: '#/components/schemas/_core_v2_services__serviceId__model_serverEgress'
+      required:
+      - bindEndpointAttributes
+      - clientIngress
+      - edgeRouterAttributes
+      - serverEgress
+    inline_object_3:
+      properties:
+        model:
+          $ref: '#/components/schemas/_core_v2_services__serviceId__model'
+        modelType:
+          type: string
+        name:
+          type: string
+      required:
+      - model
+      - modelType
+      - name
+      type: object
+    inline_response_202_3_model_clientIngress:
+      properties:
+        addresses:
+          items:
+            type: string
+          type: array
+        ports:
+          items:
+            $ref: '#/components/schemas/inline_response_200_3__embedded_model_clientIngress_ports'
+          type: array
+        protocols:
+          items:
+            type: string
+          type: array
+      required:
+      - addresses
+      - ports
+      - protocols
+    inline_response_202_3_model:
+      properties:
+        bindEndpointAttributes:
+          items:
+            type: string
+          type: array
+        clientIngress:
+          $ref: '#/components/schemas/inline_response_202_3_model_clientIngress'
+        edgeRouterAttributes:
+          items:
+            type: string
+          type: array
+        serverEgress:
+          $ref: '#/components/schemas/_core_v2_services__serviceId__model_serverEgress'
+      required:
+      - bindEndpointAttributes
+      - clientIngress
+      - edgeRouterAttributes
+      - serverEgress
+    inline_response_202_3_configIdByConfigTypeId:
+      properties:
+        d75e27f0-ebab-4567-8440-c24f02f2eca5:
+          type: string
+        cf3962b1-a98e-4ade-ae25-cdc388e7feb3:
+          type: string
+        "7cafedc5-17b8-4c1e-8b6f-0d9bc1b4b7bc":
+          type: string
+        "714a918a-7935-4b4f-82c3-afbadcd9e59b":
+          type: string
+        "64a39300-b672-413b-9d8c-42175f7e84dd":
+          type: string
+        ea6e632b-d8e1-420f-bd8f-ad50b067bad6:
+          type: string
+      required:
+      - 64a39300-b672-413b-9d8c-42175f7e84dd
+      - cf3962b1-a98e-4ade-ae25-cdc388e7feb3
+    inline_response_202_3:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        model:
+          $ref: '#/components/schemas/inline_response_202_3_model'
+        zitiId:
+          type: string
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        modelType:
+          type: string
+        id:
+          type: string
+        configIdByConfigTypeId:
+          $ref: '#/components/schemas/inline_response_202_3_configIdByConfigTypeId'
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        encryptionRequired:
+          type: boolean
+        authority: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_202_1__links'
+      required:
+      - _links
+      - attributes
+      - authority
+      - configIdByConfigTypeId
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - encryptionRequired
+      - id
+      - model
+      - modelType
+      - name
+      - networkId
+      - ownerIdentityId
+      - updatedAt
+      - zitiId
+    inline_response_200_6__embedded:
+      properties:
+        appWanList:
+          items:
+            $ref: '#/components/schemas/inline_response_200'
+          type: array
+      required:
+      - appWanList
+    inline_response_200_6:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_6__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    inline_object_4:
+      properties:
+        serviceAttributes:
+          items:
+            type: string
+          type: array
+        networkId:
+          type: string
+        name:
+          type: string
+        postureCheckAttributes:
+          items: {}
+          type: array
+        endpointAttributes:
+          items:
+            type: string
+          type: array
+      required:
+      - endpointAttributes
+      - name
+      - networkId
+      - postureCheckAttributes
+      - serviceAttributes
+      type: object
+    inline_response_200_7__embedded_endpointList:
+      properties:
+        mfaEnabled:
+          type: boolean
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        syncId: {}
+        sessionIdentityId: {}
+        osRelease: {}
+        syncResourceId: {}
+        zitiId:
+          type: string
+        appVersion: {}
+        branch: {}
+        os: {}
+        ownerIdentityId:
+          type: string
+        hasEdgeRouterConnection:
+          type: boolean
+        attributes:
+          items:
+            type: string
+          type: array
+        hasApiSession:
+          type: boolean
+        revision: {}
+        version: {}
+        jwt: {}
+        id:
+          type: string
+        sessionActive:
+          type: boolean
+        jwtExpiresAt: {}
+        createdAt:
+          type: string
+        arch: {}
+        createdBy:
+          type: string
+        deletedBy: {}
+        type: {}
+        osVersion: {}
+        appId: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - appId
+      - appVersion
+      - arch
+      - attributes
+      - branch
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - hasApiSession
+      - hasEdgeRouterConnection
+      - id
+      - jwt
+      - jwtExpiresAt
+      - mfaEnabled
+      - name
+      - networkId
+      - os
+      - osRelease
+      - osVersion
+      - ownerIdentityId
+      - revision
+      - sessionActive
+      - sessionIdentityId
+      - syncId
+      - syncResourceId
+      - type
+      - updatedAt
+      - version
+      - zitiId
+    inline_response_200_7__embedded:
+      properties:
+        endpointList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_7__embedded_endpointList'
+          type: array
+      required:
+      - endpointList
+    inline_response_200_7:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_7__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    _core_v2_endpoints_enrollmentMethod:
+      properties:
+        ott:
+          type: boolean
+      required:
+      - ott
+    inline_object_5:
+      properties:
+        attributes:
+          items:
+            type: string
+          type: array
+        enrollmentMethod:
+          $ref: '#/components/schemas/_core_v2_endpoints_enrollmentMethod'
+        name:
+          type: string
+        networkId:
+          type: string
+      required:
+      - attributes
+      - enrollmentMethod
+      - name
+      - networkId
+      type: object
+    inline_response_200_8:
+      properties:
+        mfaEnabled:
+          type: boolean
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        syncId: {}
+        sessionIdentityId: {}
+        osRelease: {}
+        syncResourceId: {}
+        zitiId:
+          type: string
+        appVersion: {}
+        branch: {}
+        os: {}
+        ownerIdentityId:
+          type: string
+        hasEdgeRouterConnection:
+          type: boolean
+        attributes:
+          items:
+            type: string
+          type: array
+        hasApiSession:
+          type: boolean
+        revision: {}
+        version: {}
+        jwt:
+          type: string
+        id:
+          type: string
+        sessionActive:
+          type: boolean
+        jwtExpiresAt:
+          type: string
+        createdAt:
+          type: string
+        arch: {}
+        createdBy:
+          type: string
+        deletedBy: {}
+        type: {}
+        osVersion: {}
+        appId: {}
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - appId
+      - appVersion
+      - arch
+      - attributes
+      - branch
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - hasApiSession
+      - hasEdgeRouterConnection
+      - id
+      - jwt
+      - jwtExpiresAt
+      - mfaEnabled
+      - name
+      - networkId
+      - os
+      - osRelease
+      - osVersion
+      - ownerIdentityId
+      - revision
+      - sessionActive
+      - sessionIdentityId
+      - syncId
+      - syncResourceId
+      - type
+      - updatedAt
+      - version
+      - zitiId
+    inline_response_200_9:
+      properties:
+        expiresAt:
+          type: string
+        registrationKey:
+          type: string
+      required:
+      - expiresAt
+      - registrationKey
+    inline_response_200_10:
+      properties:
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    inline_response_200_11__links:
+      example:
+        azureSubscription:
+          href: href
+        self:
+          href: href
+        networks:
+          href: href
+      properties:
+        azureSubscription:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        networks:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - azureSubscription
+      - networks
+      - self
+    inline_response_200_11:
+      example:
+        _links:
+          azureSubscription:
+            href: href
+          self:
+            href: href
+          networks:
+            href: href
+        billingAccountId: ""
+        organizationShortName: organizationShortName
+        createdAt: createdAt
+        deleted: true
+        name: name
+        defaultAzureVirtualWanId: ""
+        ownerIdentityId: ""
+        id: id
+        mfaRequired: true
+        awsAutoScalingGatewayEnabled: true
+        updatedAt: updatedAt
+        zitiEnabled: true
+      properties:
+        organizationShortName:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        zitiEnabled:
+          type: boolean
+        defaultAzureVirtualWanId: {}
+        ownerIdentityId: {}
+        billingAccountId: {}
+        id:
+          type: string
+        awsAutoScalingGatewayEnabled:
+          type: boolean
+        createdAt:
+          type: string
+        mfaRequired:
+          type: boolean
+        deleted:
+          type: boolean
+        _links:
+          $ref: '#/components/schemas/inline_response_200_11__links'
+      required:
+      - _links
+      - awsAutoScalingGatewayEnabled
+      - billingAccountId
+      - createdAt
+      - defaultAzureVirtualWanId
+      - deleted
+      - id
+      - mfaRequired
+      - name
+      - organizationShortName
+      - ownerIdentityId
+      - updatedAt
+      - zitiEnabled
+    inline_response_200_12:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        provider: {}
+        online:
+          type: boolean
+        zitiId:
+          type: string
+        userData: {}
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        providerId: {}
+        jwt: {}
+        id:
+          type: string
+        ipAddress: {}
+        status:
+          type: string
+        hostId: {}
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        locationMetadataId: {}
+        linkListener:
+          type: boolean
+        dataCenterId: {}
+        verified:
+          type: boolean
+        _links:
+          $ref: '#/components/schemas/inline_response_200__links'
+      required:
+      - _links
+      - attributes
+      - createdAt
+      - createdBy
+      - dataCenterId
+      - deletedAt
+      - deletedBy
+      - hostId
+      - id
+      - ipAddress
+      - jwt
+      - linkListener
+      - locationMetadataId
+      - name
+      - networkId
+      - online
+      - ownerIdentityId
+      - provider
+      - providerId
+      - status
+      - updatedAt
+      - userData
+      - verified
+      - zitiId
+    inline_response_200_13:
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt:
+          type: string
+        size:
+          type: string
+        locationCode:
+          type: string
+        ownerIdentityId:
+          type: string
+        productVersion:
+          type: string
+        networkGroupId:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+        sdsPassword:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        networkController: {}
+        o365BreakoutCategory:
+          type: string
+        _links:
+          $ref: '#/components/schemas/inline_response_200_1__embedded__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - id
+      - name
+      - networkGroupId
+      - o365BreakoutCategory
+      - ownerIdentityId
+      - productVersion
+      - size
+      - status
+      - updatedAt
+    inline_response_500_1_status:
+      properties:
+        code:
+          type: number
+        label:
+          type: string
+      required:
+      - code
+      - label
+    inline_response_500_1:
+      properties:
+        errors:
+          items:
+            type: string
+          type: array
+        status:
+          $ref: '#/components/schemas/inline_response_500_1_status'
+        traceId:
+          type: string
+      required:
+      - errors
+      - status
+      - traceId
+    inline_response_202_4_networkController:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        provider:
+          type: string
+        userData: {}
+        ownerIdentityId: {}
+        domainName:
+          type: string
+        providerId:
+          type: string
+        id:
+          type: string
+        port:
+          type: number
+        ipAddress:
+          type: string
+        status:
+          type: string
+        hostId:
+          type: string
+        createdAt:
+          type: string
+        deletedBy: {}
+        locationMetadataId:
+          type: string
+        dataCenterId:
+          type: string
+      required:
+      - createdAt
+      - dataCenterId
+      - deletedAt
+      - deletedBy
+      - domainName
+      - hostId
+      - id
+      - ipAddress
+      - locationMetadataId
+      - name
+      - networkId
+      - ownerIdentityId
+      - port
+      - provider
+      - providerId
+      - status
+      - updatedAt
+      - userData
+    inline_response_202_4__links:
+      properties:
+        services:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        process-execution:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        networks:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        app-wans:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        endpoints:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        certificate-authorities:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        self:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        process-executions:
+          $ref: '#/components/schemas/inline_response_200__links_network'
+        network-controllers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        posture-checks:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-routers:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        edge-router-policies:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - app-wans
+      - certificate-authorities
+      - edge-router-policies
+      - edge-routers
+      - endpoints
+      - network-controllers
+      - networks
+      - posture-checks
+      - process-execution
+      - process-executions
+      - self
+      - services
+    inline_response_202_4:
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt:
+          type: string
+        size:
+          type: string
+        ownerIdentityId:
+          type: string
+        productVersion:
+          type: string
+        networkGroupId:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        networkController:
+          $ref: '#/components/schemas/inline_response_202_4_networkController'
+        o365BreakoutCategory:
+          type: string
+        _links:
+          $ref: '#/components/schemas/inline_response_202_4__links'
+      required:
+      - _links
+      - createdAt
+      - createdBy
+      - deletedAt
+      - deletedBy
+      - id
+      - name
+      - networkController
+      - networkGroupId
+      - o365BreakoutCategory
+      - ownerIdentityId
+      - productVersion
+      - size
+      - status
+      - updatedAt
+    inline_response_200_14_updatedAt:
+      example:
+        nano: 6.027456183070403
+        epochSecond: 0.8008281904610115
+      properties:
+        epochSecond:
+          type: number
+        nano:
+          type: number
+      required:
+      - epochSecond
+      - nano
+    inline_response_200_14_identityProviders:
+      example:
+        organizationId: organizationId
+        createdAt:
+          nano: 6.027456183070403
+          epochSecond: 0.8008281904610115
+        deletedAt: ""
+        auth0ConnectionType: auth0ConnectionType
+        name: name
+        active: true
+        auth0ConnectionId: auth0ConnectionId
+        id: id
+        updatedAt: ""
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt: {}
+        auth0ConnectionType:
+          type: string
+        auth0ConnectionId:
+          type: string
+        id:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/inline_response_200_14_updatedAt'
+        organizationId:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - auth0ConnectionId
+      - auth0ConnectionType
+      - createdAt
+      - deletedAt
+      - id
+      - name
+      - organizationId
+      - updatedAt
+    inline_response_200_14:
+      example:
+        createdAt:
+          nano: 6.027456183070403
+          epochSecond: 0.8008281904610115
+        deletedAt: ""
+        identityProviders:
+        - organizationId: organizationId
+          createdAt:
+            nano: 6.027456183070403
+            epochSecond: 0.8008281904610115
+          deletedAt: ""
+          auth0ConnectionType: auth0ConnectionType
+          name: name
+          active: true
+          auth0ConnectionId: auth0ConnectionId
+          id: id
+          updatedAt: ""
+        - organizationId: organizationId
+          createdAt:
+            nano: 6.027456183070403
+            epochSecond: 0.8008281904610115
+          deletedAt: ""
+          auth0ConnectionType: auth0ConnectionType
+          name: name
+          active: true
+          auth0ConnectionId: auth0ConnectionId
+          id: id
+          updatedAt: ""
+        deleted: true
+        mfaProvider: mfaProvider
+        name: name
+        active: true
+        label: label
+        id: id
+        updatedAt:
+          nano: 6.027456183070403
+          epochSecond: 0.8008281904610115
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt:
+          $ref: '#/components/schemas/inline_response_200_14_updatedAt'
+        label:
+          type: string
+        id:
+          type: string
+        mfaProvider:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/inline_response_200_14_updatedAt'
+        identityProviders:
+          items:
+            $ref: '#/components/schemas/inline_response_200_14_identityProviders'
+          type: array
+        deleted:
+          type: boolean
+        active:
+          type: boolean
+      required:
+      - active
+      - createdAt
+      - deleted
+      - deletedAt
+      - id
+      - identityProviders
+      - label
+      - mfaProvider
+      - name
+      - updatedAt
+    inline_response_200_15__embedded_networkConfigMetadataList:
+      properties:
+        networkControllerVolumeSize:
+          type: number
+        gatewayVolumeSize:
+          type: number
+        name:
+          type: string
+        gcpTransferNodeSize:
+          type: string
+        awsNetworkControllerSize:
+          type: string
+        transferNodeVolumeSize:
+          type: number
+        awsGatewaySize:
+          type: string
+        ocpTransferNodeSize:
+          type: string
+        awsTransferNodeSize:
+          type: string
+        id:
+          type: string
+        azureTransferNodeSize:
+          type: string
+        alicloudTransferNodeSize:
+          type: string
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+      required:
+      - _links
+      - alicloudTransferNodeSize
+      - awsGatewaySize
+      - awsNetworkControllerSize
+      - awsTransferNodeSize
+      - azureTransferNodeSize
+      - gatewayVolumeSize
+      - gcpTransferNodeSize
+      - id
+      - name
+      - networkControllerVolumeSize
+      - ocpTransferNodeSize
+      - transferNodeVolumeSize
+    inline_response_200_15__embedded:
+      properties:
+        networkConfigMetadataList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_15__embedded_networkConfigMetadataList'
+          type: array
+      required:
+      - networkConfigMetadataList
+    inline_response_200_15:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_15__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _embedded
+      - _links
+      - page
+    inline_response_200_16:
+      example:
+        contactEmail: contactEmail
+        description: description
+        active: true
+        type: type
+        auth0ClientId: ""
+        organizationId: organizationId
+        createdAt:
+          nano: 6.027456183070403
+          epochSecond: 0.8008281904610115
+        deletedAt: ""
+        name: name
+        tenantId: tenantId
+        id: id
+        authenticationUrl: authenticationUrl
+        awsCognitoClientId: awsCognitoClientId
+        email: email
+        updatedAt: ""
+      properties:
+        deletedAt: {}
+        name:
+          type: string
+        updatedAt: {}
+        email:
+          type: string
+        description:
+          type: string
+        awsCognitoClientId:
+          type: string
+        auth0ClientId: {}
+        id:
+          type: string
+        contactEmail:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/inline_response_200_14_updatedAt'
+        organizationId:
+          type: string
+        tenantId:
+          type: string
+        type:
+          type: string
+        authenticationUrl:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - auth0ClientId
+      - authenticationUrl
+      - awsCognitoClientId
+      - contactEmail
+      - createdAt
+      - deletedAt
+      - description
+      - email
+      - id
+      - name
+      - organizationId
+      - tenantId
+      - type
+      - updatedAt
+    inline_response_200_17__embedded_organizations:
+      example:
+        _links:
+          azureSubscription:
+            href: href
+          self:
+            href: href
+          networks:
+            href: href
+        billingAccountId: billingAccountId
+        organizationShortName: organizationShortName
+        createdAt: createdAt
+        deleted: true
+        name: name
+        defaultAzureVirtualWanId: ""
+        ownerIdentityId: ""
+        id: id
+        mfaRequired: true
+        awsAutoScalingGatewayEnabled: true
+        updatedAt: updatedAt
+        zitiEnabled: true
+      properties:
+        organizationShortName:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        zitiEnabled:
+          type: boolean
+        defaultAzureVirtualWanId: {}
+        ownerIdentityId: {}
+        billingAccountId:
+          type: string
+        id:
+          type: string
+        awsAutoScalingGatewayEnabled:
+          type: boolean
+        createdAt:
+          type: string
+        mfaRequired:
+          type: boolean
+        deleted:
+          type: boolean
+        _links:
+          $ref: '#/components/schemas/inline_response_200_11__links'
+      required:
+      - _links
+      - awsAutoScalingGatewayEnabled
+      - billingAccountId
+      - createdAt
+      - defaultAzureVirtualWanId
+      - deleted
+      - id
+      - mfaRequired
+      - name
+      - organizationShortName
+      - ownerIdentityId
+      - updatedAt
+      - zitiEnabled
+    inline_response_200_17__embedded:
+      example:
+        organizations:
+        - _links:
+            azureSubscription:
+              href: href
+            self:
+              href: href
+            networks:
+              href: href
+          billingAccountId: billingAccountId
+          organizationShortName: organizationShortName
+          createdAt: createdAt
+          deleted: true
+          name: name
+          defaultAzureVirtualWanId: ""
+          ownerIdentityId: ""
+          id: id
+          mfaRequired: true
+          awsAutoScalingGatewayEnabled: true
+          updatedAt: updatedAt
+          zitiEnabled: true
+        - _links:
+            azureSubscription:
+              href: href
+            self:
+              href: href
+            networks:
+              href: href
+          billingAccountId: billingAccountId
+          organizationShortName: organizationShortName
+          createdAt: createdAt
+          deleted: true
+          name: name
+          defaultAzureVirtualWanId: ""
+          ownerIdentityId: ""
+          id: id
+          mfaRequired: true
+          awsAutoScalingGatewayEnabled: true
+          updatedAt: updatedAt
+          zitiEnabled: true
+      properties:
+        organizations:
+          items:
+            $ref: '#/components/schemas/inline_response_200_17__embedded_organizations'
+          type: array
+      required:
+      - organizations
+    inline_response_200_17__links:
+      example:
+        last:
+          href: href
+        first:
+          href: href
+      properties:
+        first:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+        last:
+          $ref: '#/components/schemas/inline_response_200__links_self'
+      required:
+      - first
+      - last
+    inline_response_200_17:
+      example:
+        _embedded:
+          organizations:
+          - _links:
+              azureSubscription:
+                href: href
+              self:
+                href: href
+              networks:
+                href: href
+            billingAccountId: billingAccountId
+            organizationShortName: organizationShortName
+            createdAt: createdAt
+            deleted: true
+            name: name
+            defaultAzureVirtualWanId: ""
+            ownerIdentityId: ""
+            id: id
+            mfaRequired: true
+            awsAutoScalingGatewayEnabled: true
+            updatedAt: updatedAt
+            zitiEnabled: true
+          - _links:
+              azureSubscription:
+                href: href
+              self:
+                href: href
+              networks:
+                href: href
+            billingAccountId: billingAccountId
+            organizationShortName: organizationShortName
+            createdAt: createdAt
+            deleted: true
+            name: name
+            defaultAzureVirtualWanId: ""
+            ownerIdentityId: ""
+            id: id
+            mfaRequired: true
+            awsAutoScalingGatewayEnabled: true
+            updatedAt: updatedAt
+            zitiEnabled: true
+        _links:
+          last:
+            href: href
+          first:
+            href: href
+        page:
+          number: 0.8008281904610115
+          size: 6.027456183070403
+          totalPages: 5.962133916683182
+          totalElements: 1.4658129805029452
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_17__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_17__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _embedded
+      - _links
+      - page
+    inline_response_200_18__embedded:
+      properties:
+        edgeRouterList:
+          items:
+            $ref: '#/components/schemas/inline_response_200_12'
+          type: array
+      required:
+      - edgeRouterList
+    inline_response_200_18:
+      properties:
+        _embedded:
+          $ref: '#/components/schemas/inline_response_200_18__embedded'
+        _links:
+          $ref: '#/components/schemas/inline_response_200_2__embedded__links'
+        page:
+          $ref: '#/components/schemas/inline_response_200_1_page'
+      required:
+      - _links
+      - page
+    inline_object_6:
+      properties:
+        networkId:
+          type: string
+        name:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        linkListener:
+          type: boolean
+        dataCenterId:
+          type: string
+      required:
+      - attributes
+      - linkListener
+      - name
+      - networkId
+      type: object
+    inline_response_202_5:
+      properties:
+        deletedAt: {}
+        networkId:
+          type: string
+        name:
+          type: string
+        updatedAt:
+          type: string
+        provider: {}
+        online:
+          type: boolean
+        zitiId: {}
+        userData: {}
+        ownerIdentityId:
+          type: string
+        attributes:
+          items:
+            type: string
+          type: array
+        providerId: {}
+        jwt: {}
+        id:
+          type: string
+        ipAddress: {}
+        status:
+          type: string
+        hostId: {}
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        deletedBy: {}
+        locationMetadataId: {}
+        linkListener:
+          type: boolean
+        dataCenterId: {}
+        verified:
+          type: boolean
+        _links:
+          $ref: '#/components/schemas/inline_response_202_1__links'
+      required:
+      - _links
+      - attributes
+      - createdAt
+      - createdBy
+      - dataCenterId
+      - deletedAt
+      - deletedBy
+      - hostId
+      - id
+      - ipAddress
+      - jwt
+      - linkListener
+      - locationMetadataId
+      - name
+      - networkId
+      - online
+      - ownerIdentityId
+      - provider
+      - providerId
+      - status
+      - updatedAt
+      - userData
+      - verified
+      - zitiId
+    inline_response_200_19_7_3_4:
+      example:
+        zitiAndroidEdge: zitiAndroidEdge
+        zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+        zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+        zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+        zitiCliLinuxBinary: zitiCliLinuxBinary
+        zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+        zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+        zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+        zitiControllerBinary: zitiControllerBinary
+        zitiMacDesktopEdge: zitiMacDesktopEdge
+        zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+        zitiRouterLinuxBinary: zitiRouterLinuxBinary
+        zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+        zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+        zitiControllerBinary.md5: zitiControllerBinary.md5
+        zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+        zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+        zitiIosEdge: zitiIosEdge
+        zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+        zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+        active: true
+        zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+        zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+        zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+        zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+        zitiVersion: zitiVersion
+        zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+        zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+        zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+        zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+        zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+      properties:
+        zitiCliLinuxBinary.sha-1:
+          type: string
+        zitiTunnelLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-1:
+          type: string
+        zitiControllerBinary:
+          type: string
+        zitiCliLinuxBinary.md5:
+          type: string
+        zitiRouterLinuxBinary.sha-1:
+          type: string
+        zitiRouterLinuxArmBinary.md5:
+          type: string
+        zitiRouterLinuxBinary.sha-256:
+          type: string
+        zitiCliLinuxArmBinary:
+          type: string
+        zitiRouterLinuxBinary.md5:
+          type: string
+        zitiWindowsDesktopEdge:
+          type: string
+        zitiRouterLinuxArmBinary.sha-256:
+          type: string
+        zitiMacDesktopEdge:
+          type: string
+        zitiControllerBinary.sha-1:
+          type: string
+        zitiControllerBinary.md5:
+          type: string
+        zitiControllerBinary.sha-256:
+          type: string
+        zitiIosEdge:
+          type: string
+        zitiCliLinuxBinary:
+          type: string
+        zitiRouterLinuxArmBinary.sha-1:
+          type: string
+        zitiVersion:
+          type: string
+        zitiCliLinuxArmBinary.sha-1:
+          type: string
+        zitiTunnelLinuxArmBinary.sha-1:
+          type: string
+        zitiTunnelLinuxArmBinary:
+          type: string
+        zitiCliLinuxArmBinary.sha-256:
+          type: string
+        zitiRouterLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-256:
+          type: string
+        zitiAndroidEdge:
+          type: string
+        zitiTunnelLinuxArmBinary.md5:
+          type: string
+        zitiTunnelLinuxBinary.md5:
+          type: string
+        zitiRouterLinuxArmBinary:
+          type: string
+        zitiCliLinuxArmBinary.md5:
+          type: string
+        zitiTunnelLinuxArmBinary.sha-256:
+          type: string
+        zitiCliLinuxBinary.sha-256:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - zitiAndroidEdge
+      - zitiCliLinuxArmBinary
+      - zitiCliLinuxArmBinary.md5
+      - zitiCliLinuxArmBinary.sha-1
+      - zitiCliLinuxArmBinary.sha-256
+      - zitiCliLinuxBinary
+      - zitiCliLinuxBinary.md5
+      - zitiCliLinuxBinary.sha-1
+      - zitiCliLinuxBinary.sha-256
+      - zitiControllerBinary
+      - zitiControllerBinary.md5
+      - zitiControllerBinary.sha-1
+      - zitiControllerBinary.sha-256
+      - zitiIosEdge
+      - zitiMacDesktopEdge
+      - zitiRouterLinuxArmBinary
+      - zitiRouterLinuxArmBinary.md5
+      - zitiRouterLinuxArmBinary.sha-1
+      - zitiRouterLinuxArmBinary.sha-256
+      - zitiRouterLinuxBinary
+      - zitiRouterLinuxBinary.md5
+      - zitiRouterLinuxBinary.sha-1
+      - zitiRouterLinuxBinary.sha-256
+      - zitiTunnelLinuxArmBinary
+      - zitiTunnelLinuxArmBinary.md5
+      - zitiTunnelLinuxArmBinary.sha-1
+      - zitiTunnelLinuxArmBinary.sha-256
+      - zitiTunnelLinuxBinary
+      - zitiTunnelLinuxBinary.md5
+      - zitiTunnelLinuxBinary.sha-1
+      - zitiTunnelLinuxBinary.sha-256
+      - zitiVersion
+      - zitiWindowsDesktopEdge
+    inline_response_200_19_7_3_16:
+      example:
+        zitiAndroidEdge: zitiAndroidEdge
+        zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+        zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+        zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+        zitiCliLinuxBinary: zitiCliLinuxBinary
+        zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+        zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+        zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+        zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+        zitiFabricBinary: zitiFabricBinary
+        zitiControllerBinary: zitiControllerBinary
+        zitiMacDesktopEdge: zitiMacDesktopEdge
+        zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+        zitiRouterLinuxBinary: zitiRouterLinuxBinary
+        zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+        zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+        zitiControllerBinary.md5: zitiControllerBinary.md5
+        zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+        zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+        zitiIosEdge: zitiIosEdge
+        zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+        zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+        active: true
+        zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+        zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+        zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+        zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+        zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+        zitiVersion: zitiVersion
+        zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+        zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+        zitiFabricBinary.md5: zitiFabricBinary.md5
+        zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+        zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+        zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+        zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+      properties:
+        zitiCliLinuxBinary.sha-1:
+          type: string
+        zitiTunnelLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-1:
+          type: string
+        zitiControllerBinary:
+          type: string
+        zitiCliLinuxBinary.md5:
+          type: string
+        zitiRouterLinuxBinary.sha-1:
+          type: string
+        zitiRouterLinuxArmBinary.md5:
+          type: string
+        zitiRouterLinuxBinary.sha-256:
+          type: string
+        zitiCliLinuxArmBinary:
+          type: string
+        zitiRouterLinuxBinary.md5:
+          type: string
+        zitiWindowsDesktopEdge:
+          type: string
+        zitiRouterLinuxArmBinary.sha-256:
+          type: string
+        zitiMacDesktopEdge:
+          type: string
+        zitiControllerBinary.sha-1:
+          type: string
+        zitiControllerBinary.md5:
+          type: string
+        zitiControllerBinary.sha-256:
+          type: string
+        zitiIosEdge:
+          type: string
+        zitiCliLinuxBinary:
+          type: string
+        zitiRouterLinuxArmBinary.sha-1:
+          type: string
+        zitiVersion:
+          type: string
+        zitiFabricBinary:
+          type: string
+        zitiCliLinuxArmBinary.sha-1:
+          type: string
+        zitiTunnelLinuxArmBinary.sha-1:
+          type: string
+        zitiTunnelLinuxArmBinary:
+          type: string
+        zitiCliLinuxArmBinary.sha-256:
+          type: string
+        zitiFabricBinary.sha-256:
+          type: string
+        zitiRouterLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-256:
+          type: string
+        zitiAndroidEdge:
+          type: string
+        zitiTunnelLinuxArmBinary.md5:
+          type: string
+        zitiFabricBinary.md5:
+          type: string
+        zitiTunnelLinuxBinary.md5:
+          type: string
+        zitiRouterLinuxArmBinary:
+          type: string
+        zitiFabricBinary.sha-1:
+          type: string
+        zitiCliLinuxArmBinary.md5:
+          type: string
+        zitiTunnelLinuxArmBinary.sha-256:
+          type: string
+        zitiCliLinuxBinary.sha-256:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - zitiAndroidEdge
+      - zitiCliLinuxArmBinary
+      - zitiCliLinuxArmBinary.md5
+      - zitiCliLinuxArmBinary.sha-1
+      - zitiCliLinuxArmBinary.sha-256
+      - zitiCliLinuxBinary
+      - zitiCliLinuxBinary.md5
+      - zitiCliLinuxBinary.sha-1
+      - zitiCliLinuxBinary.sha-256
+      - zitiControllerBinary
+      - zitiControllerBinary.md5
+      - zitiControllerBinary.sha-1
+      - zitiControllerBinary.sha-256
+      - zitiFabricBinary
+      - zitiFabricBinary.md5
+      - zitiFabricBinary.sha-1
+      - zitiFabricBinary.sha-256
+      - zitiIosEdge
+      - zitiMacDesktopEdge
+      - zitiRouterLinuxArmBinary
+      - zitiRouterLinuxArmBinary.md5
+      - zitiRouterLinuxArmBinary.sha-1
+      - zitiRouterLinuxArmBinary.sha-256
+      - zitiRouterLinuxBinary
+      - zitiRouterLinuxBinary.md5
+      - zitiRouterLinuxBinary.sha-1
+      - zitiRouterLinuxBinary.sha-256
+      - zitiTunnelLinuxArmBinary
+      - zitiTunnelLinuxArmBinary.md5
+      - zitiTunnelLinuxArmBinary.sha-1
+      - zitiTunnelLinuxArmBinary.sha-256
+      - zitiTunnelLinuxBinary
+      - zitiTunnelLinuxBinary.md5
+      - zitiTunnelLinuxBinary.sha-1
+      - zitiTunnelLinuxBinary.sha-256
+      - zitiVersion
+      - zitiWindowsDesktopEdge
+    inline_response_200_19_7_1_0:
+      example:
+        zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+        zitiRouterLinuxBinary: zitiRouterLinuxBinary
+        zitiAndroidEdge: zitiAndroidEdge
+        zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+        zitiControllerBinary.md5: zitiControllerBinary.md5
+        zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+        zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+        zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+        zitiIosEdge: zitiIosEdge
+        zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+        active: true
+        zitiCliLinuxBinary: zitiCliLinuxBinary
+        zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+        zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+        zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+        zitiVersion: zitiVersion
+        zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+        zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+        zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+        zitiControllerBinary: zitiControllerBinary
+        zitiMacDesktopEdge: zitiMacDesktopEdge
+        zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+      properties:
+        zitiCliLinuxBinary.sha-1:
+          type: string
+        zitiTunnelLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-1:
+          type: string
+        zitiControllerBinary:
+          type: string
+        zitiCliLinuxBinary.md5:
+          type: string
+        zitiRouterLinuxBinary.sha-1:
+          type: string
+        zitiRouterLinuxBinary.sha-256:
+          type: string
+        zitiRouterLinuxBinary.md5:
+          type: string
+        zitiWindowsDesktopEdge:
+          type: string
+        zitiMacDesktopEdge:
+          type: string
+        zitiControllerBinary.sha-1:
+          type: string
+        zitiControllerBinary.md5:
+          type: string
+        zitiControllerBinary.sha-256:
+          type: string
+        zitiIosEdge:
+          type: string
+        zitiCliLinuxBinary:
+          type: string
+        zitiVersion:
+          type: string
+        zitiRouterLinuxBinary:
+          type: string
+        zitiTunnelLinuxBinary.sha-256:
+          type: string
+        zitiAndroidEdge:
+          type: string
+        zitiTunnelLinuxBinary.md5:
+          type: string
+        zitiCliLinuxBinary.sha-256:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - zitiAndroidEdge
+      - zitiCliLinuxBinary
+      - zitiCliLinuxBinary.md5
+      - zitiCliLinuxBinary.sha-1
+      - zitiCliLinuxBinary.sha-256
+      - zitiControllerBinary
+      - zitiControllerBinary.md5
+      - zitiControllerBinary.sha-1
+      - zitiControllerBinary.sha-256
+      - zitiIosEdge
+      - zitiMacDesktopEdge
+      - zitiRouterLinuxBinary
+      - zitiRouterLinuxBinary.md5
+      - zitiRouterLinuxBinary.sha-1
+      - zitiRouterLinuxBinary.sha-256
+      - zitiTunnelLinuxBinary
+      - zitiTunnelLinuxBinary.md5
+      - zitiTunnelLinuxBinary.sha-1
+      - zitiTunnelLinuxBinary.sha-256
+      - zitiVersion
+      - zitiWindowsDesktopEdge
+    inline_response_200_19:
+      example:
+        "7.3.22":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.23":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.20":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.21":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.24":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.6":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.7":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.8":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.9":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.2":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.3":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.4":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.5":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.1.0":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.19":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.2.0":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.2.1":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.17":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.0":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.1":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.18":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.0.0":
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          active: true
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.11":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.12":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.10":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.15":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.16":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.13":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+        "7.3.14":
+          zitiAndroidEdge: zitiAndroidEdge
+          zitiRouterLinuxArmBinary.sha-1: zitiRouterLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary: zitiTunnelLinuxBinary
+          zitiCliLinuxBinary.md5: zitiCliLinuxBinary.md5
+          zitiCliLinuxArmBinary.sha-1: zitiCliLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-256: zitiTunnelLinuxBinary.sha-256
+          zitiCliLinuxBinary: zitiCliLinuxBinary
+          zitiTunnelLinuxArmBinary.sha-1: zitiTunnelLinuxArmBinary.sha-1
+          zitiTunnelLinuxBinary.sha-1: zitiTunnelLinuxBinary.sha-1
+          zitiCliLinuxArmBinary: zitiCliLinuxArmBinary
+          zitiRouterLinuxArmBinary.md5: zitiRouterLinuxArmBinary.md5
+          zitiFabricBinary: zitiFabricBinary
+          zitiControllerBinary: zitiControllerBinary
+          zitiMacDesktopEdge: zitiMacDesktopEdge
+          zitiControllerBinary.sha-1: zitiControllerBinary.sha-1
+          zitiRouterLinuxBinary: zitiRouterLinuxBinary
+          zitiRouterLinuxArmBinary.sha-256: zitiRouterLinuxArmBinary.sha-256
+          zitiCliLinuxArmBinary.sha-256: zitiCliLinuxArmBinary.sha-256
+          zitiControllerBinary.md5: zitiControllerBinary.md5
+          zitiCliLinuxBinary.sha-256: zitiCliLinuxBinary.sha-256
+          zitiRouterLinuxBinary.sha-256: zitiRouterLinuxBinary.sha-256
+          zitiIosEdge: zitiIosEdge
+          zitiTunnelLinuxArmBinary: zitiTunnelLinuxArmBinary
+          zitiTunnelLinuxArmBinary.md5: zitiTunnelLinuxArmBinary.md5
+          active: true
+          zitiFabricBinary.sha-256: zitiFabricBinary.sha-256
+          zitiCliLinuxArmBinary.md5: zitiCliLinuxArmBinary.md5
+          zitiTunnelLinuxBinary.md5: zitiTunnelLinuxBinary.md5
+          zitiRouterLinuxBinary.sha-1: zitiRouterLinuxBinary.sha-1
+          zitiRouterLinuxBinary.md5: zitiRouterLinuxBinary.md5
+          zitiVersion: zitiVersion
+          zitiWindowsDesktopEdge: zitiWindowsDesktopEdge
+          zitiRouterLinuxArmBinary: zitiRouterLinuxArmBinary
+          zitiFabricBinary.md5: zitiFabricBinary.md5
+          zitiCliLinuxBinary.sha-1: zitiCliLinuxBinary.sha-1
+          zitiTunnelLinuxArmBinary.sha-256: zitiTunnelLinuxArmBinary.sha-256
+          zitiFabricBinary.sha-1: zitiFabricBinary.sha-1
+          zitiControllerBinary.sha-256: zitiControllerBinary.sha-256
+      properties:
+        "7.3.4":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.11":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.16":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.1.0":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.22":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.23":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.8":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.12":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.2.1":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.13":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.0.0":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.17":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.5":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.20":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.2":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.9":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.24":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.2.0":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.0":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.14":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.6":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.1":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.19":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.15":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.10":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.7":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_4'
+        "7.3.21":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+        "7.3.3":
+          $ref: '#/components/schemas/inline_response_200_19_7_1_0'
+        "7.3.18":
+          $ref: '#/components/schemas/inline_response_200_19_7_3_16'
+      required:
+      - 7.0.0
+      - 7.1.0
+      - 7.2.0
+      - 7.2.1
+      - 7.3.0
+      - 7.3.1
+      - 7.3.10
+      - 7.3.11
+      - 7.3.12
+      - 7.3.13
+      - 7.3.14
+      - 7.3.15
+      - 7.3.16
+      - 7.3.17
+      - 7.3.18
+      - 7.3.19
+      - 7.3.2
+      - 7.3.20
+      - 7.3.21
+      - 7.3.22
+      - 7.3.23
+      - 7.3.24
+      - 7.3.3
+      - 7.3.4
+      - 7.3.5
+      - 7.3.6
+      - 7.3.7
+      - 7.3.8
+      - 7.3.9

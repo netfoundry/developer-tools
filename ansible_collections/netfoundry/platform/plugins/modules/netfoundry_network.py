@@ -3,6 +3,8 @@
 # Copyright: (c) 2021, Kenneth Bingham <kenneth.bingham@netfoundry.io>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
+
+import netfoundry
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -99,10 +101,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.api import rate_limit_argument_spec, retry_argument_spec
 from ansible.module_utils._text import to_native
 from ansible.errors import AnsibleError
-from netfoundry import Organization
-from netfoundry import NetworkGroup
-from netfoundry import Network
-from netfoundry import Utility
+from netfoundry.organization import Organization
+from netfoundry.network_group import NetworkGroup
+from netfoundry.network import Network
+from netfoundry.utility import Utility
 from uuid import UUID
 
 def run_module():
@@ -193,7 +195,7 @@ def run_module():
 
     # find any existing Network with the specified name within the Network Group
     networks_by_group = organization.get_networks_by_group(network_group_id=module.params['network_group']['id'])
-    matching_networks = [net for net in networks_by_group if net['name'] == module.params['name']]
+    matching_networks = [net for net in networks_by_group if utility.caseless_equal(net['name'], module.params['name']) ]
     if len(matching_networks) == 0:
         if module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
             try: result['message'] = network_group.create_network(**properties)
@@ -218,7 +220,14 @@ def run_module():
                 # if there's an exact match for a declared property in the found Network then it's an error if the values are not identical because they can't be changed
                 snake_key = utility.snake(camel_str=key)
                 if snake_key in properties.keys():
-                    if not result['message'][key] == properties[snake_key]:
+                    # compare caseless properties
+                    if snake_key == "name":
+                        if not utility.caseless_equal(result['message'][key], properties[snake_key]):
+                            raise AnsibleError('Declared property "{}: {}" does not match found Network "{}".'.format(
+                                snake_key,
+                                properties[snake_key],
+                                module.params['name']))
+                    elif not result['message'][key] == properties[snake_key]:
                         raise AnsibleError('Declared property "{}: {}" does not match found Network "{}".'.format(
                             snake_key,
                             properties[snake_key],
