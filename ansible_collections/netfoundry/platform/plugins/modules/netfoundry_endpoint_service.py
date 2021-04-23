@@ -33,8 +33,8 @@ options:
         type: str
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
-    clientHostNames:
-        description: the domain names (DNS) and IPv4s to intercept
+    clientHosts:
+        description: the domain names and IPv4s to intercept
         required: true
         type: list
     clientPortRanges:
@@ -46,25 +46,25 @@ options:
         type: str
         required: false
         default: tcp
-        choices: ["tcp","udp", "sctp"]
+        choices: ["tcp","udp"]
     endpoints:
         description: a list of Endpoint names, role attributes, or UUIDs to host this Service
         type: list
         required: true
-    serverHostName:
-        description: optional domain name (DNS) or IPv4 of the server that is reachable by the hosting Endpoint. Client intercept address is default.
-        type: str
+    serverHosts:
+        description: optional list of domain names, IPv4, IPv6 of the server(s) reachable by the hosting Endpoint. Default is client intercept address.
+        type: list
         required: false
-    serverPort:
-        description: the listening port of the server that is reachable by the hosting Endpoint. Client intercept port is default.
-        type: int
+    serverPorts:
+        description: listening ports of the server(s) reachable by the hosting Endpoint. Default is client intercept port(s).
+        type: list
         required: false
-    serverProtocol:
-        description: the transport protocol expected by the server. Client intercept protocol is default.
-        type: str
+    serverProtocols:
+        description: the transport protocol(s) expected by the server. Default is client intercept protocol(s).
+        type: list
         required: false
         default: same as intercept
-        choices: ["tcp","udp", "sctp"]
+        choices: ["tcp","udp"]
     encryptionRequired:
         description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint
         type: bool
@@ -114,8 +114,8 @@ EXAMPLES = r'''
         endpoints:
         - americas-datacenter-centos12
         - americas-datacenter-centos13
-        serverHostName: portal-load-balancer.internal.example.com
-        serverPort: 1443
+        serverHosts: portal-load-balancer.internal.example.com
+        serverPorts: 1443
         network: "{{ netfoundry_info.network }}"
 
   - name: Delete all Services
@@ -151,13 +151,13 @@ def run_module():
         attributes=dict(type='list', elements='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         network=dict(type='dict', required=True),
-        clientHostNames=dict(type='list', elements='str', required=True),
-        clientPortRanges=dict(type='list', elements='str', required=True),
+        clientHosts=dict(type='list', elements='str', required=True),
+        clientPorts=dict(type='list', elements='str', required=True),
         clientProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
         endpoints=dict(type='list', elements='str', required=True),
-        serverHostName=dict(type='str', required=False),
-        serverPort=dict(type='int', required=False),
-        serverProtocol=dict(type='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
+        serverHosts=dict(type='list', elements='str', required=False),
+        serverPorts=dict(type='list', elements='str', required=False),
+        serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
         encryptionRequired=dict(type='bool', required=False),
         edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
@@ -215,12 +215,12 @@ def run_module():
         "name",
         "attributes",
         "edge_router_attributes",
-        "client_host_names",
-        "client_port_ranges",
+        "client_hosts",
+        "client_ports",
         "client_protocols",
-        "server_host_name",
-        "server_port",
-        "server_protocol",
+        "server_hosts",
+        "server_ports",
+        "server_protocols",
         "encryption_required",
         "endpoints",
     ]
