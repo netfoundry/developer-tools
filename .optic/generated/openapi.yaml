@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
  title: untitled API
- version: '5227'
+ version: '5229'
 paths:
  '/core/v2/app-wans/{appWanId}':
   get:
