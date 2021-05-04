@@ -165,10 +165,12 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint(name=module.params['name'],attributes=module.params['attributes'],session_identity=module.params['sessionIdentity'])
+            result['message'] = network.create_endpoint(name=module.params['name'], attributes=module.params['attributes'], session_identity=module.params['sessionIdentity'], wait=33, sleep=10)
             result['changed'] = True
-            if module.params['dest']:
+            if 'jwt' in result['message'].keys() and result['message']['jwt'] and module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
+            elif module.params['dest']:
+                raise AnsibleError('ERROR: missing enrollment token in response to create endpoint {:s}, got response: {}'.format(module.params['name'], result['message']))
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
