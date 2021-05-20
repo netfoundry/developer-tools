@@ -37,7 +37,7 @@ options:
         description: the domain names and IPv4s to intercept
         required: true
         type: list
-    clientPortRanges:
+    clientPorts:
         description: port ranges to intercept e.g. ["80", "88:99"] as strings
         type: list
         required: true
@@ -153,11 +153,11 @@ def run_module():
         network=dict(type='dict', required=True),
         clientHosts=dict(type='list', elements='str', required=True),
         clientPorts=dict(type='list', elements='str', required=True),
-        clientProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
+        clientProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         endpoints=dict(type='list', elements='str', required=True),
         serverHosts=dict(type='list', elements='str', required=False),
         serverPorts=dict(type='list', elements='str', required=False),
-        serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","SCTP","tcp","udp","sctp"]),
+        serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         encryptionRequired=dict(type='bool', required=False),
         edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
@@ -255,8 +255,6 @@ def run_module():
         found_service = found[0]
         if module.params['state'] == "PROVISIONED":
             try:
-#                network.delete_resource(type="service",id=service['id'])
-#                result['message'] = network.create_endpoint_service(**validated_service_params)
                 # transform validated service params to the entity model for comparison with found service
                 create_service_model = network.create_endpoint_service(**validated_service_params, dry_run=True)
                 for create_key in create_service_model.keys():
@@ -266,13 +264,12 @@ def run_module():
                 result['message'] = network.patch_resource(found_service)
             except Exception as e:
                 raise AnsibleError('Failed to patch Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            #     raise AnsibleError('Failed to recreate Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: network.delete_resource(type="service",id=found_service['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            result['changed'] = True
+            else: result['changed'] = True
     else:
         module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
 
