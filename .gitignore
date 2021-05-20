@@ -2,3 +2,4 @@ netfoundry-platform-*.tar.gz
 /*_playbook.yml
 *.jwt
 /*.json
+.vscode/settings.json

@@ -495,7 +495,7 @@ build_request_path() {
 print_help() {
 cat <<EOF
 
-${BOLD}${WHITE}untitled API command line client (API version 5227)${OFF}
+${BOLD}${WHITE}untitled API command line client (API version 5229)${OFF}
 
 ${BOLD}${WHITE}Usage${OFF}
 
@@ -585,7 +585,7 @@ echo -e "              \\t\\t\\t\\t(e.g. 'https://localhost')"
 ##############################################################################
 print_about() {
     echo ""
-    echo -e "${BOLD}${WHITE}untitled API command line client (API version 5227)${OFF}"
+    echo -e "${BOLD}${WHITE}untitled API command line client (API version 5229)${OFF}"
     echo ""
     echo -e "License: "
     echo -e "Contact: "
@@ -605,7 +605,7 @@ echo "$appdescription" | paste -sd' ' | fold -sw 80
 ##############################################################################
 print_version() {
     echo ""
-    echo -e "${BOLD}untitled API command line client (API version 5227)${OFF}"
+    echo -e "${BOLD}untitled API command line client (API version 5229)${OFF}"
     echo ""
 }
 

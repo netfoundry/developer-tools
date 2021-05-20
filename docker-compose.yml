@@ -1,36 +1,77 @@
 version: "3.3"
 services:
-    client:
-        image: docker.io/netfoundry/ziti-tunnel:latest
+    ziti-tun: # intercept tun device with DNS via systemd-resolved
+        image: docker.io/netfoundry/ziti-edge-tunnel:kentest
+#              image: docker.io/netfoundry/ziti-edge-tunnel:latest  # TODO: start using :latest after next release
+        network_mode: host
+        privileged: true
+        devices:
+        - /dev/net/tun:/dev/net/tun
         restart: unless-stopped
+        volumes:
+        - .:/ziti-edge-tunnel
+        - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+        environment:
+        - NF_REG_NAME
+        command: 
+        - --verbose=2
+        - --dns-ip-range=100.64.64.0/18
+#        - --dns=dnsmasq:/ziti-edge-tunnel/hosts  # alternative to systemd-resolved, assumes Docker host has dnsmasq watching for hosts files in ./hosts
+    ziti-tproxy: # transparent proxy with DNS
+        image: netfoundry/ziti-tunnel:latest
         volumes:
         - .:/netfoundry
         network_mode: host
         cap_add:
         - NET_ADMIN
         environment:
-        - NF_REG_NAME=Linux1
+        - NF_REG_NAME
         - PFXLOG_NO_JSON=true
-        # devices:
-        # - "/dev/net/tun:/dev/net/tun"
-#        command: tun --dnsSvcIpRange 100.64.4.0/22 --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use client
-        command: tproxy --dnsSvcIpRange 100.64.4.0/22 --resolver udp://127.0.0.123:53 # configure as first nameserver on Linux device to use client
-    exit:
-        image: docker.io/netfoundry/ziti-tunnel:latest
-        restart: unless-stopped
+        dns: # override inherited default DNS in this container
+        - 127.1.2.3 # set Docker host's first nameserver e.g. NetworkManager connections
+        - 1.1.1.1
+        command:
+        - tproxy
+        - --resolver=udp://127.1.2.3:53
+        - --dnsSvcIpRange=100.64.128.0/18
+    ziti-iproxy: # transparent proxy without DNS
+        image: netfoundry/ziti-tunnel:latest
+        volumes:
+        - .:/netfoundry
+        network_mode: host
+        cap_add:
+        - NET_ADMIN
+        environment:
+        - NF_REG_NAME
+        command:
+        - tproxy
+        - --resolver=none
+        - --dnsSvcIpRange=100.64.192.0/18
+    ziti-host: # hosting-only run mode
+        image: netfoundry/ziti-tunnel:latest
         volumes:
         - .:/netfoundry
         environment:
-        - NF_REG_NAME=Exit1
-        - PFXLOG_NO_JSON=true
-        command: host --verbose
+        - NF_REG_NAME
+        command: host
+    ziti-sleep: # you could use this to poke around inside the running container for troubleshooting
+        image: netfoundry/ziti-tunnel:latest
+        volumes:
+        - .:/netfoundry
+        network_mode: host
+        cap_add:
+        - NET_ADMIN
+        entrypoint:
+        - /bin/sh
+        - -c
+        - while true; do sleep 11; done
     hello:
         image: netfoundry/railz
         restart: "no"
         ports:
-        - 3000:3000
+        - 53000:3000
     httpbin:
         image: kennethreitz/httpbin
         restart: "no"
         ports:
-        - 8081:80
+        - 53080:80
