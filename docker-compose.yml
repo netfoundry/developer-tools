@@ -51,6 +51,9 @@ services:
         image: netfoundry/ziti-tunnel:latest
         volumes:
         - .:/netfoundry
+        network_mode: host  # not required if only reaching servers inside the same Docker network
+        cap_add:
+        - NET_ADMIN         # not required if only reaching servers inside the same Docker network
         environment:
         - NF_REG_NAME
         command: host

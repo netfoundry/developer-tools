@@ -10,7 +10,7 @@ DOCUMENTATION = r'''
 ---
 module: netfoundry_router
 
-short_description: Create, update, or delete an Edge Router
+short_description: Create, update, or delete an edge router
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
@@ -20,7 +20,7 @@ description: Create and update always have result=changed
 
 options:
     name:
-        description: the name of the Edge Router
+        description: the name of the edge router
         required: true
         type: str
     attributes:
@@ -36,8 +36,18 @@ options:
         required: false
         type: str
         choices: ["AWS", "AZURE", "GCP", "ALICLOUD", "NETFOUNDRY", "OCP"]
+    linkListener:
+        description: listen for router links on 80/tcp; all hosted routers (non-null dataCenter) have link listeners
+        type: bool
+        required: false
+        default: false
+    tunnelerEnabled:
+        description: enable tunneler intercept and hosting features for this router
+        type: bool
+        required: false
+        default: false
     state:
-        description: The desired state.
+        description: The desired state
         required: false
         type: str
         choices: ["PROVISIONING", "PROVISIONED","REGISTERED", "DELETED"]
@@ -65,28 +75,22 @@ requirements:
     #     type: str
     #     choices: ["Americas","EuropeMiddleEastAfrica","AsiaPacific"]
 
-    # linkListener:
-    #     description: listen for Router links on 80/tcp; this is not typical for customer Routers; all hosted Routers have link listeners
-    #     type: bool
-    #     required: false
-    #     default: false
-
 EXAMPLES = r'''
-# Hosted Routers listen on an internet IP for Endpoints and other Routers to
+# Hosted routers listen on an internet IP for Endpoints and other routers to
 #  form North-South / branch-to-datacenter links and are configured by matching an
-#  Edge Router Policy.
-  - name: create and wait ten minutes for provisioning of a hosted Edge Router in a particular Azure region
+#  edge router policy.
+  - name: create and wait ten minutes for provisioning of a hosted edge router in a particular Azure region
     netfoundry_router:
-        name: Hosted Router for Azure "East US 2"
+        name: Hosted router for Azure "East US 2"
         datacenter: eastus2
         provider: AZURE
         network: "{{ netfoundry_info.network }}"
         attributes:
         - "#global_hosted_routers"
 
-# customer Routers may host Services and are typically deployed by running and
+# customer routers may host Services and are typically deployed by running and
 #  registering the NetFoundry VM
-  - name: create customer Edge Router
+  - name: create customer edge router
     netfoundry_router:
         name: On-premises VM for the Frankfurt branch
         network: "{{ netfoundry_info.network }}"
@@ -94,14 +98,14 @@ EXAMPLES = r'''
         - "#frankfurt_terminus_routers
 
 # state: PROVISIONED (default)
-  - name: Delete all customer Edge Routers
+  - name: Delete all customer edge routers
     netfoundry_router:
         name: "{{ item }}"
         state: DELETED
         network: "{{ netfoundry_info.network }}"
     loop: "{{ netfoundry_info.customer_edge_routers|map(attribute='name')|list }}"
 
-  - name: Delete all hosted Edge Routers
+  - name: Delete all hosted edge routers
     netfoundry_router:
         name: "{{ item }}"
         state: DELETED
@@ -109,17 +113,17 @@ EXAMPLES = r'''
     loop: "{{ netfoundry_info.hosted_edge_routers|map(attribute='name')|list }}"
 '''
 
-#   - name: create hosted Edge Router near EU in any available cloud provider
+#   - name: create hosted edge router near EU in any available cloud provider
 #     netfoundry_router:
-#         name: EU Hosted Router
+#         name: EU Hosted router
 #         georegion: EuropeMiddleEastAfrica
 #         network: "{{ netfoundry_info.network }}"
 #         attributes:
 #         - "#global_hosted_routers"
 
-#   - name: create hosted Edge Router near US in AWS
+#   - name: create hosted edge router near US in AWS
 #     netfoundry_router:
-#         name: US Hosted Router
+#         name: US Hosted router
 #         georegion: Americas
 #         provider: AWS
 #         network: "{{ netfoundry_info.network }}"
@@ -127,11 +131,11 @@ EXAMPLES = r'''
 #         - "#global_hosted_routers"
 
 
-# # customer Routers may have a public link listener; 
-# # link listeners are typically provided only by NetFoundry-hosted Routers
-#   - name: create a public customer-hosted Edge Router
+# # customer routers may have a public link listener; 
+# # link listeners are typically provided only by NetFoundry-hosted routers
+#   - name: create a public customer-hosted edge router
 #     netfoundry_router:
-#         name: On-premises DMZ Router for the Frankfurt Datacenter
+#         name: On-premises DMZ router for the Frankfurt Datacenter
 #         network: "{{ netfoundry_info.network }}"
 #         linkListener: True
 #         attributes:
@@ -167,7 +171,8 @@ def run_module():
         datacenter=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
         network=dict(type='dict', required=True),
-#        linkListener=dict(type='bool', required=False, default=False),
+        linkListener=dict(type='bool', required=False, default=False),
+        tunnelerEnabled=dict(type='bool', required=False, default=False),
         wait=dict(type='int', required=False, default=600),
     )
 
@@ -220,16 +225,19 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    # if not module.params['linkListener'] and module.params['datacenter']:
-    #     raise AnsibleError("ERROR: specify only one of linkListener or datacenter; all NF-datacenter-hosted Edge Routers listen for Router links")
+    # ERROR if link listener enabled is false and is a hosted router (non-null dataCenter)
+    if not module.params['linkListener'] and module.params['datacenter']:
+        raise AnsibleError("ERROR: specify only one of linkListener or datacenter; all NF-datacenter-hosted edge routers listen for router links")
 
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
+        "tunnelerEnabled": module.params['tunnelerEnabled'],
+        "linkListener": module.params['linkListener']
     }
 
-    # if datacenter arg is given this is a NF-datacenter-hosted Edge Router and
+    # if datacenter arg is given this is a NF-datacenter-hosted edge router and
     # we need to know if the string is a UUID (datacenter ID) or the name of
     # a datacenter location (location code)
     if module.params['datacenter']:
@@ -260,13 +268,13 @@ def run_module():
         # it's a UUID and so we assign the property directly
         else: properties['data_center_id'] = datacenter
 
-    # find any Router with the specified name
+    # find any router with the specified name
     found = network.get_resources(type="edge-routers",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
             try: result['message'] = network.create_edge_router(**properties)
             except Exception as e:
-                raise AnsibleError('Failed to create Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to create edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -278,11 +286,11 @@ def run_module():
             if module.params['datacenter']:
                 if not router['dataCenterId']:
                     if router['status'] == "PROVISIONING":
-                        raise Warning('WARN: existing Router is still PROVISIONING and does not yet have a data center ID, and so a datacenter ID may not be assigned.')
+                        raise Warning('WARN: existing router is still PROVISIONING and does not yet have a data center ID, and so a datacenter ID may not be assigned.')
                     else:
-                        raise AnsibleError('ERROR: existing Router does not have a data center ID and is presumed customer-hosted, and so a datacenter ID may not be assigned.')
+                        raise AnsibleError('ERROR: existing router does not have a data center ID and is presumed customer-hosted, and so a datacenter ID may not be assigned.')
                 elif not router['dataCenterId'] == properties['data_center_id']:
-                    raise AnsibleError('ERROR: existing Router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted Routers may not be re-located.'.format(
+                    raise AnsibleError('ERROR: existing router is hosted in NF datacenter ID {:s}, but new datacenter ID is {:s}. Hosted routers may not be re-located.'.format(
                         router['dataCenterId'],
                         properties['data_center_id']
                     ))
@@ -294,18 +302,18 @@ def run_module():
                     router[key] = properties[snake_key]
             try: result['message'] = network.patch_resource(router)
             except Exception as e:
-                raise AnsibleError('Failed to update Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to update edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: result['message'] = network.delete_resource(type="edge-router",id=router['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Edge Router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else:
                 result['changed'] = True
                 module.exit_json(**result)
 
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Edge Router'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one edge router'.format(name=module.params['name']), **result)
 
     if module.params['wait'] > 0:
         router_id = result['message']['id']
