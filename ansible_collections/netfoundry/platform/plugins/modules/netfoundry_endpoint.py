@@ -41,6 +41,11 @@ options:
         type: str
         choices: ["PROVISIONED","DELETED"]
         default: PROVISIONED
+    wait:
+        description: seconds to wait for specified status.
+        required: false
+        type: int
+        default: 60
     network:
         description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
@@ -54,23 +59,23 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: create Endpoint
-    netfoundry_endpoint:
-      name: "{{ item }}"
-      state: PROVISIONED
-      network: "{{ netfoundry_info.network }}"
-      attributes:
-      - "#workFromAnywhere"
-      dest: /tmp/ott  # directory in which to save {{ item }}.jwt
-    loop: "{{ endpointNames }}"
-    when: item not in netfoundry_info.endpoints|map(attribute='name')|list
+- name: create Endpoint
+netfoundry_endpoint:
+    name: "{{ item }}"
+    state: PROVISIONED
+    network: "{{ netfoundry_info.network }}"
+    attributes:
+    - "#workFromAnywhere"
+    dest: /tmp/ott  # directory in which to save {{ item }}.jwt
+loop: "{{ endpointNames }}"
+when: item not in netfoundry_info.endpoints|map(attribute='name')|list
 
-  - name: Delete all Endpoints
-    netfoundry_endpoint:
-      name: "{{ item }}"
-      state: DELETED
-      network: "{{ netfoundry_info.network }}"
-    loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
+- name: Delete all Endpoints
+netfoundry_endpoint:
+    name: "{{ item }}"
+    state: DELETED
+    network: "{{ netfoundry_info.network }}"
+loop: "{{ netfoundry_info.endpoints|map(attribute='name')|list }}"
 '''
 
 RETURN = r'''
@@ -102,6 +107,7 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         dest=dict(type='path', required=False, default=None),
         sessionIdentity=dict(type='str', required=False, default=None),
+        wait=dict(type='int', required=False, default=60),
         network=dict(type='dict', required=True)
     )
 
@@ -165,12 +171,14 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint(name=module.params['name'], attributes=module.params['attributes'], session_identity=module.params['sessionIdentity'], wait=33, sleep=10)
+            result['message'] = network.create_endpoint(name=module.params['name'], attributes=module.params['attributes'], 
+                session_identity=module.params['sessionIdentity'], wait=module.params['wait'])
             result['changed'] = True
             if 'jwt' in result['message'].keys() and result['message']['jwt'] and module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
             elif module.params['dest']:
-                raise AnsibleError('ERROR: missing enrollment token in response to create endpoint {:s}, got response: {}'.format(module.params['name'], result['message']))
+                raise AnsibleError('ERROR: missing enrollment token in response to create endpoint {:s}, got response: {}'.format(
+                    module.params['name'], result['message']))
         elif module.params['state'] == "DELETED":
             result['changed'] = False
     elif len(found) == 1:
