@@ -16,7 +16,7 @@ DOCUMENTATION = r'''
 ---
 module: netfoundry_service_advanced
 
-short_description: Create, update, or delete an Endpoint-hosted Service
+short_description: Create, update, or delete an endpoint-hosted service based on the advanced service model
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
@@ -26,11 +26,11 @@ description: Create and update always have result=changed
 
 options:
     name:
-        description: the name of the Service
+        description: the name of the service
         required: true
         type: str
     attributes:
-        description: A list of Service role attributes prefixed with a \#hash mark to be matched by an AppWAN
+        description: A list of service role attributes prefixed with a \#hash mark to be matched by an AppWAN
         required: false
         type: list
     state:
@@ -54,15 +54,15 @@ options:
         default: tcp
         choices: ["tcp","udp"]
     endpoints:
-        description: a list of Endpoint names, role attributes, or UUIDs to host this Service
+        description: a list of endpoint names, role attributes, or UUIDs to host this service
         type: list
         required: true
     serverHosts:
-        description: optional list of domain names, IPv4, IPv6 of the server(s) reachable by the hosting Endpoint. Default is client intercept address.
+        description: optional list of domain names, IPv4, IPv6 of the server(s) reachable by the hosting endpoint. Default is client intercept address.
         type: list
         required: false
     serverPorts:
-        description: listening ports of the server(s) reachable by the hosting Endpoint. Default is client intercept port(s).
+        description: listening ports of the server(s) reachable by the hosting endpoint. Default is client intercept port(s).
         type: list
         required: false
     serverProtocols:
@@ -72,7 +72,7 @@ options:
         default: same as intercept
         choices: ["tcp","udp"]
     encryptionRequired:
-        description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint
+        description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting endpoint
         type: bool
         required: false
         default: true
@@ -81,7 +81,7 @@ options:
         required: true
         type: dict
     edge_router_attributes:
-        description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this Service. Default is ["#all"].
+        description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this service. Default is ["#all"].
         required: false
         type: list
 
@@ -93,7 +93,7 @@ requirements:
 '''
 
 EXAMPLES = r'''
-  - name: host a Service as a range of server ports
+  - name: host a service as a range of server ports
     netfoundry_service_advanced:
         name: Spice Terminal Servers
         attributes:
@@ -106,9 +106,9 @@ EXAMPLES = r'''
         - americas-datacenter-centos12
         - americas-datacenter-centos13
         network: "{{ netfoundry_info.network }}"
-# notably, argument `serverHostName` is omitted because the Endpoints will use the same address from clientHostNames to reach the server.
+# notably, argument `serverHostName` is omitted because the endpoints will use the same address from clientHostNames to reach the server.
 
-  - name: host a Service with a round-robin of Endpoints
+  - name: host a service with a round-robin of endpoints
     netfoundry_service_advanced:
         name: SSO Portal
         attributes:
@@ -124,7 +124,7 @@ EXAMPLES = r'''
         serverPorts: 1443
         network: "{{ netfoundry_info.network }}"
 
-  - name: Delete all Services
+  - name: Delete all services
     netfoundry_service_advanced:
       name: "{{ item }}"
       state: DELETED
@@ -244,11 +244,11 @@ def run_module():
     # check if UUIDv4
     try: UUID(module.params['name'], version=4)
     except ValueError:
-        # else assume is a Service name
+        # else assume is a service name
         found = network.get_resources(type="services",name=module.params['name'])
     # it's a UUID and so we assign the property directly
     else: 
-        # discover any existing Services with the specified name
+        # discover any existing services with the specified name
         found = [network.get_resource(type="service",id=module.params['name'])]
 
     if len(found) == 0:
@@ -269,15 +269,15 @@ def run_module():
                         found_service[create_key] = create_service_model[utility.snake(create_key)]
                 result['message'] = network.patch_resource(found_service)
             except Exception as e:
-                raise AnsibleError('Failed to patch Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to patch service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
         elif module.params['state'] == "DELETED":
             try: network.delete_resource(type="service",id=found_service['id'])
             except Exception as e:
-                raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else: result['changed'] = True
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one Service'.format(name=module.params['name']), **result)
+        module.fail_json(msg='ERROR: "{name}" matched more than one service'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
 
