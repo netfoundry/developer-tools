@@ -6,6 +6,12 @@ from __future__ import (absolute_import, division, print_function)
 from re import match
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['deprecated'],
+    'supported_by': 'community'
+}
+
 DOCUMENTATION = r'''
 ---
 module: netfoundry_endpoint_service
@@ -15,6 +21,10 @@ short_description: Create, update, or delete an Endpoint-hosted Service
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
 version_added: "1.10.0"
+deprecated:
+    removed_in: '1.13.0'
+    why: renamed to reflect new service types
+    alternative: Use M(netfoundry_service_advanced) instead.
 
 description: Create and update always have result=changed
 
@@ -247,7 +257,7 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_endpoint_service(**validated_service_params)
+            result['message'] = network.create_service_advanced(**validated_service_params)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False
@@ -256,7 +266,7 @@ def run_module():
         if module.params['state'] == "PROVISIONED":
             try:
                 # transform validated service params to the entity model for comparison with found service
-                create_service_model = network.create_endpoint_service(**validated_service_params, dry_run=True)
+                create_service_model = network.create_service_advanced(**validated_service_params, dry_run=True)
                 for create_key in create_service_model.keys():
                     # clobber exactly-matching existing properties with desired property values
                     if utility.snake(create_key) in found_service.keys():
