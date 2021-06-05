@@ -6,6 +6,12 @@ from __future__ import (absolute_import, division, print_function)
 from re import match
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'community'
+}
+
 DOCUMENTATION = r'''
 ---
 module: netfoundry_router
@@ -225,16 +231,12 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    # ERROR if link listener enabled is false and is a hosted router (non-null dataCenter)
-    if not module.params['linkListener'] and module.params['datacenter']:
-        raise AnsibleError("ERROR: specify only one of linkListener or datacenter; all NF-datacenter-hosted edge routers listen for router links")
-
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
-        "tunnelerEnabled": module.params['tunnelerEnabled'],
-        "linkListener": module.params['linkListener']
+        "tunneler_enabled": module.params['tunnelerEnabled'],
+        "link_listener": module.params['linkListener']
     }
 
     # if datacenter arg is given this is a NF-datacenter-hosted edge router and
