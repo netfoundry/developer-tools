@@ -8,23 +8,19 @@ __metaclass__ = type
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
-    'status': ['deprecated'],
+    'status': ['preview'],
     'supported_by': 'community'
 }
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_endpoint_service
+module: netfoundry_service_advanced
 
 short_description: Create, update, or delete an Endpoint-hosted Service
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
 version_added: "1.10.0"
-deprecated:
-    removed_in: '1.13.0'
-    why: renamed to reflect new service types
-    alternative: Use M(netfoundry_service_advanced) instead.
 
 description: Create and update always have result=changed
 
@@ -98,7 +94,7 @@ requirements:
 
 EXAMPLES = r'''
   - name: host a Service as a range of server ports
-    netfoundry_endpoint_service:
+    netfoundry_service_advanced:
         name: Spice Terminal Servers
         attributes:
         - "#workFromAnywhere/"
@@ -113,7 +109,7 @@ EXAMPLES = r'''
 # notably, argument `serverHostName` is omitted because the Endpoints will use the same address from clientHostNames to reach the server.
 
   - name: host a Service with a round-robin of Endpoints
-    netfoundry_endpoint_service:
+    netfoundry_service_advanced:
         name: SSO Portal
         attributes:
         - "#allEmployees"
@@ -129,7 +125,7 @@ EXAMPLES = r'''
         network: "{{ netfoundry_info.network }}"
 
   - name: Delete all Services
-    netfoundry_endpoint_service:
+    netfoundry_service_advanced:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"
@@ -235,7 +231,7 @@ def run_module():
         "endpoints",
     ]
 
-    # compose a dictionary of validated parameters for Network.create_endpoint_service() from the
+    # compose a dictionary of validated parameters for Network.create_service_advanced() from the
     #  intersection of module params and expected properties method: normalize the camel-case module
     #  args for comparison with snake-case expected properties
     validated_service_params = dict()
