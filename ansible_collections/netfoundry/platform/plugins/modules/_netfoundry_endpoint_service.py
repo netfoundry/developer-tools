@@ -71,6 +71,11 @@ options:
         required: false
         default: same as intercept
         choices: ["tcp","udp"]
+    transparentHosts:
+        description: optional list of IPv4, IPv6 CIDR to allow. If specified, the terminating endpoint will transparently masquerade as
+        the source address and protocol of the intercepted packet and will ignore serverHosts, serverPorts, serverProtocols.
+        type: list
+        required: false
     encryptionRequired:
         description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting endpoint
         type: bool
@@ -162,6 +167,7 @@ def run_module():
         clientProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         endpoints=dict(type='list', elements='str', required=True),
         serverHosts=dict(type='list', elements='str', required=False),
+        transparentHosts=dict(type='list', elements='str', required=False),
         serverPorts=dict(type='list', elements='str', required=False),
         serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         encryptionRequired=dict(type='bool', required=False),
@@ -217,67 +223,132 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    expected_service_params = [
-        "name",
-        "attributes",
-        "edge_router_attributes",
-        "client_hosts",
-        "client_ports",
-        "client_protocols",
-        "server_hosts",
-        "server_ports",
-        "server_protocols",
-        "encryption_required",
-        "endpoints",
-    ]
 
-    # compose a dictionary of validated parameters for Network.create_service_advanced() from the
-    #  intersection of module params and expected properties method: normalize the camel-case module
-    #  args for comparison with snake-case expected properties
-    validated_service_params = dict()
-    for expected in expected_service_params:
-        expected_camel = utility.camel(snake_str=expected)
-        # if present and true
-        if expected_camel in module.params.keys() and module.params[expected_camel]:
-            validated_service_params[expected] = module.params[expected_camel]
 
-    # check if UUIDv4
-    try: UUID(module.params['name'], version=4)
-    except ValueError:
-        # else assume is a service name
-        found = network.get_resources(type="services",name=module.params['name'])
-    # it's a UUID and so we assign the property directly
-    else: 
-        # discover any existing services with the specified name
-        found = [network.get_resource(type="service",id=module.params['name'])]
+    # if transparent, else advanced
+    if module.params['transparentHosts']:
+        expected_service_params = [
+            "name",
+            "attributes",
+            "client_hosts",
+            "client_ports",
+            "client_protocols",
+            "transparent_hosts",
+            "encryption_required",
+            "endpoints",
+            "edge_router_attributes",
+        ]
 
-    if len(found) == 0:
-        if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_service_advanced(**validated_service_params)
-            result['changed'] = True
-        elif module.params['state'] == "DELETED":
-            result['changed'] = False
-    elif len(found) == 1:
-        found_service = found[0]
-        if module.params['state'] == "PROVISIONED":
-            try:
-                # transform validated service params to the entity model for comparison with found service
-                create_service_model = network.create_service_advanced(**validated_service_params, dry_run=True)
-                for create_key in create_service_model.keys():
-                    # clobber exactly-matching existing properties with desired property values
-                    if utility.snake(create_key) in found_service.keys():
-                        found_service[create_key] = create_service_model[utility.snake(create_key)]
-                result['message'] = network.patch_resource(found_service)
-            except Exception as e:
-                raise AnsibleError('Failed to patch service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            else: result['changed'] = True
-        elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="service",id=found_service['id'])
-            except Exception as e:
-                raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            else: result['changed'] = True
+        # compose a dictionary of validated parameters for Network.create_service_advanced() from the
+        #  intersection of module params and expected properties method: normalize the camel-case module
+        #  args for comparison with snake-case expected properties
+        validated_service_params = dict()
+        for expected in expected_service_params:
+            expected_camel = utility.camel(snake_str=expected)
+            # if present and true
+            if expected_camel in module.params.keys() and module.params[expected_camel]:
+                validated_service_params[expected] = module.params[expected_camel]
+
+        # check if UUIDv4
+        try: UUID(module.params['name'], version=4)
+        except ValueError:
+            # else assume is a service name
+            found = network.get_resources(type="services",name=module.params['name'])
+        # it's a UUID and so we assign the property directly
+        else: 
+            # discover any existing services with the specified name
+            found = [network.get_resource(type="service",id=module.params['name'])]
+
+        if len(found) == 0:
+            if module.params['state'] == "PROVISIONED":
+                result['message'] = network.create_service_transparent(**validated_service_params)
+            elif module.params['state'] == "DELETED":
+                result['changed'] = False
+        elif len(found) == 1:
+            found_service = found[0]
+            if module.params['state'] == "PROVISIONED":
+                try:
+                    # transform validated service params to the entity model for comparison with found service
+                    result['message'] = network.delete_service_transparent(module.params['name'])
+                    result['message'] = network.create_service_transparent(**validated_service_params)
+                except Exception as e:
+                    raise AnsibleError('Failed to recreate transparent service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                else: result['changed'] = True
+            elif module.params['state'] == "DELETED":
+                try: network.delete_resource(type="service",id=found_service['id'])
+                except Exception as e:
+                    raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                else: result['changed'] = True
+        else:
+            module.fail_json(msg='ERROR: "{name}" matched more than one service'.format(name=module.params['name']), **result)
+
+    # if transparent, else advanced
     else:
-        module.fail_json(msg='ERROR: "{name}" matched more than one service'.format(name=module.params['name']), **result)
+        expected_service_params = [
+            "name",
+            "attributes",
+            "client_hosts",
+            "client_ports",
+            "client_protocols",
+            "server_hosts",
+            "server_ports",
+            "server_protocols",
+            "encryption_required",
+            "endpoints",
+            "edge_router_attributes",
+        ]
+
+        # compose a dictionary of validated parameters for Network.create_service_advanced() from the
+        #  intersection of module params and expected properties method: normalize the camel-case module
+        #  args for comparison with snake-case expected properties
+        validated_service_params = dict()
+        for expected in expected_service_params:
+            expected_camel = utility.camel(snake_str=expected)
+            # if present and true
+            if expected_camel in module.params.keys() and module.params[expected_camel]:
+                validated_service_params[expected] = module.params[expected_camel]
+
+        # check if UUIDv4
+        try: UUID(module.params['name'], version=4)
+        except ValueError:
+            # else assume is a service name
+            found = network.get_resources(type="services",name=module.params['name'])
+        # it's a UUID and so we assign the property directly
+        else: 
+            # discover any existing services with the specified name
+            found = [network.get_resource(type="service",id=module.params['name'])]
+
+        if len(found) == 0:
+            if module.params['state'] == "PROVISIONED":
+                if module.params['transparentHosts']:
+                    result['message'] = network.create_service_with_configs(**validated_service_params)
+                    result['changed'] = True
+                else:
+                    result['message'] = network.create_service_advanced(**validated_service_params)
+                    result['changed'] = True
+            elif module.params['state'] == "DELETED":
+                result['changed'] = False
+        elif len(found) == 1:
+            found_service = found[0]
+            if module.params['state'] == "PROVISIONED":
+                try:
+                    # transform validated service params to the entity model for comparison with found service
+                    create_service_model = network.create_service_advanced(**validated_service_params, dry_run=True)
+                    for create_key in create_service_model.keys():
+                        # clobber exactly-matching existing properties with desired property values
+                        if utility.snake(create_key) in found_service.keys():
+                            found_service[create_key] = create_service_model[utility.snake(create_key)]
+                    result['message'] = network.patch_resource(found_service)
+                except Exception as e:
+                    raise AnsibleError('Failed to patch service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                else: result['changed'] = True
+            elif module.params['state'] == "DELETED":
+                try: network.delete_resource(type="service",id=found_service['id'])
+                except Exception as e:
+                    raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                else: result['changed'] = True
+        else:
+            module.fail_json(msg='ERROR: "{name}" matched more than one service'.format(name=module.params['name']), **result)
 
     module.exit_json(**result)
 

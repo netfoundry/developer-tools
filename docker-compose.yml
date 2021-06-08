@@ -1,8 +1,7 @@
 version: "3.3"
 services:
     ziti-tun: # intercept tun device with DNS via systemd-resolved
-        image: docker.io/netfoundry/ziti-edge-tunnel:kentest
-#              image: docker.io/netfoundry/ziti-edge-tunnel:latest  # TODO: start using :latest after next release
+        image: docker.io/netfoundry/ziti-edge-tunnel:latest
         network_mode: host
         privileged: true
         devices:
