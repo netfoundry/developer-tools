@@ -187,7 +187,7 @@ def run_module():
 
         if module.params['inventory']:
             # optionally perform expensive inventory operations
-            result['network']['endpoints'] = network.endpoints()
+            result['network']['endpoints'] = network.endpoints(typeId="Device") # not Router (managed)
             result['network']['services'] = network.services()
             result['network']['hosted_edge_routers'] = network.edge_routers(only_hosted=True)
             result['network']['customer_edge_routers'] = network.edge_routers(only_customer=True)

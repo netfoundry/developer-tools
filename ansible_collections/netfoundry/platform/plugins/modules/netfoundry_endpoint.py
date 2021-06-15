@@ -170,7 +170,7 @@ def run_module():
     try: UUID(module.params['name'], version=4)
     except ValueError:
         # else assume is an Endpoint
-        found = network.get_resources(type="endpoints",name=module.params['name'])
+        found = network.get_resources(type="endpoints",name=module.params['name'],typeId="Device")
     # it's a UUID and so we assign the property directly
     else: 
         found = [network.get_resource(type="endpoint",id=module.params['name'])]
