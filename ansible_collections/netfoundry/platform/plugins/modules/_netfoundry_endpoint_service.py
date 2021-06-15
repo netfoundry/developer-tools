@@ -154,6 +154,7 @@ from netfoundry.network_group import NetworkGroup
 from netfoundry.network import Network
 from netfoundry.utility import Utility
 from uuid import UUID
+from time import sleep
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -270,12 +271,14 @@ def run_module():
                 try:
                     # transform validated service params to the entity model for comparison with found service
                     result['message'] = network.delete_service_transparent(module.params['name'])
+                    sleep(3)
                     result['message'] = network.create_service_transparent(**validated_service_params)
                 except Exception as e:
                     raise AnsibleError('Failed to recreate transparent service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True
             elif module.params['state'] == "DELETED":
-                try: network.delete_resource(type="service",id=found_service['id'])
+                try: 
+                    result['message'] = network.delete_service_transparent(module.params['name'])
                 except Exception as e:
                     raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True
