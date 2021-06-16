@@ -26,9 +26,9 @@ spec:
         app: ziti-tunnel-sidecar-demo
     spec:
       containers:
-      - image: busybox
+      - image: appropriate/curl
         name: testclient
-        command: ["sh","-c","while true; set -x; do wget -q -O- echo-router.junction1702.netfoundry 2>&1; set +x; sleep 5; done"]
+        command: ["sh","-c","while true; do (set -x; curl -sSf4 echo-router.Junction1732.netfoundry 2>&1; ); sleep 5; done"]
       - image: netfoundry/ziti-tunnel:latest
         name: ziti-tunnel
         env:
@@ -46,8 +46,9 @@ spec:
           capabilities:
             add:
             - NET_ADMIN
-#        command: ["/bin/sh", "-c"]
-#        args: ["ls -lA /enrollment-token"]
+        # command:
+        # - --verbose
+        args: ["tproxy", "--verbose"]
       dnsPolicy: "None"
       dnsConfig:
         nameservers:
