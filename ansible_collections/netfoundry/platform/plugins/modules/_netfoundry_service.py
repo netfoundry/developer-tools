@@ -8,7 +8,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: netfoundry_service
+module: netfoundry_service_simple
 
 short_description: Create, update, or delete a Service
 
@@ -86,7 +86,7 @@ requirements:
 
 EXAMPLES = r'''
   - name: host a Service with a round-robin of Endpoints running on Linux servers
-    netfoundry_service:
+    netfoundry_service_simple:
         name: SSO Portal
         network: "{{ netfoundry_info.network }}"
         attributes:
@@ -100,7 +100,7 @@ EXAMPLES = r'''
         serverPort: 1443
 
   - name: host a Service with an Edge Router running on the NetFoundry VM configured as a "bastion" host
-    netfoundry_service:
+    netfoundry_service_simple:
         name: Finance Portal
         network: "{{ netfoundry_info.network }}"
         attributes:
@@ -112,7 +112,7 @@ EXAMPLES = r'''
         serverPort: 18443
 
   - name: Delete all Services
-    netfoundry_service:
+    netfoundry_service_simple:
       name: "{{ item }}"
       state: DELETED
       network: "{{ netfoundry_info.network }}"

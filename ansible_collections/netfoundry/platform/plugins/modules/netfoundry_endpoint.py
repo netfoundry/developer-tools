@@ -6,6 +6,12 @@ from __future__ import (absolute_import, division, print_function)
 from re import match
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'community'
+}
+
 DOCUMENTATION = r'''
 ---
 module: netfoundry_endpoint
@@ -164,7 +170,7 @@ def run_module():
     try: UUID(module.params['name'], version=4)
     except ValueError:
         # else assume is an Endpoint
-        found = network.get_resources(type="endpoints",name=module.params['name'])
+        found = network.get_resources(type="endpoints",name=module.params['name'],typeId="Device")
     # it's a UUID and so we assign the property directly
     else: 
         found = [network.get_resource(type="endpoint",id=module.params['name'])]
