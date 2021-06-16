@@ -85,7 +85,7 @@
     register: endpoints
 
   - name: declare an Endpoint-hosted Service
-    netfoundry_service:
+    netfoundry_service_simple:
       network: "{{ netfoundry_info.network }}"
       name: HTTP Echo 1
       endpoints: 
@@ -99,7 +99,7 @@
       serverProtocol: TCP
 
   - name: host a server port range as an array of Services
-    netfoundry_service:
+    netfoundry_service_simple:
       network: "{{ netfoundry_info.network }}"
       name: "spice-console-{{ item }}"
       attributes: "#spice-consoles"
@@ -128,7 +128,7 @@
   #  clientHostName
   #  egressRouterName
   - name: declare Services from CSV
-    netfoundry_service:
+    netfoundry_service_simple:
       network: "{{ netfoundry_info.network }}"
       name: "{{ item.name }}"
       attributes:
@@ -172,7 +172,7 @@
 
   # lastly, do tasks that depend on an async background task
   - name: declare a Router-hosted Service
-    netfoundry_service:
+    netfoundry_service_simple:
       network: "{{ netfoundry_info.network }}"
       name: HTTP Echo 2
       attributes: 

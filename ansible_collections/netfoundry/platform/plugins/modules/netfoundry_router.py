@@ -6,6 +6,12 @@ from __future__ import (absolute_import, division, print_function)
 from re import match
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'community'
+}
+
 DOCUMENTATION = r'''
 ---
 module: netfoundry_router
@@ -43,6 +49,11 @@ options:
         default: false
     tunnelerEnabled:
         description: enable tunneler intercept and hosting features for this router
+        type: bool
+        required: false
+        default: false
+    rotateKey:
+        description: rotate and return the new key for registration of a NetFoundry Linux VM; requires state=PROVISIONED and null dataCenter i.e. NA to NF-hosted routers
         type: bool
         required: false
         default: false
@@ -172,6 +183,7 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
         network=dict(type='dict', required=True),
         linkListener=dict(type='bool', required=False, default=False),
+        rotateKey=dict(type='bool', required=False, default=False),
         tunnelerEnabled=dict(type='bool', required=False, default=False),
         wait=dict(type='int', required=False, default=600),
     )
@@ -225,16 +237,12 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
-    # ERROR if link listener enabled is false and is a hosted router (non-null dataCenter)
-    if not module.params['linkListener'] and module.params['datacenter']:
-        raise AnsibleError("ERROR: specify only one of linkListener or datacenter; all NF-datacenter-hosted edge routers listen for router links")
-
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
         "name": module.params['name'],
         "attributes": module.params['attributes'],
-        "tunnelerEnabled": module.params['tunnelerEnabled'],
-        "linkListener": module.params['linkListener']
+        "tunneler_enabled": module.params['tunnelerEnabled'],
+        "link_listener": module.params['linkListener']
     }
 
     # if datacenter arg is given this is a NF-datacenter-hosted edge router and
@@ -243,6 +251,9 @@ def run_module():
     if module.params['datacenter']:
         datacenter = module.params['datacenter']
         provider = module.params['provider']
+        # all hosted routers have a link listener
+        if not properties['link_listener']:
+            properties['link_listener'] = True
         # check if UUIDv4
         try: UUID(datacenter, version=4)
         except ValueError:
@@ -272,7 +283,8 @@ def run_module():
     found = network.get_resources(type="edge-routers",name=properties['name'])
     if len(found) == 0:
         if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
-            try: result['message'] = network.create_edge_router(**properties)
+            try:
+                result['message'] = network.create_edge_router(**properties)
             except Exception as e:
                 raise AnsibleError('Failed to create edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
@@ -327,7 +339,15 @@ def run_module():
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
         elif module.params['state'] == "PROVISIONED":
-                try: network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+                try: 
+                    network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+                    # if rotate key and is a hosted router then wait for PROVISIONED
+                    if module.params['rotateKey'] and not module.params['datacenter']:
+                        try:
+                            registrationInfo = network.rotate_edge_router_registration(id=router_id)
+                            result['message']['registrationKey'] = registrationInfo['registrationKey']
+                        except Exception as e:
+                            raise AnsibleError('ERROR: failed to rotate and return registration key for router ID "{}"'.format(router_id))
                 except Exception as e:
                     raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
         # REGISTERED implies PROVISIONED and additionally requires the value of JWT to be null, indicating enrollment

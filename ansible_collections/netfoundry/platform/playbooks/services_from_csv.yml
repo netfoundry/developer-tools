@@ -17,7 +17,7 @@
 
   # where headings are serviceNumber	serviceName	attribute	ipAddress	port	hostName	edgeRouterId
   - name: declare Services from CSV
-    netfoundry_service:
+    netfoundry_service_simple:
       network: "{{ netfoundry_info.network }}"
       name: "{{ item.serviceName }}"
       attributes: 
@@ -38,7 +38,7 @@
     when: item.failed
 
 #   - name: delete Services
-#     netfoundry_service:
+#     netfoundry_service_simple:
 #       network: "{{ netfoundry_info.network }}"
 #       name: "{{ item.serviceName }}"
 #       state: DELETED
