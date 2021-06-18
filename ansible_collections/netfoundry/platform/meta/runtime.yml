@@ -1,0 +1,12 @@
+plugin_routing:
+    modules:
+        netfoundry_service:
+            redirect: netfoundry.platform.netfoundry_service_simple
+            deprecation:
+                removal_version: 2.0.0
+                warning_text: Use netfoundry_service_simple instead.
+        netfoundry_endpoint_service:
+            redirect: netfoundry.platform.netfoundry_service_advanced
+            deprecation:
+                removal_version: 2.0.0
+                warning_text: Use netfoundry_service_advanced instead.
