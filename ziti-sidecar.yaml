@@ -28,7 +28,7 @@ spec:
       containers:
       - image: centos
         name: testclient
-        command: ["sh","-c","while true; set -x; do curl -sSLf eth0.ziti.cli 2>&1; set +x; sleep 5; done"]
+        command: ["sh","-c","while true; set -x; do curl -sSLf echo.netfoundry 2>&1; set +x; sleep 5; done"]
       - image: netfoundry/ziti-tunnel:latest
         name: ziti-tunnel
         env:
@@ -36,7 +36,7 @@ spec:
           value: tunnel-sidecar
         volumeMounts:
         - name: tunnel-sidecar-jwt
-          mountPath: "/var/run/secrets/netfoundry.io/enrollment-token"
+          mountPath: "/var/run/secrets/kubernetes.io/enrollment-token"
           readOnly: true
         - name: ziti-tunnel-persistent-storage
           mountPath: /netfoundry
