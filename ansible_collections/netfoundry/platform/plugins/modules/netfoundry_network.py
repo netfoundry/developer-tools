@@ -185,19 +185,20 @@ def run_module():
 
     # if datacenter arg is given we need to know if the string is a UUID (datacenter ID) or the name of
     # a datacenter (location code e.g. eu-west-2)
-    if module.params['datacenter']:
+    if module.params['datacenter'] and module.params['state'] in ["PROVISIONING", "PROVISIONED"]:
         datacenter = module.params['datacenter']
+        nc_data_centers_by_location = network_group.nc_data_centers_by_location()
         # check if UUIDv4
         try: UUID(datacenter, version=4)
         except ValueError:
             # else assume is a location code and validate
-            if datacenter in network_group.nc_data_centers_by_location.keys():
+            if datacenter in nc_data_centers_by_location.keys():
                 properties['location'] = datacenter
             else:
                 raise AnsibleError('Failed to find an exact match for datacenter location code "{}".'.format(datacenter))
         else: 
             # it's a UUID and so we reverse lookup the datacenter name by the UUID
-            properties['location'] = next(location for location, uuid in network_group.nc_data_centers_by_location.items() if uuid == module.params['datacenter'])
+            properties['location'] = next(location for location, uuid in nc_data_centers_by_location.items() if uuid == module.params['datacenter'])
 
     # find any existing Network with the specified name within the Network Group
     networks_by_group = organization.get_networks_by_group(network_group_id=module.params['network_group']['id'])
