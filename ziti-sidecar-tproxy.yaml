@@ -28,12 +28,14 @@ spec:
       containers:
       - image: centos
         name: testclient
-        command: ["sh","-c","while true; set -x; do curl -sSLf echo.netfoundry 2>&1; set +x; sleep 5; done"]
+        command: ["sh","-c","while true; set -x; do curl -sSf http://echo.netfoundry 2>&1; set +x; sleep 5; done"]
       - image: netfoundry/ziti-tunnel:latest
         name: ziti-tunnel
         env:
         - name: NF_REG_NAME
           value: tunnel-sidecar
+        - name: PFXLOG_NO_JSON
+          value: "true"
         volumeMounts:
         - name: tunnel-sidecar-jwt
           mountPath: "/var/run/secrets/kubernetes.io/enrollment-token"
