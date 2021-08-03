@@ -1,0 +1,23 @@
+{
+	"encryptionRequired": true,
+	"modelType": "TunnelerToEdgeRouter",
+	"model": {
+		"edgeRouterHosts": [
+			{
+				"edgeRouterId": "aad0f542-a079-4742-bb0a-4c6c66507d57",
+				"serverEgress": {
+					"protocol": "tcp",
+					"host": "server.hostname2",
+					"port": "88"
+				}
+			}
+		],
+		"clientIngress": {
+			"host": "client.hostname2",
+			"port": "88"
+		}
+	},
+	"attributes": ["#workFromAnywhere"],
+	"name": "kentest2",
+	"networkId": "88c02731-d453-4dd0-aebb-e55856f101a9"
+}

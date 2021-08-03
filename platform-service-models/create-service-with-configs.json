@@ -1,0 +1,14 @@
+{
+    "configs": [{
+        "networkId": "",
+        "name": "",
+        "configTypeId": "",
+        "configTypeName": "",
+        "configType": {
+            "networkId": "",
+            "name": "",
+            "schema": {}
+        },
+        "data": {}
+    }]
+}

@@ -1,0 +1,24 @@
+{
+    "encryptionRequired": true,
+    "modelType": "AdvancedTunnelerToEndpoint",
+    "model": {
+        "serverEgress" : {
+            "dialInterceptProtocol": true,
+            "address": "acme.example.com",
+            "port": 12345
+        },
+        "clientIngress" : { 
+            "protocols": ["tcp","udp"],
+            "addresses": ["abc.com","192.168.0.1"],
+            "ports": [
+                {"low":10001, "high":10100},
+                {"low":10201, "high":10200}
+            ]
+        },
+        "edgeRouterAttributes" : ["#abra"],
+        "bindEndpointAttributes" : ["#bind-SP-attributes"]
+    },
+	"attributes": ["#workFromAnywhere"],
+    "networkId": "30784245-3842-3533-4145-413439363437",
+    "name": "Advanced Tunneler Hosted Service"
+}

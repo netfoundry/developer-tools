@@ -1,0 +1,34 @@
+{
+    "networkId": "{{networkId}}",
+    "name": "NF-ASE-Deploy-Service-SAEGW-PFCP-8805",
+    "encryptionRequired": true,
+    "attributes": [
+        "#PLTE4Deploy"
+    ],
+	"configs": [
+        {
+            "networkId": "{{networkId}}",
+            "name": "NF-ASE-Deploy-Service-SAEGW-PFCP-Intercept-v1",
+            "configTypeName": "intercept.v1",
+            "data": {
+                "protocols": ["udp"],
+                "addresses":["10.165.56.185/32"],
+                "portRanges": [{"low":8805, "high":8805}],
+                "sourceIp": "$src_ip:$src_port"
+            }
+        },
+        {
+            "networkId": "{{networkId}}",
+            "name": "NF-ASE-Deploy-Service-SAEGW-PFCP-Host-v1",
+            "configTypeName": "host.v1",
+            "data": {
+                "forwardProtocol": true,
+                "forwardAddress": true,
+                "forwardPort": true,
+                "allowedProtocols": ["udp"], 
+                "allowedAddresses": ["10.165.56.185/32"], 
+                "allowedPortRanges":[{"low":8805, "high":8805}],
+                "allowedSourceAddresses": ["10.16.25.37/32","10.16.25.38/32"]
+            }
+        }
+    ]

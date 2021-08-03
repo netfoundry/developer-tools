@@ -1,0 +1,20 @@
+{
+	"encryptionRequired": true,
+	"modelType": "TunnelerToEndpoint",
+	"model": {
+		"serverEgress": {
+			"protocol": "tcp",
+			"host": "server.hostname",
+			"port": "80"
+		},
+		"clientIngress": {
+			"host": "client.hostname",
+			"port": "80"
+		},
+        "edgeRouterAttributes" : ["#abra"],
+        "bindEndpointAttributes" : ["#bind-SP-attributes"]
+	},
+	"attributes": ["#workFromAnywhere"],
+	"name": "kentest",
+	"networkId": "88c02731-d453-4dd0-aebb-e55856f101a9"
+}
