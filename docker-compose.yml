@@ -21,7 +21,8 @@ services:
     ziti-tun:                # ip route to tun device transparent interceptor with DNS via systemd-resolved
         <<: *base-service
         <<: *tun-capabilities
-        image: docker.io/netfoundry/ziti-edge-tunnel:local
+        image: docker.io/netfoundry/ziti-edge-tunnel:latest
+#        image: docker.io/netfoundry/ziti-edge-tunnel:local
         devices:
         - /dev/net/tun:/dev/net/tun
         volumes:
