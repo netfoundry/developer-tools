@@ -46,10 +46,6 @@ spec:
           readOnly: true
         - name: ziti-tunnel-persistent-storage
           mountPath: /netfoundry
-        securityContext:
-          capabilities:
-            add:
-            - NET_ADMIN
       restartPolicy: Always
       volumes:
       - name: ziti-tunnel-persistent-storage
