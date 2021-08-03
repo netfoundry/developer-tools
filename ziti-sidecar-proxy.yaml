@@ -50,11 +50,6 @@ spec:
           capabilities:
             add:
             - NET_ADMIN
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 127.0.0.1
-          - 8.8.8.8
       restartPolicy: Always
       volumes:
       - name: ziti-tunnel-persistent-storage
