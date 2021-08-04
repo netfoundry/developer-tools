@@ -152,8 +152,15 @@ def run_module():
 
 #    import epdb; epdb.serve()
     network = Network(network_group, network_id=module.params['network']['id'])
-    if "endpoints" in module.params['network']:
-        endpoint_names = [endpoint['name'] for endpoint in module.params['network']['endpoints']]
+    # "endpoints" and "customer_edge_routers" are lists in the info module's
+    # inventory that are valid for the "endpoint roles" field in an AppWAN.
+    # This is because customer routers always produce a "managed endpoint" with
+    # an identical name.
+    if "endpoints" in module.params['network'] and "router_endpoints" in module.params['network']:
+        endpoint_names = [
+            endpoint['name'] for endpoint in 
+                module.params['network']['endpoints'] + module.params['network']['router_endpoints']
+        ]
     else:
         endpoint_names = [endpoint['name'] for endpoint in network.endpoints()]
     if "services" in module.params['network']:
