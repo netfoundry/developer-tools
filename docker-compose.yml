@@ -6,6 +6,7 @@ x-base-service: &base-service
     - .:/netfoundry          # mount current dir (relative to Compose file) with identity config file
     environment:
     - NF_REG_NAME            # inherit when run like this: NF_REG_NAME=AcmeIdentity docker-compose up ziti-tproxy
+    - NF_REG_TOKEN           # a JWT as string to be used for enrolling and persisting /ziti-edge-tunnel/${NF_REG_NAME}.json 
     - PFXLOG_NO_JSON=true    # suppress JSON logging
     network_mode: host       # use the Docker host's network, not the Docker bridge
 
@@ -21,8 +22,20 @@ services:
     ziti-tun:                # ip route to tun device transparent interceptor with DNS via systemd-resolved
         <<: *base-service
         <<: *tun-capabilities
-        image: docker.io/netfoundry/ziti-edge-tunnel:latest
-#        image: docker.io/netfoundry/ziti-edge-tunnel:local
+        image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi
+        devices:
+        - /dev/net/tun:/dev/net/tun
+        volumes:
+        - .:/ziti-edge-tunnel
+        - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+        command: 
+        - --verbose=4
+        - --dns-ip-range=100.64.64.0/18
+    ziti-tun-dir:                # load all identities from current dir
+        <<: *base-service
+        <<: *tun-capabilities
+        image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi # TODO: revert to :latest with 0.17.15 when multi-identity support is merged
+        environment: []
         devices:
         - /dev/net/tun:/dev/net/tun
         volumes:

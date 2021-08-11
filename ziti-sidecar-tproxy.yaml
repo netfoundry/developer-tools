@@ -45,6 +45,8 @@ spec:
         securityContext:
           capabilities:
             add:
+            # - ALL
+            #- NET_RAW
             - NET_ADMIN
       dnsPolicy: "None"
       dnsConfig:
