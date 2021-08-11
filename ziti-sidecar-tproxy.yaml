@@ -49,6 +49,8 @@ spec:
           # privileged: true
           capabilities:
             add:
+            # - ALL
+            #- NET_RAW
             - NET_ADMIN
             # - SYS_ADMIN
             # - SYS_MODULE
