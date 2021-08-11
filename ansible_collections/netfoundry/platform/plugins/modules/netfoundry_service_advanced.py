@@ -73,7 +73,7 @@ options:
         choices: ["tcp","udp"]
     transparentHosts:
         description: optional list of IPv4, IPv6 CIDR to allow. If specified, the terminating endpoint will transparently masquerade as
-        the source address and protocol of the intercepted packet and will ignore serverHosts, serverPorts, serverProtocols.
+                     the source address and protocol of the intercepted packet and will ignore serverHosts, serverPorts, serverProtocols.
         type: list
         required: false
     encryptionRequired:
