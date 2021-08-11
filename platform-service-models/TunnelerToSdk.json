@@ -1,0 +1,15 @@
+{
+    "encryptionRequired": true,
+    "modelType": "TunnelerToSdk",
+    "model": {
+        "clientIngress" : { 
+            "host":"abc.com", 
+            "port":333 
+        },
+        "bindEndpointAttributes" : ["#west-pop"],
+        "edgeRouterAttributes" : ["#west-coast"]
+    },
+	"attributes": ["#workFromAnywhere"],
+    "networkId": "30784245-3842-3533-4145-413439363437",
+    "name": "SDK Hosted Service",
+}

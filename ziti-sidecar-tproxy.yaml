@@ -26,9 +26,9 @@ spec:
         app: ziti-tunnel-sidecar-demo
     spec:
       containers:
-      - image: busybox
+      - image: centos
         name: testclient
-        command: ["sh","-c","while true; set -x; do wget -q -O- echo-router.junction1702.netfoundry 2>&1; set +x; sleep 5; done"]
+        command: ["sh","-c","while true; set -x; do curl -sSf http://echo.netfoundry 2>&1; set +x; sleep 5; done"]
       - image: netfoundry/ziti-tunnel:latest
         name: ziti-tunnel
         env:
@@ -38,7 +38,7 @@ spec:
           value: "true"
         volumeMounts:
         - name: tunnel-sidecar-jwt
-          mountPath: "/enrollment-token"
+          mountPath: "/var/run/secrets/kubernetes.io/enrollment-token"
           readOnly: true
         - name: ziti-tunnel-persistent-storage
           mountPath: /netfoundry
@@ -46,8 +46,6 @@ spec:
           capabilities:
             add:
             - NET_ADMIN
-#        command: ["/bin/sh", "-c"]
-#        args: ["ls -lA /enrollment-token"]
       dnsPolicy: "None"
       dnsConfig:
         nameservers:
