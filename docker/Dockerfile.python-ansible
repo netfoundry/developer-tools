@@ -1,0 +1,5 @@
+FROM netfoundry/python
+
+RUN pip install ansible
+RUN ansible-galaxy collection install --force-with-deps netfoundry.platform
+CMD ["bash"]

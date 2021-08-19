@@ -4,7 +4,7 @@ metadata:
   name: tunnel-sidecar-pv-claim
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
@@ -42,17 +42,25 @@ spec:
           readOnly: true
         - name: ziti-tunnel-persistent-storage
           mountPath: /netfoundry
+        # - name: lib-modules
+        #   mountPath: /lib/modules
+        #   readOnly: true
         securityContext:
+          # privileged: true
           capabilities:
             add:
             # - ALL
             #- NET_RAW
             - NET_ADMIN
+            # - SYS_ADMIN
+            # - SYS_MODULE
+      nodeSelector:
+        kubernetes.io/hostname: ip-10-0-190-53
       dnsPolicy: "None"
       dnsConfig:
         nameservers:
-          - 127.0.0.1
-          - 8.8.8.8
+        - 127.0.0.1
+        - 8.8.8.8
       restartPolicy: Always
       volumes:
       - name: ziti-tunnel-persistent-storage
@@ -61,3 +69,7 @@ spec:
       - name: tunnel-sidecar-jwt
         secret:
           secretName: tunnel-sidecar.jwt
+      # - name: lib-modules
+      #   hostPath:
+      #     path: /lib/modules
+
