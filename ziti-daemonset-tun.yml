@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ziti-run-node
+spec:
+  selector:
+    matchLabels:
+      app: ziti-edge-tunnel
+  template:
+    metadata:
+      labels:
+        app: ziti-edge-tunnel
+    spec:
+      containers:
+      - image: netfoundry/ziti-edge-tunnel:latest
+        name: ziti-edge-tunnel
+        env:
+        - name: NF_REG_NAME
+          value: ziti-identity
+        volumeMounts:
+        - name: ziti-enrolled-identity
+          mountPath: /ziti-edge-tunnel
+          readOnly: true
+        - name: system-bus-socket
+          mountPath: /var/run/dbus/system_bus_socket
+        securityContext:
+          privileged: true
+      hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/worker: ''
+      restartPolicy: Always
+      volumes:
+      - name: ziti-enrolled-identity
+        secret: # kubectl create secret generic ziti-enrolled-identity --from-file=ziti-enrolled-identity=./myZitiIdentityFile.json
+          secretName: ziti-enrolled-identity
+          defaultMode: 0400
+          items:
+          - key: ziti-enrolled-identity
+            path: ziti-identity.json
+      - name: system-bus-socket
+        hostPath:
+          path: /var/run/dbus/system_bus_socket
