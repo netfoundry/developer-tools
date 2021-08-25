@@ -152,6 +152,7 @@ def run_module():
         serverPort=dict(type='int', required=False, aliases=["serverPortRange"]),
         serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
+        wait=dict(type='int', required=False, default=11),
         edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
     )
 
@@ -216,6 +217,7 @@ def run_module():
         "server_host_name": module.params['serverHostName'],
         "server_port": module.params['serverPort'],
         "server_protocol": module.params['serverProtocol'],
+        "wait": module.params['wait'],
         "encryption_required": module.params['encryptionRequired'],
     }
 
