@@ -25,9 +25,13 @@ spec:
           mountPath: /var/run/dbus/system_bus_socket
         securityContext:
           privileged: true
+        args:
+        - --verbose=4
+        - --dns-ip-range=100.64.64.0/18
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
-        node-role.kubernetes.io/worker: ''
+        node-role.kubernetes.io/node: ''
       restartPolicy: Always
       volumes:
       - name: ziti-enrolled-identity

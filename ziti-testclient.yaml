@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ziti-testclient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ziti-testclient
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ziti-testclient
+    spec:
+      containers:
+      - image: centos
+        name: testclient
+        command: ["sh","-c","while true; set -x; do curl -sSf http://100.128.0.2/ip 2>&1; set +x; sleep 5; done"]
+#        command: ["sh", "-c", "while true; do sleep infinity; done"]
+      restartPolicy: Always
+      dnsPolicy: Default
