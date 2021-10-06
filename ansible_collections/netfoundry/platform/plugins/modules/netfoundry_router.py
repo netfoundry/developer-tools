@@ -34,14 +34,15 @@ options:
         required: false
         type: list
     datacenter:
-        description: provision the router in a NetFoundry datacenter by locationCode or ID from netfoundry_info.data_centers
+        description: provision the router in a NetFoundry datacenter by locationCode or ID from netfoundry_info.data_centers (default provider is AWS)
         required: false
         type: str
     provider:
         description: limit potential datacenter name matches to the specified cloud provider
         required: false
         type: str
-        choices: ["AWS", "AZURE", "GCP", "ALICLOUD", "NETFOUNDRY", "OCP"]
+        choices: ["AWS", "AZURE", "GCP", "OCP"]
+        default: AWS
     linkListener:
         description: listen for router links on 80/tcp; all hosted routers (non-null dataCenter) have link listeners
         type: bool
@@ -178,7 +179,7 @@ def run_module():
         name=dict(type='str', required=True),
         attributes=dict(type='list', elements='str', required=False, default=[]),
 #        georegion=dict(type='str', required=False),
-        provider=dict(type='str', required=False, default="AWS", choices=["AWS", "AZURE", "GCP", "ALICLOUD", "NETFOUNDRY", "OCP"]),
+        provider=dict(type='str', required=False, default="AWS", choices=["AWS", "AZURE", "GCP", "OCP"]),
         datacenter=dict(type='str', required=False),
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
         network=dict(type='dict', required=True),
