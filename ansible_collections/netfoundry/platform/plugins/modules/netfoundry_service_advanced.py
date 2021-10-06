@@ -172,6 +172,7 @@ def run_module():
         serverPorts=dict(type='list', elements='str', required=False),
         serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         encryptionRequired=dict(type='bool', required=False),
+        wait=dict(type='int', required=False, default=11),
         edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
 
@@ -299,6 +300,7 @@ def run_module():
             "encryption_required",
             "endpoints",
             "edge_router_attributes",
+            "wait",
         ]
 
         # compose a dictionary of validated parameters for Network.create_service_advanced() from the

@@ -1,0 +1,46 @@
+version: "3.9"
+
+x-base-service: &base-service
+    image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi
+    devices:
+    - /dev/net/tun:/dev/net/tun
+    volumes:
+    - .:/ziti-edge-tunnel
+    - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+    environment:
+    - NF_REG_NAME            # inherit when run like this: NF_REG_NAME=AcmeIdentity
+    network_mode: host       # use the Docker host's network, not a Docker bridge
+    privileged: true
+
+services:
+    ziti-tun:                # a tunneler with one Ziti identity
+      <<: *base-service
+      command: 
+      - --verbose=4
+      - --dns-ip-range=100.64.64.0/18
+    ziti-any-dns:            # a test client using Ziti and non-Ziti DNS via the bridge network
+      image: busybox
+      networks:
+          ziti-bridge:
+      dns:
+      - 100.64.64.2          # substitute correct IP for Ziti DNS
+      - 1.1.1.1              # any recursive nameserver
+      command: sh -c 'while true; do wget -O - http://httpbin/ip; sleep 1; done'
+    ziti-only-dns:           # a test client using only Ziti DNS via the bridge network
+      image: busybox
+      networks:
+          ziti-bridge:
+      dns:
+      - 100.64.64.2          # substitute correct IP for Ziti DNS
+      command: sh -c 'while true; do wget -O - http://httpbin/ip; sleep 1; done'
+    httpbin:
+      image: kennethreitz/httpbin
+      networks:
+        ziti-bridge:
+networks:
+    ziti-bridge:
+      driver: bridge
+      ipam:                        # it's not stricly necessary to specify IPAM and 
+        config:                    # Docker will assign a subnet if unspecified
+        - subnet: 172.31.255.0/24  # any available subnet
+          gateway: 172.31.255.1    # this will be bound by Docker host's bridge interface
