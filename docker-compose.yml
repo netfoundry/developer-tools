@@ -8,7 +8,6 @@ x-base-service: &base-service
     - NF_REG_NAME            # inherit when run like this: NF_REG_NAME=AcmeIdentity docker-compose up ziti-tproxy
     - NF_REG_TOKEN           # a JWT as string to be used for enrolling and persisting /ziti-edge-tunnel/${NF_REG_NAME}.json 
     - PFXLOG_NO_JSON=true    # suppress JSON logging
-    network_mode: host       # use the Docker host's network, not the Docker bridge
 
 x-tun-capabilities: &tun-capabilities
     privileged: true
@@ -23,6 +22,7 @@ services:
         <<: *base-service
         <<: *tun-capabilities
         image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi
+        network_mode: host       # use the Docker host's network, not the Docker bridge
         devices:
         - /dev/net/tun:/dev/net/tun
         volumes:
@@ -31,10 +31,11 @@ services:
         command: 
         - --verbose=4
         - --dns-ip-range=100.64.64.0/18
-    ziti-tun-dir:                # load all identities from current dir
+    ziti-tun-dir:            # load all identities from current dir
         <<: *base-service
         <<: *tun-capabilities
         image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi # TODO: revert to :latest with 0.17.15 when multi-identity support is merged
+        network_mode: host   # use the Docker host's network, not the Docker bridge
         environment: []
         devices:
         - /dev/net/tun:/dev/net/tun
@@ -43,41 +44,76 @@ services:
         - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
         command: 
         - --verbose=4
-        - --dns-ip-range=100.64.64.0/18
-#        - --dns=dnsmasq:/ziti-edge-tunnel/hosts  # alternative to systemd-resolved, assumes Docker host has dnsmasq watching for hosts files in ./hosts
+        - --dns-ip-range=100.64.64.0/18     # default is 100.64/10
     ziti-tproxy:             # iptables transparent interceptor with DNS
         <<: *base-service
         <<: *iptables-capabilities
+        network_mode: host   # use the Docker host's network, not the Docker bridge
         dns:                 # optionally, override DNS inherited from Docker host
-        - 127.0.0.1          # this first NS must match the built-in nameserver's bind address,
+        - 172.31.255.53      # this first NS must match the built-in nameserver's bind address,
         - 1.1.1.1            #   and a recursive NS is also needed e.g. 8.8.8.8
         command: 
         - tproxy
-        #- --resolver=udp://127.1.2.3:53     # override nameserver bind address (always 53/udp); default is 127.0.0.1
-        #- --dnsSvcIpRange=100.64.64.0/18    # override the IP range used for DNS intercepts; default is 100.64/10
+        - --resolver=udp://172.31.255.53:53   # default is 127.0.0.1
+        - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
+    ziti-tproxy-bridge:             # iptables transparent interceptor with DNS
+        <<: *base-service
+        <<: *iptables-capabilities
+        networks:
+            ziti-bridge:
+                ipv4_address: 172.31.255.2
+        dns:                 # optionally, override DNS inherited from Docker host
+        - 172.31.255.2       # this first NS must match the built-in nameserver's bind address,
+        - 1.1.1.1            #   and a recursive NS is also needed e.g. 8.8.8.8
+        command: 
+        - tproxy
+        - --resolver=udp://172.31.255.2:53   # default is 127.0.0.1
+        - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
     ziti-tproxy-ip:          # iptables transparent interceptor without DNS
         <<: *base-service
         <<: *iptables-capabilities
+        network_mode: host       # use the Docker host's network, not the Docker bridge
         command: 
         - tproxy
         - --resolver none
-        #- --dnsSvcIpRange=100.64.64.0/18    # override the IP range used for DNS intercepts; default is 100.64/10
+        - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
     ziti-test:               # docker-compose exec ziti-test bash
         <<: *base-service
         <<: *iptables-capabilities
+        network_mode: host       # use the Docker host's network, not the Docker bridge
         entrypoint: ["sh", "-c", "while true; do sleep infinity; done"]
     ziti-host:               # terminate a service for a server that's reachable by the host network
         <<: *base-service
+        network_mode: host       # use the Docker host's network, not the Docker bridge
         command: host 
-    ziti-bridge:             # terminate a service for a server that's reachable by this Docker network (default mode is "bridge")
+    ziti-host-bridge:             # terminate a service for a server that's reachable by this Docker network (default mode is "bridge")
         <<: *base-service
-        network_mode: bridge
+        networks:
+            ziti-bridge:
         command: host 
     ziti-proxy:              # bind a named service to a container TCP port, optionally forward host TCP port to container
         <<: *base-service
+        network_mode: bridge
         ports:
         - "8888:8888"        # optionally forward host ports to container ports listening as TCP proxy
-        network_mode: bridge
         command: 
         - proxy
         - '"my example service":8888' # example named service and container port to bind as TCP proxy
+    ziti-test-dns:       # a test client using Ziti DNS via the bridge network
+        image: busybox
+        networks:
+            ziti-bridge:
+        dns:
+#        - 127.0.0.123
+#        - 172.31.255.2
+        - 172.31.255.2
+        - 1.1.1.1
+#        command: sh -c 'while true; do wget -O - example.com; sleep 1; done'
+        command: sh -c 'while true; do wget -O - echo-router.junction1766.netfoundry; sleep 1; done'
+networks:
+    ziti-bridge:
+        driver: bridge
+        ipam:
+            config:
+            - subnet: 172.31.255.0/24
+              gateway: 172.31.255.1
