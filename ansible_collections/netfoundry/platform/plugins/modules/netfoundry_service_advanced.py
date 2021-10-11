@@ -89,6 +89,11 @@ options:
         description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this service. Default is ["#all"].
         required: false
         type: list
+    wait:
+        description: seconds to wait for async create
+        required: false
+        type: int
+        default: 66
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -172,7 +177,7 @@ def run_module():
         serverPorts=dict(type='list', elements='str', required=False),
         serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         encryptionRequired=dict(type='bool', required=False),
-        wait=dict(type='int', required=False, default=11),
+        wait=dict(type='int', required=False, default=66),
         edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
 

@@ -51,7 +51,7 @@ options:
         description: seconds to wait for specified status.
         required: false
         type: int
-        default: 60
+        default: 66
     network:
         description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
@@ -113,7 +113,7 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         dest=dict(type='path', required=False, default=None),
         sessionIdentity=dict(type='str', required=False, default=None),
-        wait=dict(type='int', required=False, default=60),
+        wait=dict(type='int', required=False, default=66),
         network=dict(type='dict', required=True)
     )
 
