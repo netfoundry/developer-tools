@@ -353,7 +353,7 @@ def run_module():
                     raise AnsibleError('Failed to patch service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True
             elif module.params['state'] == "DELETED":
-                try: network.delete_resource(type="service",id=found_service['id'])
+                try: network.delete_service(id=found_service['id'])
                 except Exception as e:
                     raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True

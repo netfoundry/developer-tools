@@ -196,7 +196,7 @@ def run_module():
             if result['message']['jwt'] and module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="endpoint",id=endpoint['id'])
+            try: network.delete_endpoint(id=endpoint['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
