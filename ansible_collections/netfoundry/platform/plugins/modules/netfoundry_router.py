@@ -54,7 +54,7 @@ options:
         required: false
         default: false
     rotateKey:
-        description: rotate and return the new key for registration of a NetFoundry Linux VM; requires state=PROVISIONED and null dataCenter i.e. NA to NF-hosted routers
+        description: rotate and return the new key for registration of a NetFoundry Linux VM; requires state=present and null dataCenter i.e. NA to NF-hosted routers
         type: bool
         required: false
         default: false
@@ -62,8 +62,8 @@ options:
         description: The desired state
         required: false
         type: str
-        choices: ["PROVISIONING", "PROVISIONED","REGISTERED", "DELETED"]
-        default: PROVISIONED
+        choices: ["present","absent"]
+        default: present
     network:
         description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
@@ -113,14 +113,14 @@ EXAMPLES = r'''
   - name: Delete all customer edge routers
     netfoundry_router:
         name: "{{ item }}"
-        state: DELETED
+        state: absent
         network: "{{ netfoundry_info.network }}"
     loop: "{{ netfoundry_info.customer_edge_routers|map(attribute='name')|list }}"
 
   - name: Delete all hosted edge routers
     netfoundry_router:
         name: "{{ item }}"
-        state: DELETED
+        state: absent
         network: "{{ netfoundry_info.network }}"
     loop: "{{ netfoundry_info.hosted_edge_routers|map(attribute='name')|list }}"
 '''
@@ -181,7 +181,7 @@ def run_module():
 #        georegion=dict(type='str', required=False),
         provider=dict(type='str', required=False, default="AWS", choices=["AWS", "AZURE", "GCP", "OCP"]),
         datacenter=dict(type='str', required=False),
-        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "REGISTERED", "DELETED"]),
+        state=dict(type='str', required=False, default="present", choices=["present","absent"]),
         network=dict(type='dict', required=True),
         linkListener=dict(type='bool', required=False, default=False),
         rotateKey=dict(type='bool', required=False, default=False),
@@ -238,6 +238,11 @@ def run_module():
 
     network = Network(network_group, network_id=module.params['network']['id'])
 
+    if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED", "present"]:
+        state = "present"
+    elif module.params['state'] in ["DELETED", "absent"]:
+        state = "absent"
+
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
         "name": module.params['name'],
@@ -283,18 +288,18 @@ def run_module():
     # find any router with the specified name
     found = network.get_resources(type="edge-routers",name=properties['name'])
     if len(found) == 0:
-        if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
+        if state == "present":
             try:
-                result['message'] = network.create_edge_router(**properties)
+                result['message'] = network.create_edge_router(**properties,wait=module.params['wait'])
             except Exception as e:
                 raise AnsibleError('Failed to create edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
-        elif module.params['state'] == "DELETED":
+        elif state == "absent":
             result['changed'] = False
             module.exit_json(**result)
     elif len(found) == 1:
         router = found[0]
-        if module.params['state'] in ["PROVISIONING", "PROVISIONED", "REGISTERED"]:
+        if state == "present":
             # sanity check datacenter IDs
             if module.params['datacenter']:
                 if not router['dataCenterId']:
@@ -317,8 +322,8 @@ def run_module():
             except Exception as e:
                 raise AnsibleError('Failed to update edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
-        elif module.params['state'] == "DELETED":
-            try: result['message'] = network.delete_edge_router(id=router['id'])
+        elif state == "absent":
+            try: result['message'] = network.delete_edge_router(id=router['id'],wait=module.params['wait'])
             except Exception as e:
                 raise AnsibleError('Failed to delete edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else:
@@ -330,41 +335,13 @@ def run_module():
 
     if module.params['wait'] > 0:
         router_id = result['message']['id']
-        # if waiting for status then wait or timeout
-        if module.params['state'] == "DELETED":
-                try: network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
+        if state == "present":
+            if module.params['rotateKey'] and not module.params['datacenter']:
+                try:
+                    registrationInfo = network.rotate_edge_router_registration(id=router_id)
+                    result['message']['registrationKey'] = registrationInfo['registrationKey']
                 except Exception as e:
-                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-        elif module.params['state'] == "PROVISIONING":
-                try: network.wait_for_statuses(["PROVISIONING", "PROVISIONED"], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
-                except Exception as e:
-                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-        elif module.params['state'] == "PROVISIONED":
-                try: 
-                    network.wait_for_status(module.params['state'], id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
-                    # if rotate key and is a hosted router then wait for PROVISIONED
-                    if module.params['rotateKey'] and not module.params['datacenter']:
-                        try:
-                            registrationInfo = network.rotate_edge_router_registration(id=router_id)
-                            result['message']['registrationKey'] = registrationInfo['registrationKey']
-                        except Exception as e:
-                            raise AnsibleError('ERROR: failed to rotate and return registration key for router ID "{}"'.format(router_id))
-                except Exception as e:
-                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-        # REGISTERED implies PROVISIONED and additionally requires the value of JWT to be null, indicating enrollment
-        elif module.params['state'] == "REGISTERED":
-            wait_until = time()+module.params['wait']
-            try: network.wait_for_status("PROVISIONED", id=router_id, type="edge-router", wait=module.params['wait'], progress=False)
-            except Exception as e:
-                raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
-            else:
-                router = network.get_resource(type="edge-router",id=router_id)
-    #            import epdb; epdb.serve()
-                while time() < wait_until and router['jwt'] is not None:
-                    router = network.get_resource(type="edge-router",id=router_id)
-                    sleep(10)
-                if router['jwt'] is not None:
-                    raise AnsibleError('Timed out waiting for status "{}"'.format(module.params['state']))
+                    raise AnsibleError('ERROR: failed to rotate and return registration key for router ID "{}"'.format(router_id))
 
     module.exit_json(**result)
 
