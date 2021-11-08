@@ -13,7 +13,7 @@
 
   - name: Create Network
     netfoundry_network:
-      network: BibbidiBobbidiBoo
+      name: BibbidiBobbidiBoo
       size: small
       datacenter: ap-south-1
       state: PROVISIONING
@@ -24,7 +24,7 @@
 
   - name: Watch for Network status in the background
     netfoundry_network:
-      network: BibbidiBobbidiBoo
+      name: BibbidiBobbidiBoo
       state: PROVISIONED
       wait: 1800
       network_group: "{{ netfoundry_organization.network_group }}"
@@ -44,12 +44,12 @@
     netfoundry_info:
       network: BibbidiBobbidiBoo
       inventory: True
-      token: "{{ netfoundry_organization.network_group.token }}"
+      session: "{{ netfoundry_organization.network_group.session }}"
     register: netfoundry_network
     
   - name: block and wait for each hosted Edge Router to have a minimum state of PROVISIONING
     netfoundry_router:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: "{{ item.name }}"
       attributes: 
       - "#defaultRouters"
@@ -60,7 +60,7 @@
 
   - name: wait in the background for each hosted Edge Router to become REGISTERED
     netfoundry_router:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: "{{ item.name }}"
       attributes: 
       - "#defaultRouters"
@@ -74,7 +74,7 @@
   - name: declare Endpoints
     netfoundry_endpoint:
       name: "{{ item }}"
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       attributes:
       - "#workFromAnywhere"
       dest: /tmp/netfoundry                  # filename is Endpoint name if dest is a directory
@@ -86,7 +86,7 @@
 
   - name: declare an Endpoint-hosted Service
     netfoundry_service_simple:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: HTTP Echo 1
       endpoints: 
       - Exit1
@@ -100,7 +100,7 @@
 
   - name: host a server port range as an array of Services
     netfoundry_service_simple:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: "spice-console-{{ item }}"
       attributes: "#spice-consoles"
       clientHostName: 192.168.0.188
@@ -114,37 +114,9 @@
     register: spice_loop
     tags: port_range
 
-  - name: Read Services from CSV file
-    read_csv:
-        path: services.csv
-    register: services
-    tags: csv
-
-  # with CSV headings:
-  #  name
-  #  attribute
-  #  serverHostName
-  #  port
-  #  clientHostName
-  #  egressRouterName
-  - name: declare Services from CSV
-    netfoundry_service_simple:
-      network: "{{ netfoundry_info.network }}"
-      name: "{{ item.name }}"
-      attributes:
-      - "{{ item.attribute }}"
-      clientHostName: "{{ item.clientHostName }}"
-      clientPortRange: "{{ item.port }}"
-      egressRouter: "{{ item.egressRouterName }}"
-      serverHostName: "{{ item.serverHostName }}"
-      serverPort: "{{ item.port }}"
-      serverProtocol: TCP
-    loop: "{{ services.list }}"
-    tags: csv
-
   - name: declare a blanket Edge Router Policy
     netfoundry_router_policy:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: defaultRouters
       routers:
       - "#defaultRouters"
@@ -154,7 +126,7 @@
 
   - name: declare an AppWAN
     netfoundry_appwan:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: Welcome
       endpoints:
       - "#workFromAnywhere"
@@ -173,7 +145,7 @@
   # lastly, do tasks that depend on an async background task
   - name: declare a Router-hosted Service
     netfoundry_service_simple:
-      network: "{{ netfoundry_info.network }}"
+      network: "{{ netfoundry_network.network }}"
       name: HTTP Echo 2
       attributes: 
       - "#welcomeWagon"

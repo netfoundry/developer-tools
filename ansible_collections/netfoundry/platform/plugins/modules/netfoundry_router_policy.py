@@ -194,7 +194,7 @@ def run_module():
             result['message'] = network.patch_resource(router_policy)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="edge-router-policy",id=router_policy['id'])
+            try: network.delete_edge_router_policy(id=router_policy['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Router Policy"{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True

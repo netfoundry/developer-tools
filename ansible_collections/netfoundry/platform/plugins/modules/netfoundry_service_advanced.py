@@ -89,6 +89,11 @@ options:
         description: A list of Router role attributes prefixed with a \#hash mark that may be used to access this service. Default is ["#all"].
         required: false
         type: list
+    wait:
+        description: seconds to wait for async create
+        required: false
+        type: int
+        default: 66
 
 author:
     - Kenneth Bingham (@qrkourier)
@@ -172,7 +177,7 @@ def run_module():
         serverPorts=dict(type='list', elements='str', required=False),
         serverProtocols=dict(type='list', elements='str', required=False, choices=["TCP","UDP","tcp","udp"]),
         encryptionRequired=dict(type='bool', required=False),
-        wait=dict(type='int', required=False, default=11),
+        wait=dict(type='int', required=False, default=66),
         edgeRouterAttributes=dict(type='list', elements='str', required=False),
     )
 
@@ -348,7 +353,7 @@ def run_module():
                     raise AnsibleError('Failed to patch service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True
             elif module.params['state'] == "DELETED":
-                try: network.delete_resource(type="service",id=found_service['id'])
+                try: network.delete_service(id=found_service['id'])
                 except Exception as e:
                     raise AnsibleError('Failed to delete service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
                 else: result['changed'] = True

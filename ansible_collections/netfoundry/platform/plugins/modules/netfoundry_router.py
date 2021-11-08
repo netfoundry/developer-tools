@@ -318,7 +318,7 @@ def run_module():
                 raise AnsibleError('Failed to update edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: result['message'] = network.delete_resource(type="edge-router",id=router['id'])
+            try: result['message'] = network.delete_edge_router(id=router['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             else:
