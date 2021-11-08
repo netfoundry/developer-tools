@@ -218,7 +218,7 @@ def run_module():
             result['message'] = network.patch_resource(appwan)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="app-wan",id=appwan['id'])
+            try: network.delete_app_wan(id=appwan['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Service "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True

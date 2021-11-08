@@ -51,7 +51,7 @@ options:
         description: seconds to wait for specified status.
         required: false
         type: int
-        default: 60
+        default: 66
     network:
         description: The dictionary describing the Network on which to operate from netfoundry_info.network.
         required: true
@@ -113,7 +113,7 @@ def run_module():
         state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONED","DELETED"]),
         dest=dict(type='path', required=False, default=None),
         sessionIdentity=dict(type='str', required=False, default=None),
-        wait=dict(type='int', required=False, default=60),
+        wait=dict(type='int', required=False, default=66),
         network=dict(type='dict', required=True)
     )
 
@@ -196,7 +196,7 @@ def run_module():
             if result['message']['jwt'] and module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.delete_resource(type="endpoint",id=endpoint['id'])
+            try: network.delete_endpoint(id=endpoint['id'])
             except Exception as e:
                 raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True

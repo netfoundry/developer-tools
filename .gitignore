@@ -3,3 +3,5 @@ netfoundry-platform-*.tar.gz
 *.jwt
 /*.json
 .vscode/settings.json
+clients/java/.settings/org.eclipse.buildship.core.prefs
+clients/kotlin/.settings/org.eclipse.buildship.core.prefs
