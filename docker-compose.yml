@@ -21,7 +21,7 @@ services:
     ziti-tun:                    # ip route to tun device transparent interceptor with DNS via systemd-resolved
         <<: *base-service
         <<: *tun-capabilities
-        image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi
+        image: docker.io/netfoundry/ziti-edge-tunnel:latest
         network_mode: host       # use the Docker host's network, not the Docker bridge
         devices:
         - /dev/net/tun:/dev/net/tun
@@ -34,7 +34,7 @@ services:
     ziti-tun-dir:                # load all identities from current dir
         <<: *base-service
         <<: *tun-capabilities
-        image: docker.io/netfoundry/ziti-edge-tunnel:0.17.14-multi # TODO: revert to :latest with 0.17.15 when multi-identity support is merged
+        image: docker.io/netfoundry/ziti-edge-tunnel:latest
         environment: []
         network_mode: host       # use the Docker host's network, not the Docker bridge
         devices:
