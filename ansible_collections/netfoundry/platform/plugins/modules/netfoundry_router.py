@@ -181,7 +181,7 @@ def run_module():
 #        georegion=dict(type='str', required=False),
         provider=dict(type='str', required=False, default="AWS", choices=["AWS", "AZURE", "GCP", "OCP"]),
         datacenter=dict(type='str', required=False),
-        state=dict(type='str', required=False, default="present", choices=["present","absent"]),
+        state=dict(type='str', required=False, default="present", choices=["present","absent","PROVISIONING", "PROVISIONED", "REGISTERED","DELETED"]),
         network=dict(type='dict', required=True),
         linkListener=dict(type='bool', required=False, default=False),
         rotateKey=dict(type='bool', required=False, default=False),
