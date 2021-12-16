@@ -67,16 +67,24 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-session = netfoundry.Session(
-    credentials=args.credentials if args.credentials is not None else None
+# use the session with some organization, default is to use the first and there's typically only one
+organization = netfoundry.Organization(
+    credentials=args.credentials if 'credentials' in args else None,
+    organization_label=args.organization if 'organization' in args else None,
+)
+
+# use some Network Group, default is to use the first and there's typically only one
+network_group = netfoundry.NetworkGroup(
+    organization,
+    network_group_name=args.network_group if 'network_group' in args else None
 )
 
 if args.network_name and args.network_id:
     raise Exception("ERROR: need one of network-name or network-id")
 elif args.network_name:
-    network = netfoundry.Network(session, network_name=args.network_name)
+    network = netfoundry.Network(network_group, network_name=args.network_name)
 elif args.network_id:
-    network = netfoundry.Network(session, network_id=args.network_id)
+    network = netfoundry.Network(network_group, network_id=args.network_id)
 else:
     raise Exception("ERROR: need one of network-name or network-id")
 

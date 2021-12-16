@@ -1,0 +1,30 @@
+version: "3.9"
+
+x-base-service: &base-service
+    image: netfoundry/ziti-tunnel:latest # https://hub.docker.com/r/netfoundry/ziti-tunnel/tags?page=1&ordering=last_updated
+    volumes:
+    - .:/netfoundry              # mount current dir (relative to Compose file) with identity config file
+    environment:
+    - NF_REG_NAME                # inherit when run like this: NF_REG_NAME=AcmeIdentity docker-compose up ziti-tproxy
+    - NF_REG_TOKEN               # a JWT as string to be used for enrolling and persisting /ziti-edge-tunnel/${NF_REG_NAME}.json 
+    - PFXLOG_NO_JSON=true        # suppress JSON logging
+
+services:
+  ziti-host-bridge:              # terminate a service for a server that's reachable by this Docker network (default mode is "bridge")
+    <<: *base-service
+    networks:
+      ziti-bridge:
+    command: host
+  ldap:
+    image: openmicroscopy/apacheds
+    ports:
+      - 10389
+    networks:
+      ziti-bridge:
+networks:
+  ziti-bridge:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.31.255.0/24
+        gateway: 172.31.255.1

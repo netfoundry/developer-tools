@@ -1,0 +1,58 @@
+---
+# tasks file for netfoundry-network
+
+  # the info module is read-only and may establish a session or take an inventory of a network or both
+- name: Establish Session
+  netfoundry_info:
+    credentials: "{{ netfoundry_credentials|default(omit) }}"
+    network_group: "{{ embedded.networkGroupId }}"
+  register: netfoundry_api
+
+  # the network module will create the network if necessary and wait for desired state
+- name: Create Network
+  netfoundry_network:
+    name: "{{ embedded.name }}"
+    size: "{{ embedded.size }}"
+    datacenter: "{{ embedded.locationCode }}"
+    version: "{{ embedded.productVersion }}"
+    state: PROVISIONED
+    network_group: "{{ netfoundry_api.network_group }}"
+    wait: 999
+  register: created_network
+
+  # the info module is read-only and may establish a session or take an inventory of a network or both
+- name: Describe the Network
+  netfoundry_info:
+    network: "{{ created_network.id }}"
+    inventory: True
+    session: "{{ netfoundry_api.session }}"
+  register: netfoundry_api
+
+- name: wait in the background for each hosted edge router to become REGISTERED
+  netfoundry_router:
+    name: "{{ item.display_name }}"
+    attributes: "{{ item.attributes+['#'+item.provider+'_routers'] }}" # add a provider attribute like "#AWS_routers"
+    datacenter: "{{ item.datacenter | default((netfoundry_api.network.data_centers|selectattr('provider', 'match', item.provider)|list|random).id) }}"
+    state: REGISTERED
+    wait: "{{ router_wait }}"
+    tunnelerEnabled: yes
+    network: "{{ netfoundry_api.network }}"
+  when: 'item.display_name not in netfoundry_api.network.hosted_edge_routers|map(attribute="name")'
+  register: router_watcher
+  async: "{{ router_wait }}"
+  poll: 0
+  loop: "{{ edge_router_placements }}"
+  tags:
+  - routers
+
+- name: Wait for router watcher
+  async_status:
+    jid: "{{ async_result_item.ansible_job_id }}"
+  retries: "{{ router_wait }}"
+  delay: 1
+  register: async_poll_results
+  until: async_poll_results.finished
+  loop: "{{ router_watcher.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  when: async_result_item.ansible_job_id is defined

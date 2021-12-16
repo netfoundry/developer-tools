@@ -24,10 +24,10 @@ services:
         - PFXLOG_NO_JSON=true
         command: host
     hello:
-        image: netfoundry/railz
+        image: netfoundry/hello-world-webpage
         restart: "no"
         ports:
-        - 3000:3000
+        - 3000:80
     httpbin:
         image: kennethreitz/httpbin
         restart: "no"
