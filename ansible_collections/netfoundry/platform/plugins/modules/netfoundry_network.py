@@ -50,6 +50,10 @@ options:
         type: str
         choices: ["small","medium","large"]
         default: small
+    version:
+        description: The product version number in SemVer notation e.g. 7.3.17.
+        required: false
+        type: str
     wait:
         description: seconds to wait for specified status (see async example)
         required: false
