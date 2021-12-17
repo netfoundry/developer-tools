@@ -5,16 +5,17 @@
 - name: Establish Session
   netfoundry_info:
     credentials: "{{ netfoundry_credentials|default(omit) }}"
-    network_group: "{{ embedded.networkGroupId }}"
+    network_group: "{{ network_download.networkGroupId }}"
+    proxy: "{{ netfoundry_proxy | default(omit) }}"
   register: netfoundry_api
 
   # the network module will create the network if necessary and wait for desired state
 - name: Create Network
   netfoundry_network:
-    name: "{{ embedded.name }}"
-    size: "{{ embedded.size }}"
-    datacenter: "{{ embedded.locationCode }}"
-    version: "{{ embedded.productVersion }}"
+    name: "{{ network_download.name }}"
+    size: "{{ network_download.size }}"
+    datacenter: "{{ network_download.locationCode }}"
+    version: "{{ network_download.productVersion }}"
     state: PROVISIONED
     network_group: "{{ netfoundry_api.network_group }}"
     wait: 999
@@ -23,25 +24,25 @@
   # the info module is read-only and may establish a session or take an inventory of a network or both
 - name: Describe the Network
   netfoundry_info:
-    network: "{{ created_network.id }}"
+    network: "{{ created_network.message.id }}"
     inventory: True
     session: "{{ netfoundry_api.session }}"
+    proxy: "{{ netfoundry_proxy | default(omit) }}"
   register: netfoundry_api
 
+  # BEGIN configure routers in parallel to save time
 - name: wait in the background for each hosted edge router to become REGISTERED
   netfoundry_router:
-    name: "{{ item.display_name }}"
-    attributes: "{{ item.attributes+['#'+item.provider+'_routers'] }}" # add a provider attribute like "#AWS_routers"
-    datacenter: "{{ item.datacenter | default((netfoundry_api.network.data_centers|selectattr('provider', 'match', item.provider)|list|random).id) }}"
+    name: "{{ item.name }}"
+    attributes: "{{ item.attributes }}"
     state: REGISTERED
     wait: "{{ router_wait }}"
-    tunnelerEnabled: yes
+    tunnelerEnabled: "{{ item.tunnelerEnabled }}"
     network: "{{ netfoundry_api.network }}"
-  when: 'item.display_name not in netfoundry_api.network.hosted_edge_routers|map(attribute="name")'
   register: router_watcher
   async: "{{ router_wait }}"
   poll: 0
-  loop: "{{ edge_router_placements }}"
+  loop: "{{ network_download.edgeRouters }}"
   tags:
   - routers
 
@@ -56,3 +57,44 @@
   loop_control:
     loop_var: "async_result_item"
   when: async_result_item.ansible_job_id is defined
+  # END configure routers in parallel to save time
+
+- name: configure simple endpoint-hosted services
+  netfoundry_service_simple:
+    name: "{{ item.name }}"
+    attributes: "{{ item.attributes }}"
+    clientHostName: "{{ item.model.clientIngress.host }}"
+    clientPort: "{{ item.model.clientIngress.port | int }}"
+    endpoints: "{{ item.model.bindEndpointAttributes | default([]) }}"
+    serverHostName: "{{ item.model.serverEgress.host | default(omit) }}"          # default is SDK-hosted
+    serverPort: "{{ (item.model.serverEgress.port | int) | default(omit) }}"      # default is client port unless SDK-hosted
+    serverProtocol: "{{ item.model.serverEgress.protocol | default(omit) }}"      # default TCP
+    encryptionRequired: "{{ item.model.encryptionRequired | default(omit) }}"     # default True
+    edgeRouterAttributes: "{{ item.model.edgeRouterAttributes | default(omit) }}" # default #all
+    wait: "{{ service_wait }}"
+    network: "{{ netfoundry_api.network }}"
+  when:
+  - item.modelType == "TunnelerToEndpoint"
+  register: simple_endpoint_services
+  async: "{{ service_wait }}"
+  loop: "{{ network_download.services }}"
+
+- name: configure simple router-hosted services
+  netfoundry_service_simple:
+    name: "{{ item.name }}"
+    attributes: "{{ item.attributes }}"
+    clientHostName: "{{ item.model.clientIngress.host }}"
+    clientPort: "{{ item.model.clientIngress.port | int }}"
+    egressRouter: "{{ item.model.edgeRouterHosts.0.edgeRouterName }}"
+    serverHostName: "{{ item.model.edgeRouterHosts.0.serverEgress.host }}"
+    serverPort: "{{ (item.model.edgeRouterHosts.0.serverEgress.port | int) | default(omit) }}"      # default is client port
+    serverProtocol: "{{ item.model.edgeRouterHosts.0.serverEgress.protocol | default(omit) }}"      # default TCP
+    encryptionRequired: "{{ item.model.encryptionRequired | default(omit) }}"     # default True
+    edgeRouterAttributes: "{{ item.model.edgeRouterAttributes | default(omit) }}" # default #all
+    wait: "{{ service_wait }}"
+    network: "{{ netfoundry_api.network }}"
+  when:
+  - item.modelType == "TunnelerToEdgeRouter"
+  register: simple_router_services
+  async: "{{ service_wait }}"
+  loop: "{{ network_download.services }}"
