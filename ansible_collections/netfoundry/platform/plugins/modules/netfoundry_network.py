@@ -124,7 +124,7 @@ def run_module():
         network_group=dict(type='dict', required=True),
         datacenter=dict(type='str', required=False),
         version=dict(type='str', required=False),
-        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "DELETING", "DELETED"]),
+        state=dict(type='str', required=False, default="PROVISIONED", choices=["PROVISIONING", "PROVISIONED", "DELETING", "DELETED", "present", "absent"]),
         size=dict(type='str', required=False, default="small", choices=["small","medium","large"]),
         wait=dict(type='int', required=False, default=1200),
     )
@@ -178,6 +178,14 @@ def run_module():
         organization,
         network_group_id=module.params['network_group']['id']
     )
+
+    # This translates the conventional "present" and "absent" into knowable network states.
+    if module.params['state'] == "present":
+        state = "PROVISIONED"
+    elif module.params['state'] in ["absent"]:
+        state = "DELETED"
+    else:
+        state = module.params['state']
 
     # these properties will be style translated from snake to lower camel as API properties when patching an existing resource
     properties = {
