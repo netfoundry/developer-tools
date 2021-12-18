@@ -1,48 +1,60 @@
 ---
 # tasks file for netfoundry-network
 
-  # the info module is read-only and may establish a session or take an inventory of a network or both
+- name: import vars from network download file
+  include_vars:
+    file: "{{ downloaded_network_file }}"
+    name: downloaded_network
+
+  # The info module is read-only and may establish a session or take an
+  #  inventory of a network or both. In this case we're authenticating as a
+  #  member of the caller's organization and verifying access to a particular
+  #  network group, if specified in the downloaded_network file
 - name: Establish Session
   netfoundry_info:
-    credentials: "{{ netfoundry_credentials|default(omit) }}"
-    network_group: "{{ network_download.networkGroupId }}"
+    network_group: "{{ downloaded_network.networkGroupId | default(omit) }}"
+    credentials: "{{ netfoundry_credentials | default(omit) }}"
     proxy: "{{ netfoundry_proxy | default(omit) }}"
   register: netfoundry_api
+  tags: session
 
-  # the network module will create the network if necessary and wait for desired state
+  # The network module will create the network if necessary and wait for desired state.
 - name: Create Network
   netfoundry_network:
-    name: "{{ network_download.name }}"
-    size: "{{ network_download.size }}"
-    datacenter: "{{ network_download.locationCode }}"
-    version: "{{ network_download.productVersion }}"
+    name: "{{ downloaded_network.name }}"
+    size: "{{ downloaded_network.size }}"
+    datacenter: "{{ downloaded_network.locationCode }}"
+    version: "{{ downloaded_network.productVersion }}"
     state: PROVISIONED
     network_group: "{{ netfoundry_api.network_group }}"
-    wait: 999
+    #wait: "{{ network_wait }}"
   register: created_network
 
-  # the info module is read-only and may establish a session or take an inventory of a network or both
+  # Now we'll use the same info module again with the session/bearer token we
+  # already obtained to take an inventory of a particular network.
 - name: Describe the Network
   netfoundry_info:
-    network: "{{ created_network.message.id }}"
+    network: "{{ downloaded_network.name }}"
     inventory: True
     session: "{{ netfoundry_api.session }}"
     proxy: "{{ netfoundry_proxy | default(omit) }}"
   register: netfoundry_api
+  tags: inventory
 
   # BEGIN configure routers in parallel to save time
 - name: wait in the background for each hosted edge router to become REGISTERED
   netfoundry_router:
     name: "{{ item.name }}"
-    attributes: "{{ item.attributes }}"
+    attributes: "{{ item.attributes | default(omit)  }}"
     state: REGISTERED
     wait: "{{ router_wait }}"
-    tunnelerEnabled: "{{ item.tunnelerEnabled }}"
+    tunnelerEnabled: "{{ item.tunnelerEnabled | default(omit)  }}"
+    linkListener: "{{ item.linkListener | default(omit) }}"
     network: "{{ netfoundry_api.network }}"
   register: router_watcher
   async: "{{ router_wait }}"
   poll: 0
-  loop: "{{ network_download.edgeRouters }}"
+  loop: "{{ downloaded_network.edgeRouters }}"
   tags:
   - routers
 
@@ -57,7 +69,20 @@
   loop_control:
     loop_var: "async_result_item"
   when: async_result_item.ansible_job_id is defined
+  tags:
+  - routers
   # END configure routers in parallel to save time
+
+- name: configure OTT Device endpoints
+  netfoundry_endpoint:
+    name: "{{ item.name }}"
+    attributes: "{{ item.attributes }}"
+    network: "{{ netfoundry_api.network }}"
+  when: item.enrollmentMethod.ott
+  register: ott_device_endpoints
+  async: "{{ endpoint_wait }}"
+  loop: "{{ downloaded_network.endpoints }}"
+  tags: endpoints
 
 - name: configure simple endpoint-hosted services
   netfoundry_service_simple:
@@ -71,13 +96,14 @@
     serverProtocol: "{{ item.model.serverEgress.protocol | default(omit) }}"      # default TCP
     encryptionRequired: "{{ item.model.encryptionRequired | default(omit) }}"     # default True
     edgeRouterAttributes: "{{ item.model.edgeRouterAttributes | default(omit) }}" # default #all
-    wait: "{{ service_wait }}"
+    #wait: "{{ service_wait }}"
     network: "{{ netfoundry_api.network }}"
   when:
   - item.modelType == "TunnelerToEndpoint"
   register: simple_endpoint_services
   async: "{{ service_wait }}"
-  loop: "{{ network_download.services }}"
+  loop: "{{ downloaded_network.services }}"
+  tags: services
 
 - name: configure simple router-hosted services
   netfoundry_service_simple:
@@ -91,10 +117,64 @@
     serverProtocol: "{{ item.model.edgeRouterHosts.0.serverEgress.protocol | default(omit) }}"      # default TCP
     encryptionRequired: "{{ item.model.encryptionRequired | default(omit) }}"     # default True
     edgeRouterAttributes: "{{ item.model.edgeRouterAttributes | default(omit) }}" # default #all
-    wait: "{{ service_wait }}"
+    #wait: "{{ service_wait }}"
     network: "{{ netfoundry_api.network }}"
   when:
   - item.modelType == "TunnelerToEdgeRouter"
   register: simple_router_services
   async: "{{ service_wait }}"
-  loop: "{{ network_download.services }}"
+  loop: "{{ downloaded_network.services }}"
+  tags: services
+
+- name: create an endpoint-hosted TCP,UDP iperf service 
+  netfoundry_service_advanced:
+    name: iperf server {{ network_basename_serial }}
+    endpoints:
+    - Exit{{ network_basename_serial }}
+    attributes: 
+    - "#cyan_services"
+    # edgeRouterAttributes:
+    # - "#magenta_routers"
+    clientHosts:
+    - iperf-endpoint.{{ network_basename }}{{ network_basename_serial }}.netfoundry
+    - 100.128.0.1
+    clientPorts: 
+      - 5201:5202
+    clientProtocols:
+      - tcp
+      - udp
+    serverHosts: iperf
+    serverPorts: 5201
+    wait: "{{ service_wait }}"
+    network: "{{ netfoundry_api.network }}"
+  tags: 
+    - services
+    - services_advanced
+
+- pause:
+
+- name: configure advanced services as raw object # advanced are always endpoint-hosted
+  netfoundry_service_raw:
+    object: "{{ item }}"
+    #wait: "{{ service_wait }}"
+    wait: 0 # work around missing async process
+    network: "{{ netfoundry_api.network }}"
+  when:
+  - item.modelType == "AdvancedTunnelerToEndpoint"
+  register: advanced_services
+  loop: "{{ downloaded_network.services }}"
+  tags: 
+    - services
+    - services_advanced
+    - services_raw
+
+- name: configure edge router policies
+  netfoundry_router_policy:
+    name: "{{ item.name }}"
+    attributes: "{{ item.attributes }}"
+    network: "{{ netfoundry_api.network }}"
+  when: item.enrollmentMethod.ott
+  register: ott_device_endpoints
+  async: "{{ endpoint_wait }}"
+  loop: "{{ downloaded_network.endpoints }}"
+  tags: endpoints
