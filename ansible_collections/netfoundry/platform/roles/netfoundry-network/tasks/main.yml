@@ -126,33 +126,6 @@
   loop: "{{ downloaded_network.services }}"
   tags: services
 
-- name: create an endpoint-hosted TCP,UDP iperf service 
-  netfoundry_service_advanced:
-    name: iperf server {{ network_basename_serial }}
-    endpoints:
-    - Exit{{ network_basename_serial }}
-    attributes: 
-    - "#cyan_services"
-    # edgeRouterAttributes:
-    # - "#magenta_routers"
-    clientHosts:
-    - iperf-endpoint.{{ network_basename }}{{ network_basename_serial }}.netfoundry
-    - 100.128.0.1
-    clientPorts: 
-      - 5201:5202
-    clientProtocols:
-      - tcp
-      - udp
-    serverHosts: iperf
-    serverPorts: 5201
-    wait: "{{ service_wait }}"
-    network: "{{ netfoundry_api.network }}"
-  tags: 
-    - services
-    - services_advanced
-
-- pause:
-
 - name: configure advanced services as raw object # advanced are always endpoint-hosted
   netfoundry_service_raw:
     object: "{{ item }}"
