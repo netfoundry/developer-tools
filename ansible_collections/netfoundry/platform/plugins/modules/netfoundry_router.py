@@ -258,8 +258,7 @@ def run_module():
         datacenter = module.params['datacenter']
         provider = module.params['provider']
         # all hosted routers have a link listener
-        if not properties['link_listener']:
-            properties['link_listener'] = True
+        properties['link_listener'] = True
         # check if UUIDv4
         try: UUID(datacenter, version=4)
         except ValueError:
@@ -318,7 +317,8 @@ def run_module():
                 snake_key = utility.snake(camel_str=key)
                 if snake_key in properties.keys():
                     router[key] = properties[snake_key]
-            try: result['message'] = network.patch_resource(router)
+#            try: result['message'] = network.patch_resource(router, wait=module.params['wait'])
+            try: result['message'] = network.patch_resource(router, wait=0) # TODO: work around missing async patch process
             except Exception as e:
                 raise AnsibleError('Failed to update edge router "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
             result['changed'] = True
