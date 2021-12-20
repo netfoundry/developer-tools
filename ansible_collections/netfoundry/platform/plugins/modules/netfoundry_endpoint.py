@@ -170,7 +170,7 @@ def run_module():
     try: UUID(module.params['name'], version=4)
     except ValueError:
         # else assume is an Endpoint
-        found = network.get_resources(type="endpoints",name=module.params['name'],typeId="Device")
+        found = network.get_resources(type="endpoints",name=module.params['name'])
     # it's a UUID and so we assign the property directly
     else: 
         found = [network.get_resource(type="endpoint",id=module.params['name'])]
@@ -196,10 +196,14 @@ def run_module():
             if result['message']['jwt'] and module.params['dest']:
                 save_one_time_token(name=result['message']['name'], jwt=result['message']['jwt'], dest=module.params['dest'])
         elif module.params['state'] == "DELETED":
-            try: network.delete_endpoint(id=endpoint['id'])
-            except Exception as e:
-                raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
-            result['changed'] = True
+            if endpoint['typeId'] == "Device":
+                try: network.delete_endpoint(id=endpoint['id'])
+                except Exception as e:
+                    raise AnsibleError('Failed to delete Endpoint "{}". Caught exception: {}'.format(module.params['name'], to_native(e)))
+                result['changed'] = True
+            elif endpoint['typeId'] == "Router":
+                raise AnsibleError('It is not possible to delete endpoints with typeId=Router. These are system-managed components of the eponymous edge router.')
+
     else:
         module.fail_json(msg='ERROR: "{name}" matched more than one Endpoint'.format(name=module.params['name']), **result)
 
