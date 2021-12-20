@@ -5,14 +5,10 @@
   # networks
 - hosts: localhost
   gather_facts: False
-  force_handlers: True
   roles:
     - { role: netfoundry-network, tags: ['netfoundry'] }
   collections:
       - netfoundry.platform
   vars:
-    netfoundry_credentials: nfziti-staging.json
-    netfoundry_proxy: http://localhost:4321
-
     # download as YAML from NF web console
     downloaded_network_file: downloaded_network.yml
