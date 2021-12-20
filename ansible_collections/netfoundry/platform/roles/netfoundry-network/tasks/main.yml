@@ -5,6 +5,7 @@
   include_vars:
     file: "{{ downloaded_network_file }}"
     name: downloaded_network
+  tags: vars
 
   # The info module is read-only and may establish a session or take an
   #  inventory of a network or both. In this case we're authenticating as a
@@ -73,13 +74,13 @@
   - routers
   # END configure routers in parallel to save time
 
-- name: configure OTT Device endpoints
+- name: configure OTT endpoints
   netfoundry_endpoint:
     name: "{{ item.name }}"
     attributes: "{{ item.attributes }}"
     network: "{{ netfoundry_api.network }}"
   when: item.enrollmentMethod.ott
-  register: ott_device_endpoints
+  register: ott_endpoints
   async: "{{ endpoint_wait }}"
   loop: "{{ downloaded_network.endpoints }}"
   tags: endpoints
@@ -144,10 +145,24 @@
 - name: configure edge router policies
   netfoundry_router_policy:
     name: "{{ item.name }}"
-    attributes: "{{ item.attributes }}"
+    endpoints: "{{ item.endpointAttributes | default(omit)  }}"
+    routers: "{{ item.edgeRouterAttributes | default(omit)  }}"
     network: "{{ netfoundry_api.network }}"
-  when: item.enrollmentMethod.ott
-  register: ott_device_endpoints
-  async: "{{ endpoint_wait }}"
-  loop: "{{ downloaded_network.endpoints }}"
-  tags: endpoints
+  register: router_policies
+  async: "{{ policy_wait }}"
+  loop: "{{ downloaded_network.edgeRouterPolicies }}"
+  when: not item.name.endswith('-system')
+  tags: router_policies
+
+- name: configure app-wans
+  netfoundry_appwan:
+    name: "{{ item.name }}"
+    endpoints: "{{ item.endpointAttributes | default(omit)  }}"
+    services: "{{ item.serviceAttributes | default(omit)  }}"
+    network: "{{ netfoundry_api.network }}"
+  register: router_policies
+  async: "{{ policy_wait }}"
+  loop: "{{ downloaded_network.appWans }}"
+  when: not item.name.endswith('-system')
+  tags: app_wans
+  

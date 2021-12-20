@@ -1,9 +1,9 @@
 ---
 # defaults file for netfoundry-network
 
-network_size: small
-network_datacenter: us-east-1
-network_version: default # "default" (i.e. stable) or "latest" (i.e. experimental) or "7.3.23" (specific product version) 
+network_size: small           # vertical scaling factor for compute instances
+network_datacenter: us-east-1 #
+network_version: default      # "default" (i.e. stable) or "latest" (i.e. experimental) or "7.3.23" (product version) 
 netfoundry_credentials: credentials.json
 netfoundry_identity_organization: null
 netfoundry_network_group: null
@@ -12,5 +12,5 @@ wait_seconds: 60                                            # minimum timeout
 network_wait:  "{{ wait_seconds|int*30 }}"                  # create network timeout seconds
 router_wait:   "{{ wait_seconds|int*15 }}"                  # create router timeout seconds
 endpoint_wait: "{{ wait_seconds|int*5 }}"                   # create endpoint timeout seconds
-enroll_wait:   "{{ (wait_seconds|int/2)|round|int }}"       # enroll endpoint timeout seconds
+policy_wait:   "{{ (wait_seconds|int/2)|round|int }}"       # router policy timeout seconds
 service_wait:  "{{ (wait_seconds|int*10)|round|int }}"      # create service timeout seconds
