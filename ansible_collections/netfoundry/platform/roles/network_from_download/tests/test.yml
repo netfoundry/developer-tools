@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - netfoundry-network
+    - network_from_download
