@@ -8,7 +8,7 @@ on:
   #   types: [published]
 
 jobs:
-  upload_pypi:
+  network_mgmt:
     runs-on: ubuntu-latest
     steps:
       - name: NetFoundry Network Action
