@@ -2,10 +2,7 @@ name: Manage NetFoundry Network
 
 on:
   push:
-  #   branches:
-  #     - release-v*
-  # release:
-  #   types: [published]
+    branches: ['**']
 
 jobs:
   network_mgmt:
