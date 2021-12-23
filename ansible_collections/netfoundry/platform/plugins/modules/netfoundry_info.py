@@ -161,10 +161,24 @@ def run_module():
     }
     result['session'] = renewal
 
+    # assign network_id if UUIDv4 else network_name
+    if module.params['network_group']:
+        try: UUID(module.params['network_group'], version=4)
+        except ValueError: # is not UUIDv4
+            network_group_name = module.params['network_group']
+            network_group_id = None
+        else: # is UUIDv4
+            network_group_id = module.params['network_group']
+            network_group_name = None
+    else:
+        network_group_id = None
+        network_group_name = None
+
     # use some Network Group, default is to use the first and there's typically only one
     network_group = NetworkGroup(
         organization,
-        network_group_name=module.params['network_group'] if 'network_group' in module.params else None
+        network_group_name=module.params['network_group'] if network_group_name else None,
+        network_group_id=module.params['network_group'] if network_group_id else None
     )
 
     if module.params['network']:

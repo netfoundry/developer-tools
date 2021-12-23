@@ -62,7 +62,7 @@ options:
         type: str
         required: false
         default: TCP
-        choices: ["TCP","UDP"]
+        choices: ["TCP","UDP", "tcp", "udp"]
     encryptionRequired:
         description: require edge-to-edge encryption (E2EE) from intercept or SDK to hosting Endpoint or Edge Router or SDK
         type: bool
@@ -155,7 +155,7 @@ def run_module():
         egressRouter=dict(type='str', required=False),
         serverHostName=dict(type='str', required=False),
         serverPort=dict(type='int', required=False, aliases=["serverPortRange"]),
-        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP","UDP"]),
+        serverProtocol=dict(type='str', required=False, default="TCP", choices=["TCP", "UDP", "tcp", "udp"]),
         encryptionRequired=dict(type='bool', required=False, default=True),
         wait=dict(type='int', required=False, default=66),
         edgeRouterAttributes=dict(type='list', elements='str', required=False, default=["#all"]),
@@ -221,7 +221,7 @@ def run_module():
         "client_port": module.params['clientPort'],
         "server_host_name": module.params['serverHostName'],
         "server_port": module.params['serverPort'],
-        "server_protocol": module.params['serverProtocol'],
+        "server_protocol": module.params['serverProtocol'].upper(),
         "wait": module.params['wait'],
         "encryption_required": module.params['encryptionRequired'],
     }

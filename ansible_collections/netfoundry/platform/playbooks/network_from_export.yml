@@ -1,0 +1,14 @@
+---
+
+  # declare entities from a vars dict "embedded" containing the data structure
+  # exported / downloaded from the NF console's "manage networks" list of
+  # networks
+- hosts: localhost
+  gather_facts: False
+  roles:
+    - { role: netfoundry-network, tags: ['netfoundry'] }
+  collections:
+      - netfoundry.platform
+  vars:
+    # download as YAML from NF web console
+    downloaded_network_file: downloaded_network.yml
