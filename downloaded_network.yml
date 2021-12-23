@@ -1,0 +1,462 @@
+#networkGroupId: NFZITI
+networkGroupId: fa080396-8f02-4596-9bf4-d16e1686b4b0
+size: small
+name: ACMETEST1639677664
+productVersion: 7.3.43
+o365BreakoutCategory: NONE
+locationCode: us-east-1
+edgeRouters:
+  - name: Yellow Hosted 1639677664
+    linkListener: true
+    tunnelerEnabled: true
+    attributes:
+      - '#AWS_routers'
+      - '#yellow_routers'
+      - '#kentest_router_role123'
+  - name: Cyan Hosted 1639677664
+    linkListener: false
+    tunnelerEnabled: true
+    attributes:
+      - '#cyan_routers'
+      - '#OCP_routers'
+  - name: customer router 1639677664
+    linkListener: false
+    tunnelerEnabled: false
+    attributes:
+      - '#privateRouters'
+  - name: Key Hosted 1639677664
+    linkListener: true
+    tunnelerEnabled: false
+    attributes:
+      - '#AWS_routers'
+      - '#key_routers'
+  - name: Magenta Hosted 1639677664
+    linkListener: true
+    tunnelerEnabled: true
+    attributes:
+      - '#magenta_routers'
+      - '#AZURE_routers'
+edgeRouterPolicies:
+  - name: edge-router-N8Pd8mnFzi-system
+    endpointAttributes:
+      - '@N8Pd8mnFzi'
+    edgeRouterAttributes:
+      - '@N8Pd8mnFzi'
+  - name: edge-router-DbOZ8mnFzi-system
+    endpointAttributes:
+      - '@DbOZ8mnFzi'
+    edgeRouterAttributes:
+      - '@DbOZ8mnFzi'
+  - name: edge-router-sKOn82ZFzi-system
+    endpointAttributes:
+      - '@sKOn82ZFzi'
+    edgeRouterAttributes:
+      - '@sKOn82ZFzi'
+  - name: edge-router-Q.4o8mnFui-system
+    endpointAttributes:
+      - '@Q.4o8mnFui'
+    edgeRouterAttributes:
+      - '@Q.4o8mnFui'
+  - name: magenta ERP 1639677664
+    endpointAttributes:
+      - '#magenta_endpoints'
+    edgeRouterAttributes:
+      - '#yellow_routers'
+      - '#magenta_routers'
+  - name: edge-router-mh7dI2ZRz-system
+    endpointAttributes:
+      - '@mh7dI2ZRz'
+    edgeRouterAttributes:
+      - '@mh7dI2ZRz'
+  - name: cyan endpoints ERP 1639677664
+    endpointAttributes:
+      - '#cyan_endpoints'
+    edgeRouterAttributes:
+      - '#yellow_routers'
+      - '#cyan_routers'
+services:
+  - name: echo-1639677664-50003
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50003.ACMETEST1639677664.netfoundry
+        port: 50003
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50003
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: Key Hosted 1639677664 SSH Server
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEdgeRouter
+    model:
+      clientIngress:
+        host: key-hosted.routers.ACMETEST1639677664.netfoundry
+        port: 22
+      edgeRouterAttributes:
+        - '#all'
+      edgeRouterHosts:
+        - edgeRouterName: Key Hosted 1639677664
+          serverEgress:
+            protocol: tcp
+            host: localhost
+            port: 22
+  - name: echo-1639677664-50000
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50000.ACMETEST1639677664.netfoundry
+        port: 50000
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50000
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: Go SDK Reflect 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToSdk
+    model:
+      clientIngress:
+        host: reflect-server.ACMETEST1639677664.netfoundry
+        port: 194
+      bindEndpointAttributes:
+        - '@Reflect1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: echo-1639677664-50001
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50001.ACMETEST1639677664.netfoundry
+        port: 50001
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50001
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: echo-1639677664-50002
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50002.ACMETEST1639677664.netfoundry
+        port: 50002
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50002
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: Magenta Hosted 1639677664 SSH Server
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEdgeRouter
+    model:
+      clientIngress:
+        host: magenta-hosted.routers.ACMETEST1639677664.netfoundry
+        port: 22
+      edgeRouterAttributes:
+        - '#all'
+      edgeRouterHosts:
+        - edgeRouterName: Magenta Hosted 1639677664
+          serverEgress:
+            protocol: tcp
+            host: localhost
+            port: 22
+  - name: Yellow Hosted 1639677664 SSH Server
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEdgeRouter
+    model:
+      clientIngress:
+        host: yellow-hosted.routers.ACMETEST1639677664.netfoundry
+        port: 22
+      edgeRouterAttributes:
+        - '#all'
+      edgeRouterHosts:
+        - edgeRouterName: Yellow Hosted 1639677664
+          serverEgress:
+            protocol: tcp
+            host: localhost
+            port: 22
+  - name: Router Echo 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEdgeRouter
+    model:
+      clientIngress:
+        host: echo-router.ACMETEST1639677664.netfoundry
+        port: 80
+      edgeRouterAttributes:
+        - '#all'
+      edgeRouterHosts:
+        - edgeRouterName: Yellow Hosted 1639677664
+          serverEgress:
+            protocol: tcp
+            host: eth0.me
+            port: 80
+  - name: echo-1639677664-50005
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50005.ACMETEST1639677664.netfoundry
+        port: 50005
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50005
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: echo-1639677664-50004
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-50004.ACMETEST1639677664.netfoundry
+        port: 50004
+      serverEgress:
+        protocol: tcp
+        host: echo
+        port: 50004
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: iperf server 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: AdvancedTunnelerToEndpoint
+    model:
+      clientIngress:
+        protocols:
+          - udp
+          - tcp
+        addresses:
+          - 100.128.0.1
+          - iperf-endpoint.ACMETEST1639677664.netfoundry
+        ports:
+          - low: 5201
+            high: 5202
+      serverEgress:
+        forwardProtocol: true
+        allowedProtocols:
+          - udp
+          - tcp
+        host: iperf
+        port: 5201
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: Cyan Hosted 1639677664 SSH Server
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEdgeRouter
+    model:
+      clientIngress:
+        host: cyan-hosted.routers.ACMETEST1639677664.netfoundry
+        port: 22
+      edgeRouterAttributes:
+        - '#all'
+      edgeRouterHosts:
+        - edgeRouterName: Cyan Hosted 1639677664
+          serverEgress:
+            protocol: tcp
+            host: localhost
+            port: 22
+  - name: REST test server 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: httpbin.ACMETEST1639677664.netfoundry
+        port: 80
+      serverEgress:
+        protocol: tcp
+        host: httpbin
+        port: 80
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: OpenSpeedtest server 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: speedtest-endpoint.ACMETEST1639677664.netfoundry
+        port: 80
+      serverEgress:
+        protocol: tcp
+        host: speedtest
+        port: 8080
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+  - name: Endpoint Echo 1639677664
+    encryptionRequired: true
+    attributes:
+      - '#cyan_services'
+    modelType: TunnelerToEndpoint
+    model:
+      clientIngress:
+        host: echo-endpoint.ACMETEST1639677664.netfoundry
+        port: 80
+      serverEgress:
+        protocol: tcp
+        host: eth0.me
+        port: 80
+      bindEndpointAttributes:
+        - '@Exit1639677664'
+      edgeRouterAttributes:
+        - '#all'
+certificateAuthorities: []
+endpoints:
+  - name: client-1639677664-1001
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: client-1639677664-1005
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: client-1639677664-1004
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: Reflect1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#magenta_endpoints'
+  - name: Client1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: Exit1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#magenta_endpoints'
+  - name: Yellow Hosted 1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes: []
+  - name: Key Hosted 1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes: []
+  - name: client-1639677664-1000
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: Magenta Hosted 1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes: []
+  - name: client-1639677664-1002
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+  - name: customer router 1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes: []
+  - name: Cyan Hosted 1639677664
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes: []
+  - name: client-1639677664-1003
+    enrollmentMethod:
+      ott: true
+      updb: null
+      ottca: null
+    attributes:
+      - '#cyan_endpoints'
+appWans:
+  - networkId: null
+    name: Welcome 1639677664
+    type: Dial
+    semantic: AnyOf
+    serviceAttributes:
+      - '#cyan_endpoints'
+    endpointAttributes:
+      - '@customer router 1639677664'
+      - '#cyan_services'
+    postureCheckAttributes: []
+postureChecks: []
