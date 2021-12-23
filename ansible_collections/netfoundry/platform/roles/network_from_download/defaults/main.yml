@@ -1,5 +1,5 @@
 ---
-# defaults file for netfoundry-network
+# defaults file for network_from_download
 
 network_size: small           # vertical scaling factor for compute instances
 network_datacenter: us-east-1 #

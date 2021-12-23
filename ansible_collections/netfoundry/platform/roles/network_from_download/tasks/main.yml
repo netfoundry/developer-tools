@@ -1,5 +1,5 @@
 ---
-# tasks file for netfoundry-network
+# tasks file for network_from_download
 
 - name: import vars from network download file
   include_vars:

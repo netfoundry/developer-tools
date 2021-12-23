@@ -6,7 +6,7 @@
 - hosts: localhost
   gather_facts: False
   roles:
-    - { role: netfoundry-network, tags: ['netfoundry'] }
+    - { role: network_from_download, tags: ['netfoundry'] }
   collections:
       - netfoundry.platform
   vars:
