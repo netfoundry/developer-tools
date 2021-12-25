@@ -246,7 +246,7 @@ def run_module():
             "edge_router_attributes",
         ]
 
-        # compose a dictionary of validated parameters for Network.create_service_advanced() from the
+        # compose a dictionary of validated parameters for Network.create_service_transparent() from the
         #  intersection of module params and expected properties method: normalize the camel-case module
         #  args for comparison with snake-case expected properties
         validated_service_params = dict()
