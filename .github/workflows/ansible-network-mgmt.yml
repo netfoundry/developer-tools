@@ -1,0 +1,16 @@
+name: Manage NetFoundry Network
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  network_mgmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: NetFoundry Network Action
+        uses: netfoundry/ansible-network-action@v1
+        env:
+          NETFOUNDRY_CLIENT_ID: ${{ secrets.NETFOUNDRY_CLIENT_ID }}
+          NETFOUNDRY_PASSWORD: ${{ secrets.NETFOUNDRY_PASSWORD }}
+          NETFOUNDRY_OAUTH_URL: ${{ secrets.NETFOUNDRY_OAUTH_URL }}

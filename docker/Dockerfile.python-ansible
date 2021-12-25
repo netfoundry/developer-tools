@@ -1,6 +1,6 @@
 # builds netfoundry/ansible
-FROM netfoundry/python
+FROM netfoundry/python:latest
 
-RUN pip install ansible
+RUN pip install ansible yq
 RUN ansible-galaxy collection install --force-with-deps netfoundry.platform
 CMD ["bash"]
