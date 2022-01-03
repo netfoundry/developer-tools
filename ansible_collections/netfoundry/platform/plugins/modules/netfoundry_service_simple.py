@@ -221,7 +221,7 @@ def run_module():
         "client_port": module.params['clientPort'],
         "server_host_name": module.params['serverHostName'],
         "server_port": module.params['serverPort'],
-        "server_protocol": module.params['serverProtocol'].upper(),
+        "server_protocol": module.params['serverProtocol'],
         "wait": module.params['wait'],
         "encryption_required": module.params['encryptionRequired'],
     }
@@ -250,7 +250,7 @@ def run_module():
 
     if len(found) == 0:
         if module.params['state'] == "PROVISIONED":
-            result['message'] = network.create_service(**service_properties)
+            result['message'] = network.create_service_simple(**service_properties)
             result['changed'] = True
         elif module.params['state'] == "DELETED":
             result['changed'] = False

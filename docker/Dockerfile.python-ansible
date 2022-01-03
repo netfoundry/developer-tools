@@ -2,5 +2,5 @@
 FROM netfoundry/python:latest
 
 RUN pip install ansible yq
-RUN ansible-galaxy collection install --force-with-deps netfoundry.platform
+RUN ansible-galaxy collection install --collections-path /usr/share/ansible/collections netfoundry.platform
 CMD ["bash"]
