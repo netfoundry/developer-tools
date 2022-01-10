@@ -11,4 +11,5 @@
       - netfoundry.platform
   vars:
     # download as YAML from NF web console
-    downloaded_network_file: /netfoundry/downloaded_network.yml
+    # downloaded_network_file: /netfoundry/downloaded_network.yml
+    # netfoundry_credentials: /netfoundry/credentials.json

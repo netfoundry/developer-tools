@@ -46,6 +46,8 @@
 - name: wait in the background for each hosted edge router to become REGISTERED
   netfoundry_router:
     name: "{{ item.name }}"
+    datacenter: "{{ item.datacenter | default(omit)  }}"
+    provider: "{{ item.provider | default(omit)  }}"
     attributes: "{{ item.attributes | default(omit)  }}"
     state: REGISTERED
     wait: "{{ router_wait }}"
