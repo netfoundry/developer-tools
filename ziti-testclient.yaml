@@ -17,7 +17,14 @@ spec:
       containers:
       - image: centos
         name: testclient
-        command: ["sh","-c","while true; set -x; do curl -sSf http://100.128.0.2/ip 2>&1; set +x; sleep 5; done"]
+        command: ["sh","-c"]
+        args: [
+          "while true; do 
+            set +x;
+            curl -sSf http://100.128.0.2/ip 2>&1; 
+            sleep 5; 
+          done"
+        ]
 #        command: ["sh", "-c", "while true; do sleep infinity; done"]
       restartPolicy: Always
       dnsPolicy: Default

@@ -26,12 +26,12 @@ spec:
         securityContext:
           privileged: true
         args:
-        - --verbose=4
+        - --verbose=3
         - --dns-ip-range=100.64.64.0/18
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
-        node-role.kubernetes.io/node: ''
+        kubernetes.io/role: node
       restartPolicy: Always
       volumes:
       - name: ziti-enrolled-identity
