@@ -6,7 +6,7 @@ x-base-service: &base-service
     - .:/netfoundry              # mount current dir (relative to Compose file) with identity config file
     environment:
     - NF_REG_NAME                # inherit when run like this: NF_REG_NAME=AcmeIdentity docker-compose up ziti-tproxy
-    - NF_REG_TOKEN               # a JWT as string to be used for enrolling and persisting /ziti-edge-tunnel/${NF_REG_NAME}.json 
+    - NF_REG_TOKEN               # a JWT as string to be used for enrolling and persisting /ziti-edge-tunnel/${NF_REG_NAME}.json
     - PFXLOG_NO_JSON=true        # suppress JSON logging
 
 x-tun-capabilities: &tun-capabilities
@@ -28,8 +28,8 @@ services:
         volumes:
         - .:/ziti-edge-tunnel
         - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
-        command: 
-        - --verbose=4
+        command:
+        - --verbose=2
         - --dns-ip-range=100.64.64.0/18
     ziti-tun-dir:                # load all identities from current dir
         <<: *base-service
@@ -42,7 +42,7 @@ services:
         volumes:
         - .:/ziti-edge-tunnel
         - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
-        command: 
+        command:
         - --verbose=4
         - --dns-ip-range=100.64.64.0/18
     ziti-tproxy:                 # iptables transparent interceptor with DNS
@@ -52,7 +52,7 @@ services:
         dns:                     # optionally, override DNS inherited from Docker host
         - 172.31.255.53          # this first NS must match the built-in nameserver's bind address,
         - 1.1.1.1                #   and a recursive NS is also needed e.g. 8.8.8.8
-        command: 
+        command:
         - tproxy
         - --resolver=udp://172.31.255.53:53   # default is 127.0.0.1
         - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
@@ -65,7 +65,7 @@ services:
         dns:                     # optionally, override DNS inherited from Docker host
         - 172.31.255.2           # this first NS must match the built-in nameserver's bind address,
         - 1.1.1.1                #  and a recursive NS is also needed e.g. 8.8.8.8
-        command: 
+        command:
         - tproxy
         - --resolver=udp://172.31.255.2:53   # default is 127.0.0.1
         - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
@@ -73,7 +73,7 @@ services:
         <<: *base-service
         <<: *iptables-capabilities
         network_mode: host       # use the Docker host's network, not the Docker bridge
-        command: 
+        command:
         - tproxy
         - --resolver none
         - --dnsSvcIpRange=100.64.64.0/18     # default is 100.64/10
@@ -85,18 +85,18 @@ services:
     ziti-host:                   # terminate a service for a server that's reachable by the host network
         <<: *base-service
         network_mode: host       # use the Docker host's network, not the Docker bridge
-        command: host 
+        command: host
     ziti-host-bridge:            # terminate a service for a server that's reachable by this Docker network (default mode is "bridge")
         <<: *base-service
         networks:
             ziti-bridge:
-        command: host 
+        command: host
     ziti-proxy:                  # bind a named service to a container TCP port, optionally forward host TCP port to container
         <<: *base-service
         network_mode: bridge
         ports:
         - "8888:8888"            # optionally forward host ports to container ports listening as TCP proxy
-        command: 
+        command:
         - proxy
         - '"my example service":8888' # example named service and container port to bind as TCP proxy
     ziti-test-dns:               # a test client using Ziti DNS via the bridge network
